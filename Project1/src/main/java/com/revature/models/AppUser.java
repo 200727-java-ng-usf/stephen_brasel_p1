@@ -1,17 +1,29 @@
 package com.revature.models;
 
-import java.util.HashSet;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Objects;
-import java.util.Set;
 
+@Entity
+@Table(name = "revabursement.ers_users")
 public class AppUser {
 	//region Fields
+	@Id
+	@Column(name="ers_user_id")
 	private int id;
+	@Column(name="firstname")
 	private String firstName;
+	@Column(name="lastname")
 	private String lastName;
-	private String userName;
+	@Column(name="username")
+	private String username;
+
 	private transient String password;
+	@Column(name="email")
 	private String email;
+	@Column(name="user_role_id")
 	private Role role;
 	//endregion
 
@@ -20,27 +32,27 @@ public class AppUser {
 		super();
 	}
 
-	public AppUser(String firstName, String lastName, String userName, String password, String email) {
+	public AppUser(String firstName, String lastName, String username, String password, String email) {
 		this();
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.userName = userName;
+		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.role = Role.EMPLOYEE;
 	}
 
-	public AppUser(String firstName, String lastName, String userName, String password, String email, Role role) {
-		this(firstName, lastName, userName, password, email);
+	public AppUser(String firstName, String lastName, String username, String password, String email, Role role) {
+		this(firstName, lastName, username, password, email);
 		this.role = role;
 	}
-	public AppUser(int id, String firstName, String lastName, String userName, String password, String email, Role role) {
-		this(firstName, lastName, userName, password, email, role);
+	public AppUser(int id, String firstName, String lastName, String username, String password, String email, Role role) {
+		this(firstName, lastName, username, password, email, role);
 		this.id = id;
 	}
 
 	public AppUser(AppUser user){
-		this(user.id, user.firstName, user.lastName, user.userName, user.password, user.email, user.role);
+		this(user.id, user.firstName, user.lastName, user.username, user.password, user.email, user.role);
 	}
 	//endregion
 
@@ -69,12 +81,12 @@ public class AppUser {
 		this.lastName = lastName;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getPassword() {
@@ -123,7 +135,7 @@ public class AppUser {
 		return id == appUser.id &&
 				Objects.equals(firstName, appUser.firstName) &&
 				Objects.equals(lastName, appUser.lastName) &&
-				Objects.equals(userName, appUser.userName) &&
+				Objects.equals(username, appUser.username) &&
 				Objects.equals(password, appUser.password) &&
 				Objects.equals(email, appUser.email) &&
 				role == appUser.role;
@@ -131,7 +143,7 @@ public class AppUser {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, firstName, lastName, userName, password, email, role);
+		return Objects.hash(id, firstName, lastName, username, password, email, role);
 	}
 
 	@Override
@@ -140,7 +152,7 @@ public class AppUser {
 				"id=" + id +
 				", firstName='" + firstName + '\'' +
 				", lastName='" + lastName + '\'' +
-				", userName='" + userName + '\'' +
+				", userName='" + username + '\'' +
 				", email='" + email + '\'' +
 				", role=" + role +
 				'}';
