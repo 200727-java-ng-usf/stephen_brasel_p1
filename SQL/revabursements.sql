@@ -49,7 +49,7 @@ create table ers_reimbursements(
 	submitted 				timestamp, 
 	resolved 				timestamp, 
 	description 			text, 
-	reciept 				text, -- stores a link to an AWS S3 bucket object
+	receipt 				text, -- stores a link to an AWS S3 bucket object
 	author_id 				int, 
 	resolver_id 			int, 
 	reimb_status_id 		int, 
@@ -165,7 +165,7 @@ values
 -- +                    	  TESTING
 -- +-------------------------------------------------------------+
 
-select eu.firstname, eu.lastname , eu.username , eu.password , eu.email, eur.role_id, eur.role_name
+select eu.firstname, eu.lastname , eu.username , eu.password_hash, eu.email, eur.role_id, eur.role_name
 from ers_users eu 
 join ers_user_roles eur 
 on eu.user_role_id = eur.role_id
@@ -176,7 +176,7 @@ select er.reimb_id,
 	er.submitted, 
 	er.resolved, 
 	er.description, 
-	er.reciept, 
+	er.receipt, 
 	eu.username as author, 
 	eu2.username as resolver, 
 	ers.reimb_status, 
