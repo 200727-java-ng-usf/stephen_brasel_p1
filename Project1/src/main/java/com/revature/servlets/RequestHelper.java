@@ -51,11 +51,14 @@ public class RequestHelper {
 		String ret = ("THIS is the current URI active: " + req.getRequestURI());
 
 		switch(req.getRequestURI()){
-			case "/revabursement/html/login": case "/revabursement/api/login":
+//			case "/revabursement/":
+			case "/revabursement/html/login":
+			case "/revabursement/api/login":
 				System.out.println("in login case");
 //				return "/html/login.html";
 				return LoginController.login(req);
-			case "/revabursement/html/home": case "/revabursement/api/home":
+			case "/revabursement/html/home":
+			case "/revabursement/api/home":
 				System.out.println("in home case");
 //				NOT modularized
 //				return "/html/home.html";
