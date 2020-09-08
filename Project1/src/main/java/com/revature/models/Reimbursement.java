@@ -1,31 +1,48 @@
 package com.revature.models;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Entity
+@Table(name="revabursement.ers_reimbursements")
 public class Reimbursement {
+	@Id
+	@Column(name = "reimb_id")
 	private int id;
+	@Column(name = "amount")
 	private double amount;
+	@Column(name = "submitted")
 	private Timestamp submitted;
+	@Column(name = "resolved")
 	private Timestamp resolved;
+	@Column(name = "description")
 	private String description;
+	@Column(name = "receipt")
 	private String receiptURI;
-	private int author_id;
-	private int resolver_id;
+	@Column(name = "author_id")
+	private int authorId;
+	@Column(name = "resolver_id")
+	private int resolverId;
+	@Column(name = "reimb_status_id")
 	private ReimbursementStatus reimbursementStatus;
+	@Column(name = "reimb_type_id")
 	private ReimbursementType reimbursementType;
 
 	public Reimbursement() {
 	}
 
-	public Reimbursement(double amount, Timestamp submitted, Timestamp resolved, String description, String receiptURI, int author_id, int resolver_id, ReimbursementStatus reimbursementStatus, ReimbursementType reimbursementType) {
+	public Reimbursement(double amount, Timestamp submitted, Timestamp resolved, String description, String receiptURI, int authorId, int resolverId, ReimbursementStatus reimbursementStatus, ReimbursementType reimbursementType) {
 		this.amount = amount;
 		this.submitted = submitted;
 		this.resolved = resolved;
 		this.description = description;
 		this.receiptURI = receiptURI;
-		this.author_id = author_id;
-		this.resolver_id = resolver_id;
+		this.authorId = authorId;
+		this.resolverId = resolverId;
 		this.reimbursementStatus = reimbursementStatus;
 		this.reimbursementType = reimbursementType;
 	}
@@ -78,20 +95,20 @@ public class Reimbursement {
 		this.receiptURI = receiptURI;
 	}
 
-	public int getAuthor_id() {
-		return author_id;
+	public int getAuthorId() {
+		return authorId;
 	}
 
-	public void setAuthor_id(int author_id) {
-		this.author_id = author_id;
+	public void setAuthorId(int authorId) {
+		this.authorId = authorId;
 	}
 
-	public int getResolver_id() {
-		return resolver_id;
+	public int getResolverId() {
+		return resolverId;
 	}
 
-	public void setResolver_id(int resolver_id) {
-		this.resolver_id = resolver_id;
+	public void setResolverId(int resolverId) {
+		this.resolverId = resolverId;
 	}
 
 	public ReimbursementStatus getReimbursementStatus() {
@@ -117,8 +134,8 @@ public class Reimbursement {
 		Reimbursement that = (Reimbursement) o;
 		return id == that.id &&
 				Double.compare(that.amount, amount) == 0 &&
-				author_id == that.author_id &&
-				resolver_id == that.resolver_id &&
+				authorId == that.authorId &&
+				resolverId == that.resolverId &&
 				Objects.equals(submitted, that.submitted) &&
 				Objects.equals(resolved, that.resolved) &&
 				Objects.equals(description, that.description) &&
@@ -129,7 +146,7 @@ public class Reimbursement {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, amount, submitted, resolved, description, receiptURI, author_id, resolver_id, reimbursementStatus, reimbursementType);
+		return Objects.hash(id, amount, submitted, resolved, description, receiptURI, authorId, resolverId, reimbursementStatus, reimbursementType);
 	}
 
 	@Override
@@ -141,8 +158,8 @@ public class Reimbursement {
 				", resolved=" + resolved +
 				", description='" + description + '\'' +
 				", receiptURI='" + receiptURI + '\'' +
-				", author_id=" + author_id +
-				", resolver_id=" + resolver_id +
+				", author_id=" + authorId +
+				", resolver_id=" + resolverId +
 				", reimbursementStatus=" + reimbursementStatus +
 				", reimbursementType=" + reimbursementType +
 				'}';

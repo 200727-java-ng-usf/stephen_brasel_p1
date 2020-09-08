@@ -100,7 +100,7 @@ public class UserService {
 		if(!isUserValid(newUser)){
 			throw new InvalidRequestException("Invalid user field values provided during registration!");
 		}
-		Optional<AppUser> existingUser = userDao.findUserByUsername(newUser.getUserName());
+		Optional<AppUser> existingUser = userDao.findUserByUsername(newUser.getUsername());
 
 		if(existingUser.isPresent()){
 			throw new AuthenticationException("Provided username is already in use!");
@@ -157,7 +157,7 @@ public class UserService {
 		if(user == null) return false;
 		if(user.getFirstName() == null || user.getFirstName().trim().equals("")) return false;
 		if(user.getLastName() == null || user.getLastName().trim().equals("")) return false;
-		if(user.getUserName() == null || user.getUserName().trim().equals("")) return false;
+		if(user.getUsername() == null || user.getUsername().trim().equals("")) return false;
 		if(user.getPassword() == null || user.getPassword().trim().equals("")) return false;
 		if(user.getEmail() == null || user.getEmail().trim().equals("")) return false;
 
