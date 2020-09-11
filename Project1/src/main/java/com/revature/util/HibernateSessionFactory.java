@@ -8,19 +8,25 @@ import org.hibernate.cfg.Configuration;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class HibernateSessionFactory {
 	private static SessionFactory sessionFactory;
 	private static Properties props = new Properties();
+
 	static{
 
 		try {
-			props.load(new FileReader("./src/main/resources/application.properties"));
-			if(props.isEmpty()){
-				props.load(new FileReader("./application.properties"));
-			}
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			InputStream propsInput = loader.getResourceAsStream("application.properties");
+			props.load(propsInput);
+//			props.load(new FileReader("./src/main/resources/application.properties"));
+//			if(props.isEmpty()){
+//				props.load(new FileReader("./application.properties"));
+//			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.out.println("Failed to load application properties.");
 //			e.printStackTrace();
 		}
@@ -35,16 +41,20 @@ public class HibernateSessionFactory {
 		}
 
 		try{
+
 			Configuration config = new Configuration()
-				.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
-				.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
-				.setProperty("hibernate.connection.url", "jdbc:" +
-						"postgresql://" +
-						props.getProperty("url") +
-						":5432" +
-						"/postgres")
-				.setProperty("hibernate.connection.username", props.getProperty("username"))
-				.setProperty("hibernate.connection.password", props.getProperty("password"))
+					.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
+					.setProperty("hibernate.connection.url", "jdbc:" +
+							"postgresql://" +
+							props.getProperty("url") +
+							":5432" +
+							"/postgres")
+					.setProperty("hibernate.connection.username", props.getProperty("username"))
+					.setProperty("hibernate.connection.password", props.getProperty("password"))
+					.setProperty("hibernate.connection.pool_size", "1")
+					.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL95Dialect")
+					.setProperty("hibernate.current_session_context_class", "thread")
+					.setProperty("hibernate.hbm2ddl.auto", "create-drop")
 				.addAnnotatedClass(AppUser.class)
 				.addAnnotatedClass(Reimbursement.class)
 				;
@@ -64,4 +74,9 @@ public class HibernateSessionFactory {
 		    return null;
 		}
 	}
+
+//	@Override
+//	protected Object clone() throws CloneNotSupportedException {
+//		throw new CloneNotSupportedException();
+//	}
 }

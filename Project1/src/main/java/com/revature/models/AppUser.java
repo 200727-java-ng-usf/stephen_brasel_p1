@@ -1,9 +1,6 @@
 package com.revature.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -12,6 +9,7 @@ public class AppUser {
 	//region Fields
 	@Id
 	@Column(name="ers_user_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	@Column(name="firstname")
 	private String firstName;
@@ -20,10 +18,12 @@ public class AppUser {
 	@Column(name="username")
 	private String username;
 
-	private transient String password;
+	@Column(name="password_hash")
+	private String password;
 	@Column(name="email")
 	private String email;
 	@Column(name="user_role_id")
+//	@Enumerated(EnumType.STRING)
 	private Role role;
 	//endregion
 

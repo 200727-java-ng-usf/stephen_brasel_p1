@@ -164,6 +164,8 @@ values
 -- +-------------------------------------------------------------+
 -- +                    	  TESTING
 -- +-------------------------------------------------------------+
+select * 
+from revabursement.ers_users eu ;
 
 select eu.firstname, eu.lastname , eu.username , eu.password_hash, eu.email, eur.role_id, eur.role_name
 from ers_users eu 

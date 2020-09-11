@@ -9,25 +9,4 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
-    <servlet>
-        <servlet-name>ForwardingMasterServlet</servlet-name>
-        <servlet-class>com.revature.servlets.ForwardingMasterServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ForwardingMasterServlet</servlet-name>
-<!--        <url-pattern>/</url-pattern>-->
-        <url-pattern>/api/*</url-pattern>
-        <url-pattern>/MasterServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>JSONMasterServlet</servlet-name>
-        <servlet-class>com.revature.servlets.JSONMasterServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>JSONMasterServlet</servlet-name>
-        <url-pattern>/json/*</url-pattern>
-        <url-pattern>/JSONServlet</url-pattern>
-    </servlet-mapping>
-
 </web-app>

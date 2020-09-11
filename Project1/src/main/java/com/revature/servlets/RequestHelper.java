@@ -4,6 +4,7 @@ import com.revature.controllers.HomeController;
 import com.revature.controllers.LoginController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 public class RequestHelper {
 
@@ -46,7 +47,7 @@ public class RequestHelper {
 	</xml>
 	 */
 
-	public static String process(HttpServletRequest req){
+	public static String process(HttpServletRequest req) throws IOException {
 
 		String ret = ("THIS is the current URI active: " + req.getRequestURI());
 
@@ -67,7 +68,7 @@ public class RequestHelper {
 				return HomeController.home(req);
 			default:
 				System.out.println("in default");
-				return "/html/badlogin.html";
+				return "/html/login.html";
 		}
 //		System.out.println(ret);
 //		return "/html/home.html";

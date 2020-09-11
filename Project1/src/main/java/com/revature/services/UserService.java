@@ -1,22 +1,25 @@
 package com.revature.services;
 
 import com.revature.daos.UserDao;
+import com.revature.dtos.Credentials;
 import com.revature.exceptions.AuthenticationException;
 import com.revature.exceptions.InvalidRequestException;
+import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.models.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 
 public class UserService {
-	private UserDao userDao;
+	private UserDao userDao = new UserDao();
 
 	//region Constructors
-	public UserService(UserDao repo){
-//		System.out.println("[LOG] - Instantiating " + this.getClass().getName());
-		userDao = repo;
-	}
+//	public UserService(UserDao repo){
+////		System.out.println("[LOG] - Instantiating " + this.getClass().getName());
+//		userDao = repo;
+//	}
 	//endregion
 
 	//region Methods
@@ -25,8 +28,13 @@ public class UserService {
 	 * Returns all users registered with the bank database.
 	 * @return a Set of <code>{@link AppUser}</code>s that have been registered and saved to the bank database
 	 */
-	public Set<AppUser> getAllUser(){
-		return null;
+	public List<AppUser> getAllUser() throws ResourceNotFoundException {
+
+		List<AppUser> users = userDao.findAll();
+		if(users.isEmpty()){
+			throw new ResourceNotFoundException();
+		}
+		return users;
 	}
 
 	/**
@@ -34,17 +42,13 @@ public class UserService {
 	 * @param role the <code>{@link Role}</code> to search by.
 	 * @return a Set of <code>{@link AppUser}</code>s that all have the given <code>{@link Role}</code>
 	 */
-	public Set<AppUser> getUsersByRole(Role role){
-		return null;
-	}
+	public List<AppUser> getUsersByRole(Role role) throws ResourceNotFoundException {
 
-	/**
-	 * Returns all <code>{@link AppUser}</code>s who have the given id.
-	 * @param id the int id to search by.
-	 * @return a Set of <code>{@link AppUser}</code>s that all have the given id. This should never be more than 1 user.
-	 */
-	public Set<AppUser> getUsersById(int id){
-		return null;
+		List<AppUser> users = userDao.findUserbyRole(role);
+		if(users.isEmpty()){
+			throw new ResourceNotFoundException();
+		}
+		return users;
 	}
 
 	/**
@@ -52,8 +56,13 @@ public class UserService {
 	 * @param id the int id to search by
 	 * @return the first <code>{@link AppUser}</code> found with the given id.
 	 */
-	public AppUser getUserById(int id){
-		return null;
+	public AppUser getUserById(int id) throws ResourceNotFoundException {
+		if(id <= 0){
+			throw new InvalidRequestException("The provided id cannot be less than or equal to zero.");
+		}
+
+		return userDao.findUserById(id)
+				.orElseThrow(ResourceNotFoundException::new);
 	}
 
 	/**
@@ -67,19 +76,18 @@ public class UserService {
 
 	/**
 	 * This method authenticates a <code>{@link AppUser}</code>  that already exists within the database.
-	 * with the given username and password with the database. If a user already exists with the username
-	 * and password or a user does not exist with the username and password or either username or password
-	 * are either null or empty, then the method will not authenticate.
-	 * @param username the String username to authenticate.
-	 * @param password the String password to authenticate.
+	 * with the given credentials with the database. If a user already exists with the credentials
+	 * or a user does not exist with the credentials or any credential is either null or empty,
+	 * then the method will not authenticate.
+	 * @param credentials the <code>{@link Credentials}</code> to authenticate.
 	 */
-	public void authenticate(String username, String password){
+	public AppUser authenticate(Credentials credentials){
 		// Validate that the provided username and password are not non-values
-		if(username == null || username.trim().equals("")
-				|| password == null || password.trim().equals("")){
+		if(credentials.getUsername() == null || credentials.getUsername().trim().equals("")
+				|| credentials.getPassword() == null || credentials.getPassword().trim().equals("")){
 			throw new InvalidRequestException("Invalid credential values provided");
 		}
-		AppUser authUser = userDao.findUserByCredentials(username, password)
+		return userDao.findUserByCredentials(credentials)
 				.orElseThrow(AuthenticationException::new);
 
 //		app.setCurrentUser(authUser);
@@ -133,17 +141,15 @@ public class UserService {
 		return false;
 	}
 
-	/**
-	 * Validates that the given <code>{@link AppUser}</code> and its fields are
-	 * valid (not null or empty strings). Does not perform validation on id or Role fields.
-	 *
-	 * @param user the <code>{@link AppUser}</code> to validate.
-	 * @return true if the <code>{@link AppUser}</code> is valid.
-	 */
-	public boolean validateUserFields(AppUser user){
-		return isUserValid(user);
+	public boolean isUsernameAvailable(String username) {
+		AppUser user = userDao.findUserByUsername(username).orElse(null);
+		return user == null;
 	}
 
+	public boolean isEmailAvailable(String email) {
+		AppUser user = userDao.findUserByEmail(email).orElse(null);
+		return user == null;
+	}
 
 	/**
 	 * Validates that the given <code>{@link AppUser}</code> and its fields are

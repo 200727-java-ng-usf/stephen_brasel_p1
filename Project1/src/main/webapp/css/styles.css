@@ -1,0 +1,43 @@
+html, body{
+    height: 100%;
+}
+
+.container {
+    background-color: #f5f5f5;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+    align-items: center;
+}
+
+.form-control:hover{
+	background-color: yellow;
+}
+
+#nav-dropdown {
+	color: white;
+}
+
+.h1{
+    font-size: 2em;
+    font-weight: bolder;
+}
+.h2{
+	font-size: 1.5em
+    font-weight: bolder
+}
+.h3{
+    font-size: 1.17em
+    font-weight: bolder
+}
+.h4{
+	font-size: 1em
+    font-weight: bolder
+}
+.h5{
+    font-size: .83em
+    font-weight: bolder
+}
+.h6{
+	font-size: .67em
+    font-weight: bolder
+}
