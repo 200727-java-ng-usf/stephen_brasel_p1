@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -19,9 +20,8 @@ public class UserDao implements CrudDao<AppUser> {
 
 	@Override
 	public void save(AppUser appUser) {
-		Session session = sessionFactory.getCurrentSession();
 		Transaction tx = null;
-		try {
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
 			session.save(appUser);
 			tx.commit();
@@ -29,7 +29,6 @@ public class UserDao implements CrudDao<AppUser> {
 			e.printStackTrace();
 			if(tx != null) tx.rollback();
 		}
-		session.close();
 	}
 
 	@Override
@@ -37,7 +36,7 @@ public class UserDao implements CrudDao<AppUser> {
 		List<AppUser> _users = new ArrayList<>();
 
 		Transaction tx = null;
-		try (Session session = Objects.requireNonNull(HibernateSessionFactory.getInstance()).openSession()) {
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
 			CriteriaBuilder cb = session.getCriteriaBuilder();
 			CriteriaQuery<AppUser> query = cb.createQuery(AppUser.class);
@@ -58,9 +57,8 @@ public class UserDao implements CrudDao<AppUser> {
 
 	@Override
 	public boolean update(AppUser appUser) {
-		Session session = sessionFactory.getCurrentSession();
 		Transaction tx = null;
-		try {
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
 			session.update(appUser);
 			tx.commit();
@@ -69,15 +67,13 @@ public class UserDao implements CrudDao<AppUser> {
 			if(tx != null) tx.rollback();
 			return false;
 		}
-		session.close();
 		return true;
 	}
 
 	@Override
 	public boolean deleteById(int id) {
-		Session session = sessionFactory.getCurrentSession();
 		Transaction tx = null;
-		try {
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
 			session.createQuery("delete AppUser au where au.id = :id")
 				.setParameter("id", id);
@@ -87,7 +83,6 @@ public class UserDao implements CrudDao<AppUser> {
 			if(tx != null) tx.rollback();
 			return false;
 		}
-		session.close();
 		return true;
 	}
 
@@ -95,72 +90,61 @@ public class UserDao implements CrudDao<AppUser> {
 		Optional<AppUser> _user = Optional.empty();
 
 		Transaction tx = null;
-		try (Session session = Objects.requireNonNull(HibernateSessionFactory.getInstance()).openSession()) {
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
-			CriteriaBuilder cb = session.getCriteriaBuilder();
-			CriteriaQuery<AppUser> query = cb.createQuery(AppUser.class);
-			Root<AppUser> root = query.from(AppUser.class);
-			System.out.println(userName);
-			query.select(root).where(cb.equal(root.get("username"), userName));
-			_user = Optional.of(session.createQuery(query).getSingleResult());
-			System.out.println(_user);
-			tx.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (tx != null) tx.rollback();
-			e.printStackTrace();
-		}
-		return  _user;
-	}
-
-	public Optional<AppUser> findUserByCredentials(Credentials creds) {
-		Optional<AppUser> _user = Optional.empty();
-
-		Transaction tx = null;
-		try (Session session = Objects.requireNonNull(HibernateSessionFactory.getInstance()).openSession()) {
-			tx = session.beginTransaction();
-			AppUser retrievedUser = session.createQuery(
-					"from AppUser au where au.username = :un and password = :pw"
+			_user = Optional.of(session.createQuery(
+					"from AppUser au where au.username = :un"
 					, AppUser.class)
-					.setParameter("un", creds.getUsername())
-					.setParameter("pw", creds.getPassword())
-					.getSingleResult();
-			_user = Optional.of(retrievedUser);
-//			Query query = session.createQuery("FROM com.revature.model.Employee", Employee.class);
-//			List<Employee> employees = query.list();
-//			for (Employee e : employees) {
-//				System.out.println("Entry: "
-//						+ e.getFirstname() + " "
-//						+ e.getLastname() + " "
-//						+ e.getSalary());
-//			}
+					.setParameter("un", userName)
+					.getSingleResult()
+			);
 			tx.commit();
+		} catch (NoResultException nre) {
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (tx != null) tx.rollback();
-			e.printStackTrace();
 		}
-		return  _user;
+		return _user;
 	}
+//
+//	public Optional<AppUser> findUserByCredentials(Credentials creds) {
+//		Optional<AppUser> _user = Optional.empty();
+//
+//		Transaction tx = null;
+//		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
+//			tx = session.beginTransaction();
+//			AppUser retrievedUser = session.createQuery(
+//					"from AppUser au where au.username = :un"
+//					, AppUser.class)
+//					.setParameter("un", creds.getUsername())
+//					.getSingleResult();
+//			_user = Optional.of(retrievedUser);
+////			}
+//			tx.commit();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			if (tx != null) tx.rollback();
+//		}
+//		return  _user;
+//	}
 
 	public Optional<AppUser> findUserByEmail(String email) {
 		Optional<AppUser> _user = Optional.empty();
 
 		Transaction tx = null;
-		try (Session session = Objects.requireNonNull(HibernateSessionFactory.getInstance()).openSession()) {
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
-			CriteriaBuilder cb = session.getCriteriaBuilder();
-			CriteriaQuery<AppUser> query = cb.createQuery(AppUser.class);
-			Root<AppUser> root = query.from(AppUser.class);
-			System.out.println(email);
-			query.select(root).where(cb.equal(root.get("email"), email));
-			_user = Optional.of(session.createQuery(query).getSingleResult());
-			System.out.println(_user);
+			_user = Optional.of(session.createQuery(
+					"from AppUser au where au.email = :em"
+					, AppUser.class)
+					.setParameter("em", email)
+					.getSingleResult()
+			);
 			tx.commit();
+		} catch (NoResultException nre) {
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (tx != null) tx.rollback();
-			e.printStackTrace();
 		}
 		return  _user;
 	}
@@ -169,7 +153,7 @@ public class UserDao implements CrudDao<AppUser> {
 		Optional<AppUser> _user = Optional.empty();
 
 		Transaction tx = null;
-		try (Session session = Objects.requireNonNull(HibernateSessionFactory.getInstance()).openSession()) {
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
 			CriteriaBuilder cb = session.getCriteriaBuilder();
 			CriteriaQuery<AppUser> query = cb.createQuery(AppUser.class);
@@ -182,20 +166,21 @@ public class UserDao implements CrudDao<AppUser> {
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (tx != null) tx.rollback();
-			e.printStackTrace();
 		}
 		return  _user;
 	}
 
+	// TODO Test Me
 	public List<AppUser> findUserbyRole(Role role) {
 		List<AppUser> _users = new ArrayList<>();
 
 		Transaction tx = null;
-		try (Session session = Objects.requireNonNull(HibernateSessionFactory.getInstance()).openSession()) {
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
-			CriteriaBuilder cb = session.getCriteriaBuilder();
-			CriteriaQuery<AppUser> query = cb.createQuery(AppUser.class);
-			_users = session.createQuery(query).list();
+			_users = session.createQuery("from AppUser au where au.role_id = :id"
+					, AppUser.class)
+					.setParameter("id", Role.getOrdinal(role))
+					.list();
 			System.out.println(_users);
 			tx.commit();
 		} catch (Exception e) {

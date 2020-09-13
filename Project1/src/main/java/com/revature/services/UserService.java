@@ -9,7 +9,6 @@ import com.revature.models.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 
 public class UserService {
@@ -71,7 +70,7 @@ public class UserService {
 	 * @return the first <code>{@link AppUser}</code> found with the given username.
 	 */
 	public AppUser getUserByUsername(String username){
-		return null;
+		return userDao.findUserByUsername(username).orElse(null);
 	}
 
 	/**
@@ -81,14 +80,21 @@ public class UserService {
 	 * then the method will not authenticate.
 	 * @param credentials the <code>{@link Credentials}</code> to authenticate.
 	 */
-	public AppUser authenticate(Credentials credentials){
+	public AppUser authenticate(Credentials credentials) throws AuthenticationException{
 		// Validate that the provided username and password are not non-values
 		if(credentials.getUsername() == null || credentials.getUsername().trim().equals("")
 				|| credentials.getPassword() == null || credentials.getPassword().trim().equals("")){
 			throw new InvalidRequestException("Invalid credential values provided");
 		}
-		return userDao.findUserByCredentials(credentials)
+		AppUser user = userDao.findUserByUsername(credentials.getUsername())
 				.orElseThrow(AuthenticationException::new);
+		if(user.validatePassword(
+				credentials.getPassword(),
+				user.getPasswordHash(),
+				user.getPasswordSalt())){
+			return user;
+		}
+		throw new AuthenticationException();
 
 //		app.setCurrentUser(authUser);
 
@@ -127,7 +133,7 @@ public class UserService {
 	 * @return returns true if the update was successful, false otherwise.
 	 */
 	public boolean updateUser(AppUser user){
-		return false;
+		return userDao.update(user);
 	}
 
 	/**
@@ -138,7 +144,7 @@ public class UserService {
 	 * 		If there was no such user, returns true.
 	 */
 	public boolean deleteUserById(int id){
-		return false;
+		return userDao.deleteById(id);
 	}
 
 	public boolean isUsernameAvailable(String username) {
@@ -164,7 +170,7 @@ public class UserService {
 		if(user.getFirstName() == null || user.getFirstName().trim().equals("")) return false;
 		if(user.getLastName() == null || user.getLastName().trim().equals("")) return false;
 		if(user.getUsername() == null || user.getUsername().trim().equals("")) return false;
-		if(user.getPassword() == null || user.getPassword().trim().equals("")) return false;
+		if(user.getPasswordHash() == null || user.getPasswordHash().length == 0) return false;
 		if(user.getEmail() == null || user.getEmail().trim().equals("")) return false;
 
 		return true;

@@ -51,7 +51,7 @@ public class HibernateSessionFactory {
 							"/postgres")
 					.setProperty("hibernate.connection.username", props.getProperty("username"))
 					.setProperty("hibernate.connection.password", props.getProperty("password"))
-					.setProperty("hibernate.connection.pool_size", "1")
+//					.setProperty("hibernate.connection.pool_size", "1")
 					.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL95Dialect")
 					.setProperty("hibernate.current_session_context_class", "thread")
 					.setProperty("hibernate.hbm2ddl.auto", "create-drop")

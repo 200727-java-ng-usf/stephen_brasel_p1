@@ -96,7 +96,8 @@ insert into ers_user_roles (role_name)
 values 
 	('EMPLOYEE'),
 	('MANAGER'),
-	('ADMIN')
+	('ADMIN'), 
+	('LOCKED')
 ;
 
 insert into ers_reimbursement_types (reimb_type) 
@@ -164,8 +165,11 @@ values
 -- +-------------------------------------------------------------+
 -- +                    	  TESTING
 -- +-------------------------------------------------------------+
-select * 
-from revabursement.ers_users eu ;
+select * from ers_reimbursement_statuses ers ;
+select * from ers_reimbursement_types ert ;
+select * from ers_user_roles eur ;
+select * from ers_users eu ;
+select * from ers_reimbursements er ;
 
 select eu.firstname, eu.lastname , eu.username , eu.password_hash, eu.email, eur.role_id, eur.role_name
 from ers_users eu 

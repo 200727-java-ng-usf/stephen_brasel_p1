@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.revature.dtos.ErrorResponse;
 import com.revature.dtos.Principal;
+import com.revature.dtos.UserDto;
 import com.revature.exceptions.InvalidRequestException;
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.models.AppUser;
@@ -105,7 +106,14 @@ public class UserServlet extends HttpServlet {
 
 		try {
 
-			AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
+			UserDto userDto = mapper.readValue(req.getInputStream(), UserDto.class);
+			AppUser newUser = new AppUser(
+					userDto.getFirstName(),
+					userDto.getLastName(),
+					userDto.getUsername(),
+					userDto.getPassword(),
+					userDto.getEmail()
+			);
 			userService.register(newUser);
 			String newUserJSON = mapper.writeValueAsString(newUser);
 			respWriter.write(newUserJSON);

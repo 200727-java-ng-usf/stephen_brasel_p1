@@ -1,6 +1,16 @@
 package com.revature.models;
 
+import com.sun.crypto.provider.PBKDF2HmacSHA1Factory;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.persistence.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Entity
@@ -19,11 +29,13 @@ public class AppUser {
 	private String username;
 
 	@Column(name="password_hash")
-	private String password;
+	private byte[] passwordHash;
+	@Column(name="password_salt")
+	private byte[] passwordSalt;
 	@Column(name="email")
 	private String email;
-	@Column(name="user_role_id")
-//	@Enumerated(EnumType.STRING)
+//	@Column(name="user_role_id")
+	@Enumerated(EnumType.STRING)
 	private Role role;
 	//endregion
 
@@ -32,27 +44,49 @@ public class AppUser {
 		super();
 	}
 
-	public AppUser(String firstName, String lastName, String username, String password, String email) {
+	public AppUser(String firstName, String lastName, String username, byte[] passwordHash, byte[] passwordSalt, String email) {
 		this();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
-		this.password = password;
+		this.passwordHash = passwordHash;
+		this.passwordSalt = passwordSalt;
 		this.email = email;
 		this.role = Role.EMPLOYEE;
 	}
 
-	public AppUser(String firstName, String lastName, String username, String password, String email, Role role) {
-		this(firstName, lastName, username, password, email);
+	public AppUser(String firstName, String lastName, String username, String email) {
+		this();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.username = username;
+		this.email = email;
+		this.role = Role.EMPLOYEE;
+	}
+
+	public AppUser(String firstName, String lastName, String username, String email, Role role) {
+		this(firstName, lastName, username, email);
 		this.role = role;
 	}
+	public AppUser(String firstName, String lastName, String username, String password, String email) {
+		this(firstName, lastName, username, email);
+		saltAndHashPassword(password);
+	}
 	public AppUser(int id, String firstName, String lastName, String username, String password, String email, Role role) {
-		this(firstName, lastName, username, password, email, role);
+		this(firstName, lastName, username, email, role);
+		saltAndHashPassword(password);
 		this.id = id;
 	}
 
+	private AppUser(int id, String firstName, String lastName, String username, byte[] passwordHash, byte[] passwordSalt, String email, Role role) {
+		this(firstName, lastName, username, email, role);
+		this.id = id;
+		this.passwordHash = passwordHash;
+		this.passwordSalt = passwordSalt;
+	}
+
 	public AppUser(AppUser user){
-		this(user.id, user.firstName, user.lastName, user.username, user.password, user.email, user.role);
+		this(user.id, user.firstName, user.lastName, user.username, user.passwordHash, user.passwordSalt, user.email, user.role);
 	}
 	//endregion
 
@@ -89,20 +123,28 @@ public class AppUser {
 		this.username = username;
 	}
 
-	public String getPassword() {
-		return password;
+	public byte[] getPasswordHash() {
+		return passwordHash;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPasswordHash(byte[] passwordHash) {
+		this.passwordHash = passwordHash;
 	}
 
-	public String getString() {
-		return password;
+	public byte[] getPasswordSalt() {
+		return passwordSalt;
 	}
 
-	public void setString(String password) {
-		this.password = password;
+	public void setPasswordSalt(byte[] passwordSalt) {
+		this.passwordSalt = passwordSalt;
+	}
+
+	public byte[] getString() {
+		return passwordHash;
+	}
+
+	public void setString(byte[] password) {
+		this.passwordHash = password;
 	}
 
 	public String getEmail() {
@@ -136,14 +178,50 @@ public class AppUser {
 				Objects.equals(firstName, appUser.firstName) &&
 				Objects.equals(lastName, appUser.lastName) &&
 				Objects.equals(username, appUser.username) &&
-				Objects.equals(password, appUser.password) &&
+				Objects.equals(passwordHash, appUser.passwordHash) &&
 				Objects.equals(email, appUser.email) &&
 				role == appUser.role;
+	}
+	public boolean saltAndHashPassword(String password){
+		try {
+			SecureRandom random = new SecureRandom();
+			passwordSalt = new byte[256];
+			random.nextBytes(passwordSalt);
+			int iterationCount = 65536;
+			int keyLength = 128;
+			char[] pca = password.toCharArray();
+			KeySpec spec = new PBEKeySpec(pca, passwordSalt, iterationCount, keyLength);
+			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+			passwordHash = factory.generateSecret(spec).getEncoded();
+			return true;
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean validatePassword(String password, byte[] hash, byte[] salt){
+		try{
+			int iterationCount = 65536;
+			int keyLength = 128;
+			char[] pca = password.toCharArray();
+			KeySpec spec = new PBEKeySpec(pca, salt, iterationCount, keyLength);
+			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+//			System.out.println(Arrays.toString(hash));
+//			System.out.println(Arrays.toString(factory.generateSecret(spec).getEncoded()));
+			return Arrays.equals(hash, factory.generateSecret(spec).getEncoded());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, firstName, lastName, username, password, email, role);
+		int result = Objects.hash(id, firstName, lastName, username, email, role);
+		result = 31 * result + Arrays.hashCode(passwordHash);
+		result = 31 * result + Arrays.hashCode(passwordSalt);
+		return result;
 	}
 
 	@Override
