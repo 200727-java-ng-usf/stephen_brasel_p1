@@ -1,7 +1,22 @@
 const APP_VIEW = document.getElementById('app-view');
 const NAV_BAR = document.getElementById('navbar');
 
+window.onbeforeunload = function (e) {
+    window.localStorage.setItem('unloadTime') = JSON.stringify(new Date());
+};
+
 window.onload = function(){ //function w/out a name = anon function
+	if(window.localStorage.getItem('unloadTime')){
+		let loadTime = new Date();
+		let unloadTime = new Date(JSON.parse(window.localStorage.getItem('unloadTime')));
+		let refreshTime = loadTime.getTime() - unloadTime.getTime();
+
+		if(refreshTime>3000)//3000 milliseconds
+		{
+			window.localStorage.removeItem("authUser");
+			logout();
+		}
+	}
 	loadView("login.view");
 	$('.dropdown-toggle').dropdown();
 }
@@ -10,11 +25,18 @@ window.onload = function(){ //function w/out a name = anon function
 
 function loadView(pageToLoad){
 	console.log('in ' + pageToLoad);
-	if(pageToLoad == 'home.view'){
+	var authRole = "main";
+	if(pageToLoad != 'login.view'){
 		if(!localStorage.getItem('authUser')){
 			console.log('No user logged in, navigating to login screen');
 			loadView("login.view");
 			return;
+		} else{
+			let authUser = JSON.parse(localStorage.getItem('authUser'));
+			if(authUser){
+				console.log(authUser);
+				authRole = authUser.role.toLowerCase();
+			}
 		}
 	}
 	let xhr = new XMLHttpRequest;
@@ -88,25 +110,25 @@ function eventLoadView(evt){
 // 	}
 // }
 
-function loadHome(){
-	console.log('in loadHome()');
-	if(!localStorage.getItem('authUser')){
-		console.log('No user logged in, navigating to login screen');
-		loadView("login.view");
-		return;
-	}
-	let xhr = new XMLHttpRequest;
-	// xhr.responseType();
-	xhr.open("GET", "home.view", true); 
-	xhr.send();
-	xhr.onreadystatechange = function(){
-		if(xhr.readyState == 4 && xhr.status == 200){
-			// console.log('response received');
-			APP_VIEW.innerHTML = xhr.responseText;
-			configureHomeView();
-		}
-	}
-}
+// function loadHome(){
+// 	console.log('in loadHome()');
+// 	if(!localStorage.getItem('authUser')){
+// 		console.log('No user logged in, navigating to login screen');
+// 		loadView("login.view");
+// 		return;
+// 	}
+// 	let xhr = new XMLHttpRequest;
+// 	// xhr.responseType();
+// 	xhr.open("GET", "home.view", true); 
+// 	xhr.send();
+// 	xhr.onreadystatechange = function(){
+// 		if(xhr.readyState == 4 && xhr.status == 200){
+// 			// console.log('response received');
+// 			APP_VIEW.innerHTML = xhr.responseText;
+// 			configureHomeView();
+// 		}
+// 	}
+// }
 
 function loadNavBar(){
 	console.log('in loadNavBar');
@@ -182,6 +204,15 @@ function configureHomeView(){
 
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
 	document.getElementById('loggedInUsername').innerText = authUser.username;
+}
+
+function 
+configureUsersView(){
+	console.log('in configureUsersView');
+
+	populateUserView();
+	// $('#userTable').DataTable();
+	// $('.dataTables_length').addClass('bs-select');
 }
 
 function configureDefaultViewButtons(){
@@ -339,6 +370,52 @@ function register(){
 
 		}
 	}
+}
+
+function populateUserView(){
+	console.log('in populateUserView');
+
+	let tableBody = document.getElementById('userTableBody');
+
+    let xhr = new XMLHttpRequest();
+
+    xhr.open('GET', 'users');
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.send();
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+			let users = JSON.parse(xhr.responseText);
+			for(var i = 0; i < users.length; i++){
+				let row = document.createElement("tr");
+				row.classList.add("userEntry");
+				let id = document.createElement("td");
+				id.innerText = users[i].id;
+				let firstName = document.createElement("td");
+				firstName.innerText = users[i].firstName;
+				let lastName = document.createElement("td");
+				lastName.innerText = users[i].lastName;
+				let username = document.createElement("td");
+				username.innerText = users[i].username;
+				let email = document.createElement("td");
+				email.innerText = users[i].email;
+				let role = document.createElement("td");
+				role.innerText = users[i].role;
+				row.appendChild(id);
+				row.appendChild(firstName);
+				row.appendChild(lastName);
+				row.appendChild(username);
+				row.appendChild(email);
+				row.appendChild(role);
+				tableBody.appendChild(row);
+			}
+			console.log(users);
+			// tableBody.innerText = JSON.stringify(users);
+			$('#userTable').DataTable();
+			$('.dataTables_length').addClass('bs-select');
+		}
+	}
+
 }
 
 function isUsernameAvailable() {
