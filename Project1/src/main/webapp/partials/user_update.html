@@ -1,0 +1,51 @@
+<div id="register-container">
+    <header class="h2">Revabursements</header>
+    <hr/>
+    <header class="h3">Revabursements Registration</header>
+    <div class="form-group">
+		<label for="fn">First name</label> 
+		<input type="text" class="form-control" id="fn">
+    </div>
+    <div class="form-group">
+		<label for="ln">Last name</label> 
+		<input type="text" class="form-control" id="ln">
+    </div>
+    <div class="form-group">
+		<label for="email">Email Address</label> 
+		<input type="email" class="form-control" id="email">
+    </div>
+    <div class="form-group">
+		<label for="reg-username">Username</label> 
+		<input type="text" class="form-control" id="reg-username">
+    </div>
+    <div class="form-group">
+		<label for="reg-password">Password</label> 
+		<input type="password" class="form-control" id="reg-password">
+    </div>
+    <div class="form-group">
+		<!-- <label for="dropdownMenuButtonReimbursement">Role</label>  -->
+		<!-- <input type="text" class="form-control" id="reg-role" placeholder="Enter role"> -->
+		<div class="dropdown">
+			<button class="btn btn-secondary dropdown-toggle" 
+					type="button" 
+					id="dropdownMenuButtonReimbursement" 
+					data-toggle="dropdown" 
+					aria-haspopup="true" 
+					aria-expanded="false">
+			Role
+			</button>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<option class="dropdown-item" id="toCreateReimbursement" selected="selected">Employee</option>
+				<option class="dropdown-item" id="toUpdateReimbursement">Manager</option>
+				<option class="dropdown-item" id="toViewReimbursement">Admin</option>
+				<option class="dropdown-item" id="toDeleteReimbursement">Locked</option>
+			</div>
+		</div>
+    </div>
+    <div id="reg-button-container">
+        <button type="submit" class="btn btn-primary" id="register">Register</button>
+    </div>
+	<br/> 
+	<br/>
+    <div class="alert alert-danger" id="reg-message"></div>
+</div>

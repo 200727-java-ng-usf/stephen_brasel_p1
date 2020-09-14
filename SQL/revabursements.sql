@@ -29,18 +29,18 @@ create table ers_user_roles(
 
 create table ers_users( 
 	ers_user_id				serial, 
-	username 				varchar(25) unique not null, 
-	password_hash 			varchar(512) not null, -- should be hashed before being stored in the database. 
-	password_salt 			varchar(512) not null, -- salt for the password hash
-	firstname 				varchar(25), 
-	lastname 				varchar(25), 
-	email					varchar(256) unique not null, 
-	user_role_id			int, 
+	username 				varchar(255) unique not null, 
+	password_hash 			bytea not null, -- should be hashed before being stored in the database. 
+	password_salt 			bytea not null, -- salt for the password hash
+	firstname 				varchar(255), 
+	lastname 				varchar(255), 
+	email					varchar(255) unique not null, 
+	role					varchar(255), 
 	constraint user_id_pk 
-		primary key (ers_user_id), 
-	constraint user_role_fk 
-		foreign key (user_role_id) 
-		references ers_user_roles (role_id) 
+		primary key (ers_user_id)
+--	constraint user_role_fk 
+--		foreign key (user_role_id) 
+--		references ers_user_roles (role_id) 
 );
 
 create table ers_reimbursements( 
@@ -112,13 +112,14 @@ values
 -- +                    	  TEST DATA
 -- +-------------------------------------------------------------+
 
-insert into ers_users (firstname, lastname , username , password_hash , password_salt,  email , user_role_id )
+insert into ers_users (firstname, lastname , username , password_hash , password_salt,  email , role )
 values
-	('Alice', 'Anderson', 'aanderson', 'password', 'salt', 'aanderson@revature.net', 3),
-	('Benjamin', 'Barker', 'bbarker', 'password', 'salt', 'bbarker@revature.net', 2),
-	('Charlie', 'Courtson', 'ccourtson', 'password', 'salt', 'ccourtson@revature.net', 1),
-	('Debra', 'Delion', 'ddelion', 'password', 'salt', 'ddelion@revature.net', 1),
-	('Edward', 'Eliotson', 'eeliotson', 'password', 'salt', 'eeliotson@revature.net', 1)
+	('Alice', 'Anderson', 'aanderson', 'chæÁØ/s�½ô´', 'Å *÷_   _F^+Ò` ã¥f ùÌÀ H"  ùGï»rsgA ã>ÈPq:@? É kÂ|Î-: Ìj%ø 8|u³ g äì­è¡ÁÏÝ  ¾ «75;ù#½^A  4ÊõÞÂæ` c  å B¯< Î Zúæ£ <-£ãï<þ Py/þ£b  Â ö={  T·®ã8cKUá "µ¿/ ÿ/±×A*Ý SnH£o> ÄSn ð u#Ø ¥ðç t Ù¶F+ ,Ä )Ît jê Zá  V waL  ï/¦¿_XÌ J Xï#ÿ1>£  HÞT þ [.©%RI)¡×ÏÝý4ÅZ x$ F  V', 'aanderson@revature.net', 'ADMIN')
+--	('Stanley', 'Yelnats', 'yelnats', '1äÄL2ÞX¥…q'í°³', 'üª#rä{*Yæ" ï f   ¬, 3Ý  A¬ ÕÑIlö"ß ôêë~Ü ²Æ<êmÛ 5ÌyPj¿7ñ9]cøó¦µK¸  QÇÉÅ '  d¹B  ò á Û­Y   ¨m ¹vS#=  m"Pg Ä1 Ó¥­  8£. º5§ GT³ G^ 7eÝ÷¾ uc"ä Õ,  #[- dW ½dKºÏ   âÞÅ   M(ä´  [#  ßvn«bñ Ïð2Ø]  :P åÎü  1*ÈïOïã%&   £Ö«MLG¾  Í  Ó i  á  Ò©Ú §õÒµé¬$ÙèCpq© ~±²@   c j', 'stanley.yelnats@gmail.com')
+	--	('Benjamin', 'Barker', 'bbarker', 'password', 'salt', 'bbarker@revature.net', 2),
+--	('Charlie', 'Courtson', 'ccourtson', 'password', 'salt', 'ccourtson@revature.net', 1),
+--	('Debra', 'Delion', 'ddelion', 'password', 'salt', 'ddelion@revature.net', 1),
+--	('Edward', 'Eliotson', 'eeliotson', 'password', 'salt', 'eeliotson@revature.net', 1)
 ;
 
 --	reimb_id 				serial, 
@@ -141,24 +142,24 @@ insert into ers_reimbursements (amount,
 values 
 	(150.00, timestamp '2018-01-08 14:05:06', 'traveled to/from test location', 1, 1, 2, 2),
 	(150.00, timestamp '2018-01-08 14:05:06', 'traveled to/from test location', 2, 1, 2, 2),
-	(150.00, timestamp '2018-01-08 14:05:06', 'traveled to/from test location', 3, 2, 2, 2),
-	(150.00, timestamp '2018-01-08 14:05:06', 'traveled to/from test location', 4, 2, 2, 2),
-	(150.00, timestamp '2018-01-08 14:05:06', 'traveled to/from test location', 5, 2, 2, 2), -- endregion
+--	(150.00, timestamp '2018-01-08 14:05:06', 'traveled to/from test location', 3, 2, 2, 2),
+--	(150.00, timestamp '2018-01-08 14:05:06', 'traveled to/from test location', 4, 2, 2, 2),
+--	(150.00, timestamp '2018-01-08 14:05:06', 'traveled to/from test location', 5, 2, 2, 2), -- endregion
 	(50.00, timestamp '2018-01-08 14:05:06', 'stayed at hotel6', 1, 1, 2, 1),
 	(50.00, timestamp '2018-01-08 14:13:06', 'stayed at hotel6', 2, 1, 2, 1),
-	(50.00, timestamp '2018-01-08 14:05:06', 'stayed at hotel6', 3, 2, 2, 1),
-	(50.00, timestamp '2018-01-08 14:05:06', 'stayed at hotel6', 4, 2, 2, 1),
-	(50.00, timestamp '2018-01-08 14:05:06', 'stayed at hotel6', 5, 2, 2, 1), -- endregion
+--	(50.00, timestamp '2018-01-08 14:05:06', 'stayed at hotel6', 3, 2, 2, 1),
+--	(50.00, timestamp '2018-01-08 14:05:06', 'stayed at hotel6', 4, 2, 2, 1),
+--	(50.00, timestamp '2018-01-08 14:05:06', 'stayed at hotel6', 5, 2, 2, 1), -- endregion
 	(12.00, timestamp '2018-01-09 14:05:06', 'ate breakfast', 1, 1, 2, 3),
 	(15.00, timestamp '2018-01-09 14:13:06', 'ate breakfast', 2, 1, 2, 3),
-	(15.00, timestamp '2018-01-09 14:05:06', 'ate breakfast', 3, 2, 2, 3),
-	(10.00, timestamp '2018-01-09 14:05:06', 'ate breakfast', 4, 2, 2, 3),
-	(12.00, timestamp '2018-01-09 14:05:06', 'ate breakfast', 5, 2, 2, 3), -- endregion
+--	(15.00, timestamp '2018-01-09 14:05:06', 'ate breakfast', 3, 2, 2, 3),
+--	(10.00, timestamp '2018-01-09 14:05:06', 'ate breakfast', 4, 2, 2, 3),
+--	(12.00, timestamp '2018-01-09 14:05:06', 'ate breakfast', 5, 2, 2, 3), -- endregion
 	(200.00, timestamp '2018-01-09 14:05:06', 'passed exam', 1, 1, 2, 4),
-	(200.00, timestamp '2018-01-09 14:13:06', 'passed exam', 2, 1, 2, 4),
-	(200.00, timestamp '2018-01-09 14:05:06', 'passed exam', 3, 2, 2, 4),
-	(200.00, timestamp '2018-01-09 14:05:06', 'passed exam', 4, 2, 2, 4),
-	(200.00, timestamp '2018-01-09 14:05:06', 'passed exam', 5, 2, 2, 4) -- endregion
+	(200.00, timestamp '2018-01-09 14:13:06', 'passed exam', 2, 1, 2, 4)
+--	(200.00, timestamp '2018-01-09 14:05:06', 'passed exam', 3, 2, 2, 4),
+--	(200.00, timestamp '2018-01-09 14:05:06', 'passed exam', 4, 2, 2, 4),
+--	(200.00, timestamp '2018-01-09 14:05:06', 'passed exam', 5, 2, 2, 4) -- endregion
 ;
 
 
@@ -201,7 +202,7 @@ order by er.reimb_id;
 select * 
 from ers_reimbursements er ;
 
-
+delete from ers_users where ers_user_id = 5;
 
 
 

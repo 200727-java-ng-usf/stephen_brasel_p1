@@ -1,71 +1,104 @@
 const APP_VIEW = document.getElementById('app-view');
+const NAV_BAR = document.getElementById('navbar');
 
 window.onload = function(){ //function w/out a name = anon function
-	loadLogin();
-//	loadRegister();
-	document.getElementById('toLogin').addEventListener('click', loadLogin);
-	document.getElementById('toRegister').addEventListener('click', loadRegister);
-	document.getElementById('toHome').addEventListener('click', loadHome);
-	document.getElementById('toLogout').addEventListener('click', logout);
+	loadView("login.view");
+	$('.dropdown-toggle').dropdown();
 }
 
 //#region loaders
 
-function loadPage(page){
-	console.log(page);
+function loadView(pageToLoad){
+	console.log('in ' + pageToLoad);
+	if(pageToLoad == 'home.view'){
+		if(!localStorage.getItem('authUser')){
+			console.log('No user logged in, navigating to login screen');
+			loadView("login.view");
+			return;
+		}
+	}
 	let xhr = new XMLHttpRequest;
 	// xhr.responseType();
-	xhr.open("GET", page, true);
+	xhr.open("GET", pageToLoad, true); // third parameter of this method is optional (defaults to true)
 	xhr.send();
-	xhr.onreadystatechange = function(){
+	xhr.onreadystatechange = async function(){
 		if(xhr.readyState == 4 && xhr.status == 200){
-			// console.log('response received');
 			APP_VIEW.innerHTML = xhr.responseText;
+			switch(pageToLoad){
+				default:
+					console.log('loading default page');
+				case 'login.view':
+					configureLoginView();
+					break;
+				case 'home.view':
+					configureHomeView();
+					break;
+				case 'profile.view':
+					configureProfileView();
+					break;
+				case 'user_register.view':
+					configureRegisterView();
+					break;
+				case 'user_update.view':
+				case 'user_view.view':
+				case 'user_delete.view':
+					configureUsersView();
+					break;
+				case 'reimbursement_create.view':
+				case 'reimbursement_update.view':
+				case 'reimbursement_view.view':
+					configureReimbursementsView();
+					break;
+			}
+			loadNavBar();
 		}
 	}
 }
 
-function loadLogin(){
-	console.log('in loadLogin()');
-	let xhr = new XMLHttpRequest;
-	// xhr.responseType();
-	xhr.open("GET", "login.view", true); // third parameter of this method is optional (defaults to true)
-	xhr.send();
-	xhr.onreadystatechange = function(){
-		if(xhr.readyState == 4 && xhr.status == 200){
-			// console.log('response received');
-			APP_VIEW.innerHTML = xhr.responseText;
-			configureLoginView();
-		}
-	}
+function eventLoadView(evt){
+	loadView(evt.currentTarget.desiredView);
 }
 
-function loadRegister(){
-	console.log('in loadRegister()');
-	let xhr = new XMLHttpRequest;
-	// xhr.responseType();
-	xhr.open("GET", "register.view"); // third parameter of this method is optional (defaults to true)
-	xhr.send();
-	xhr.onreadystatechange = function(){
-		if(xhr.readyState == 4 && xhr.status == 200){
-			// console.log('response received');
-			APP_VIEW.innerHTML = xhr.responseText;
-			configureRegisterView();
-		}
-	}
-}
+// function loadLogin(){
+// 	console.log('in loadLogin()');
+// 	let xhr = new XMLHttpRequest;
+// 	// xhr.responseType();
+// 	xhr.open("GET", "login.view", true); // third parameter of this method is optional (defaults to true)
+// 	xhr.send();
+// 	xhr.onreadystatechange = async function(){
+// 		if(xhr.readyState == 4 && xhr.status == 200){
+// 			APP_VIEW.innerHTML = xhr.responseText;
+// 			configureLoginView();
+// 		}
+// 	}
+// }
+
+// function loadUserRegister(){
+// 	console.log('in loadRegister()');
+// 	let xhr = new XMLHttpRequest;
+// 	// xhr.responseType();
+// 	xhr.open("GET", "user_register.view"); // third parameter of this method is optional (defaults to true)
+// 	xhr.send();
+// 	xhr.onreadystatechange = function(){
+// 		if(xhr.readyState == 4 && xhr.status == 200){
+// 			// console.log('response received');
+// 			APP_VIEW.innerHTML = xhr.responseText;
+// 			configureRegisterView();
+// 		}
+// 	}
+// }
 
 function loadHome(){
 	console.log('in loadHome()');
 	if(!localStorage.getItem('authUser')){
 		console.log('No user logged in, navigating to login screen');
-		loadLogin();
+		loadView("login.view");
 		return;
 	}
 	let xhr = new XMLHttpRequest;
 	// xhr.responseType();
 	xhr.open("GET", "home.view", true); 
-	xhr.send(); 
+	xhr.send();
 	xhr.onreadystatechange = function(){
 		if(xhr.readyState == 4 && xhr.status == 200){
 			// console.log('response received');
@@ -75,16 +108,46 @@ function loadHome(){
 	}
 }
 
-function loadLogout(){
-	console.log('in loadLogout()');
+function loadNavBar(){
+	console.log('in loadNavBar');
 	let xhr = new XMLHttpRequest;
-	// xhr.responseType();
-	xhr.open("GET", "logout.view", true);
+	let destNav = "main.nav";
+	let authUser = JSON.parse(localStorage.getItem('authUser'));
+	var authRole = "main";
+	if(authUser){
+		console.log(authUser);
+		authRole = authUser.role.toLowerCase();
+		destNav = authRole + ".nav";
+	}
+	console.log(destNav);
+	xhr.open("GET", destNav, true);
 	xhr.send();
-	xhr.onreadystatechange = function(){
+	xhr.onreadystatechange = async function(){
 		if(xhr.readyState == 4 && xhr.status == 200){
-			// console.log('response received');
-			APP_VIEW.innerHTML = xhr.responseText;
+			NAV_BAR.innerHTML = xhr.responseText;
+			switch(authRole){
+				default:
+				case 'main':
+					configureNavbarUserDropdown();
+					document.getElementById('toLogin').addEventListener('click', login);
+					break;
+				case 'admin':
+					configureNavbarUserDropdown();
+					configureNavbarReimbursementDropdown();
+					configureDefaultViewButtons();
+					document.getElementById('toLogout').addEventListener('click', logout);
+					break;
+				case 'employee':
+					configureNavbarReimbursementDropdown();
+					configureDefaultViewButtons();
+					document.getElementById('toLogout').addEventListener('click', logout);
+					break;
+				case 'manager':
+					configureNavbarReimbursementDropdown();
+					configureDefaultViewButtons();
+					document.getElementById('toLogout').addEventListener('click', logout);
+					break;
+			}
 		}
 	}
 }
@@ -119,6 +182,63 @@ function configureHomeView(){
 
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
 	document.getElementById('loggedInUsername').innerText = authUser.username;
+}
+
+function configureDefaultViewButtons(){
+	console.log('in configureDefaultViewButtons');
+	const HomeButton = document.getElementById('toHome')
+	HomeButton.addEventListener('click', eventLoadView);
+	HomeButton.desiredView = 'home.view';
+
+	const ProfileButton = document.getElementById('toProfile')
+	ProfileButton.addEventListener('click', eventLoadView);
+	ProfileButton.desiredView = 'profile.view';
+}
+
+function configureNavbarUserDropdown(){
+	// const UserDropdown = document.getElementById('dropdownMenuButtonUser');
+	// UserDropdown.addEventListener('click', function(){
+	// 	$('.dropdown-toggle').dropdown('toggle');
+	// });
+
+	const UpdateUserButton = document.getElementById('toUpdateUser');
+	UpdateUserButton.addEventListener('click', eventLoadView);
+	UpdateUserButton.desiredView = 'user_update.view';
+
+	const RegisterUserButton = document.getElementById('toRegisterUser');
+	RegisterUserButton.addEventListener('click', eventLoadView);
+	RegisterUserButton.desiredView = 'user_register.view';
+
+	const ViewUserButton = document.getElementById('toViewUsers');
+	ViewUserButton.addEventListener('click', eventLoadView);
+	ViewUserButton.desiredView = 'user_view.view';
+
+	const DeleteUserButton = document.getElementById('toDeleteUser');
+	DeleteUserButton.addEventListener('click', eventLoadView);
+	DeleteUserButton.desiredView = 'user_delete.view';
+}
+
+function configureNavbarReimbursementDropdown(){
+	// const ReimbursementDropdown = document.getElementById('dropdownMenuButtonReimbursement');
+	// ReimbursementDropdown.addEventListener('click', function(){
+	// 	$('.dropdown-toggle').dropdown('toggle');
+	// });
+
+	const CreateReimbursementButton = document.getElementById('toCreateReimbursement');
+	CreateReimbursementButton.addEventListener('click', eventLoadView);
+	CreateReimbursementButton.desiredView = 'reimbursement_create.view';
+
+	const UpdateReimbursementButton = document.getElementById('toUpdateReimbursement');
+	UpdateReimbursementButton.addEventListener('click', eventLoadView);
+	UpdateReimbursementButton.desiredView = 'reimbursement_update.view';
+
+	const ViewReimbursementButton = document.getElementById('toViewReimbursement');
+	ViewReimbursementButton.addEventListener('click', eventLoadView);
+	ViewReimbursementButton.desiredView = 'reimbursement_view.view';
+
+	const DeleteReimbursementButton = document.getElementById('toDeleteReimbursement');
+	DeleteReimbursementButton.addEventListener('click', eventLoadView);
+	DeleteReimbursementButton.desiredView = 'reimbursement_view.view';
 }
 
 //#endregion
@@ -159,7 +279,20 @@ function login(){
 
 		}
 	}
+}
 
+function logout() {
+    console.log('in logout()');
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'auth');
+    xhr.send();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('logout successful!');
+			localStorage.removeItem('authUser');
+			loadView("login.view");
+        }
+    }
 }
 
 function register(){
@@ -170,14 +303,17 @@ function register(){
 	let em = document.getElementById('email').value;
 	let un = document.getElementById('reg-username').value;
 	let pw = document.getElementById('reg-password').value;
+	let rl = document.getElementById('roleSelectButton').selected;
 
 	let credentials = {
 		email:em,
 		firstName:fn,
 		lastName:ln,
 		username: un,
-		password: pw
+		password: pw,
+		role: rl
 	}
+	console.log(credentials);
 
 	let credentialsJSON = JSON.stringify(credentials);
 
@@ -193,7 +329,7 @@ function register(){
 			console.log(msg);
 			// document.getElementById('reg-message').innerText = msg;
 			document.getElementById('reg-message').setAttribute('hidden', true);
-			loadLogin();
+			loadView("login.view");
 
 		} else if (xhr.readyState == 4 && xhr.status == 400){
 
@@ -203,24 +339,6 @@ function register(){
 
 		}
 	}
-}
-
-function logout() {
-    
-    console.log('in logout()');
-
-    let xhr = new XMLHttpRequest();
-
-    xhr.open('GET', 'auth');
-    xhr.send();
-
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 204) {
-			console.log('logout successful!');
-			localStorage.removeItem('authUser');
-			loadLogin();
-        }
-    }
 }
 
 function isUsernameAvailable() {
@@ -309,8 +427,9 @@ function validateRegisterForm() {
     let email = document.getElementById('email').value;
     let un = document.getElementById('reg-username').value;
     let pw = document.getElementById('reg-password').value;
+    let rl = document.getElementById('dropdownMenuButtonReimbursement').value;
 
-    if (!fn || !ln || !email || !un || !pw) {
+    if (!fn || !ln || !email || !un || !pw || !rl) {
         document.getElementById('reg-message').removeAttribute('hidden');
         document.getElementById('reg-message').innerText = 'You must provided values for all fields in the form!'
         document.getElementById('register').setAttribute('disabled', true);

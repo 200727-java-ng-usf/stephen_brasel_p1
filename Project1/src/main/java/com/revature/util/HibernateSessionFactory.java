@@ -54,7 +54,7 @@ public class HibernateSessionFactory {
 //					.setProperty("hibernate.connection.pool_size", "1")
 					.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL95Dialect")
 					.setProperty("hibernate.current_session_context_class", "thread")
-					.setProperty("hibernate.hbm2ddl.auto", "create-drop")
+//					.setProperty("hibernate.hbm2ddl.auto", "create-drop")
 				.addAnnotatedClass(AppUser.class)
 				.addAnnotatedClass(Reimbursement.class)
 				;
