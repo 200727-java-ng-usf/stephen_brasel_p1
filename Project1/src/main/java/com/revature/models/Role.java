@@ -27,7 +27,7 @@ public enum Role {
 //		return LOCKED;
 
 		return Arrays.stream(Role.values())
-				.filter(role -> role.type.equals(name))
+				.filter(role -> role.type.toLowerCase().equals(name.toLowerCase()))
 				.findFirst()
 				.orElse(LOCKED);
 	}

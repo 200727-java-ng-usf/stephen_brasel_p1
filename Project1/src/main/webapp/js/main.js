@@ -128,7 +128,7 @@ function loadNavBar(){
 			switch(authRole){
 				default:
 				case 'main':
-					configureNavbarUserDropdown();
+					// configureNavbarUserDropdown();
 					document.getElementById('toLogin').addEventListener('click', login);
 					break;
 				case 'admin':
@@ -269,7 +269,7 @@ function login(){
 			console.log('login successful!');
 			document.getElementById('login-message').setAttribute('hidden', true);
 			localStorage.setItem('authUser', xhr.responseText);
-			loadHome();
+			loadView('home.view');
 
 		} else if (xhr.readyState == 4 && xhr.status == 401){
 
@@ -303,7 +303,7 @@ function register(){
 	let em = document.getElementById('email').value;
 	let un = document.getElementById('reg-username').value;
 	let pw = document.getElementById('reg-password').value;
-	let rl = document.getElementById('roleSelectButton').selected;
+	let rl = document.getElementById('roleSelectButton').value;
 
 	let credentials = {
 		email:em,
@@ -329,7 +329,7 @@ function register(){
 			console.log(msg);
 			// document.getElementById('reg-message').innerText = msg;
 			document.getElementById('reg-message').setAttribute('hidden', true);
-			loadView("login.view");
+			loadView("user_register.view");
 
 		} else if (xhr.readyState == 4 && xhr.status == 400){
 
@@ -427,7 +427,7 @@ function validateRegisterForm() {
     let email = document.getElementById('email').value;
     let un = document.getElementById('reg-username').value;
     let pw = document.getElementById('reg-password').value;
-    let rl = document.getElementById('dropdownMenuButtonReimbursement').value;
+    let rl = document.getElementById('roleSelectButton').value;
 
     if (!fn || !ln || !email || !un || !pw || !rl) {
         document.getElementById('reg-message').removeAttribute('hidden');

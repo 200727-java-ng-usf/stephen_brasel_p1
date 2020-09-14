@@ -120,7 +120,6 @@ public class UserService {
 			throw new AuthenticationException("Provided username is already in use!");
 		}
 
-		newUser.setRole(Role.EMPLOYEE);
 		userDao.save(newUser);
 
 //		app.setCurrentUser(newUser);

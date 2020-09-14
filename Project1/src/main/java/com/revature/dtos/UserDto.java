@@ -12,12 +12,12 @@ public class UserDto {
 	private String username;
 	private String password;
 	private String email;
-	private Role role;
+	private String role;
 
 	public UserDto() {
 	}
 
-	public UserDto(int id, String firstName, String lastName, String username, String password, String email, Role role) {
+	public UserDto(int id, String firstName, String lastName, String username, String password, String email, String role) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -75,11 +75,11 @@ public class UserDto {
 		this.email = email;
 	}
 
-	public Role getRole() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 
@@ -94,7 +94,7 @@ public class UserDto {
 				Objects.equals(username, userDto.username) &&
 				Objects.equals(password, userDto.password) &&
 				Objects.equals(email, userDto.email) &&
-				role == userDto.role;
+				Objects.equals(role, userDto.role);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class UserDto {
 				", lastName='" + lastName + '\'' +
 				", username='" + username + '\'' +
 				", email='" + email + '\'' +
-				", role=" + role +
+				", role='" + role + '\'' +
 				'}';
 	}
 }

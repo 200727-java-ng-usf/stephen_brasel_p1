@@ -8,6 +8,7 @@ import com.revature.dtos.UserDto;
 import com.revature.exceptions.InvalidRequestException;
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.models.AppUser;
+import com.revature.models.Role;
 import com.revature.services.UserService;
 
 import javax.servlet.ServletException;
@@ -107,6 +108,7 @@ public class UserServlet extends HttpServlet {
 		try {
 
 			UserDto userDto = mapper.readValue(req.getInputStream(), UserDto.class);
+			System.out.println(userDto);
 			AppUser newUser = new AppUser(
 					userDto.getFirstName(),
 					userDto.getLastName(),
@@ -114,7 +116,11 @@ public class UserServlet extends HttpServlet {
 					userDto.getPassword(),
 					userDto.getEmail()
 			);
+			System.out.println(newUser);
+			newUser.setRole(Role.getByName(userDto.getRole()));
+			System.out.println(newUser);
 			userService.register(newUser);
+			System.out.println(newUser);
 			String newUserJSON = mapper.writeValueAsString(newUser);
 			respWriter.write(newUserJSON);
 			resp.setStatus(201); // 201 = CREATED

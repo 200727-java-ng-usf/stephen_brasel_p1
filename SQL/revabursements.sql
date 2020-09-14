@@ -202,7 +202,7 @@ order by er.reimb_id;
 select * 
 from ers_reimbursements er ;
 
-delete from ers_users where ers_user_id = 5;
+delete from ers_users where ers_user_id = 1;
 
 
 
