@@ -151,7 +151,9 @@ function loadNavBar(){
 				default:
 				case 'main':
 					// configureNavbarUserDropdown();
-					document.getElementById('toLogin').addEventListener('click', login);
+					const LoginButton = document.getElementById('toLogin')
+					LoginButton.addEventListener('click', eventLoadView);
+					LoginButton.desiredView = 'login.view';
 					break;
 				case 'admin':
 					configureNavbarUserDropdown();
@@ -391,6 +393,7 @@ function populateUserView(){
 				row.classList.add("userEntry");
 				let id = document.createElement("td");
 				id.innerText = users[i].id;
+				row.id=id;
 				let firstName = document.createElement("td");
 				firstName.innerText = users[i].firstName;
 				let lastName = document.createElement("td");
@@ -401,21 +404,67 @@ function populateUserView(){
 				email.innerText = users[i].email;
 				let role = document.createElement("td");
 				role.innerText = users[i].role;
+				let modify = document.createElement('td');
+				let editInteract = document.createElement('a');
+				editInteract.href = "#";
+				editInteract.className += 'edit';
+				editInteract.innerText = "Edit";
+				editInteract.userId = id;
+				editInteract.addEventListener('click', editUser);
+				let slash = document.createTextNode(' / ');
+				let deleteInteract = document.createElement('a');
+				deleteInteract.href = "#";
+				deleteInteract.className += 'remove';
+				deleteInteract.innerText = "Delete";
+				deleteInteract.userId = id;
+				deleteInteract.addEventListener('click', deleteUser);
+				// modify.innerHTML = `<a href="" class="editor_edit">Edit</a> / <a href="" class="editor_remove">Delete</a>`;
+				modify.appendChild(editInteract);
+				modify.appendChild(slash);
+				modify.appendChild(deleteInteract);
+
 				row.appendChild(id);
 				row.appendChild(firstName);
 				row.appendChild(lastName);
 				row.appendChild(username);
 				row.appendChild(email);
 				row.appendChild(role);
+				row.appendChild(modify);
+
 				tableBody.appendChild(row);
 			}
 			console.log(users);
 			// tableBody.innerText = JSON.stringify(users);
-			$('#userTable').DataTable();
-			$('.dataTables_length').addClass('bs-select');
 		}
 	}
+}
+$('#userTable').DataTable();
+$('.dataTables_length').addClass('bs-select');
+// Edit record
+function editUser(id) {
+}
 
+function eventEditUser(evt){
+	editUser (evt.currentTarget.userId);
+}
+// Delete a record
+function deleteUser(id) {
+	console.log(id);
+	if(!id) return;
+    let xhr = new XMLHttpRequest();
+    xhr.open('DELETE', 'users');
+    xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(id));
+	
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+			console.log('User removed successfully!');
+			document.removeChild($(this).closest('tr'));
+		}
+	} 
+}
+function eventDeleteUser(evt){
+	editUser (evt.currentTarget.userId);
 }
 
 function isUsernameAvailable() {

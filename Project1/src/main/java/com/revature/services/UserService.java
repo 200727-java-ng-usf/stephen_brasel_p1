@@ -146,6 +146,17 @@ public class UserService {
 		return userDao.deleteById(id);
 	}
 
+	/**
+	 * This method deletes a <code>{@link AppUser}</code> with the given id from
+	 * the the database, along with any records only pertinent to them.
+	 * @param id the id of the <code>{@link AppUser}</code>.
+	 * @return returns true if the deletion was successful, false if otherwise.
+	 * 		If there was no such user, returns true.
+	 */
+	public boolean deleteUserByUsername(String username){
+		return userDao.deleteByUsername(username);
+	}
+
 	public boolean isUsernameAvailable(String username) {
 		AppUser user = userDao.findUserByUsername(username).orElse(null);
 		return user == null;

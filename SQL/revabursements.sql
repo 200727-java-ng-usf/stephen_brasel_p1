@@ -50,10 +50,10 @@ create table ers_reimbursements(
 	resolved 				timestamp, 
 	description 			text, 
 	receipt 				text, -- stores a link to an AWS S3 bucket object
-	author_id 				int, 
-	resolver_id 			int, 
-	reimb_status_id 		int, 
-	reimb_type_id 			int, 
+	author_id	 			int, 
+	resolver_id	 			int, 
+	reimb_status_id 		varchar(255), 
+	reimb_type_id 			varchar(255), 
 	constraint reimb_pk 
 		primary key (reimb_id), 
 	constraint reimb_author_fk 
@@ -61,13 +61,13 @@ create table ers_reimbursements(
 		references ers_users (ers_user_id), 
 	constraint reimb_resolver_fk 
 		foreign key (resolver_id) 
-		references ers_users (ers_user_id), 
-	constraint reimb_status_fk 
-		foreign key (reimb_status_id) 
-		references ers_reimbursement_statuses (reimb_status_id), 
-	constraint reimb_type_fk 
-		foreign key (reimb_type_id) 
-		references ers_reimbursement_types (reimb_type_id) 
+		references ers_users (ers_user_id) 
+--	constraint reimb_status_fk 
+--		foreign key (reimb_status_id) 
+--		references ers_reimbursement_statuses (reimb_status_id), 
+--	constraint reimb_type_fk 
+--		foreign key (reimb_type_id) 
+--		references ers_reimbursement_types (reimb_type_id) 
 );
 
 --create or replace function salt_and_hash_password()
@@ -119,7 +119,7 @@ values
 	--	('Benjamin', 'Barker', 'bbarker', 'password', 'salt', 'bbarker@revature.net', 2),
 --	('Charlie', 'Courtson', 'ccourtson', 'password', 'salt', 'ccourtson@revature.net', 1),
 --	('Debra', 'Delion', 'ddelion', 'password', 'salt', 'ddelion@revature.net', 1),
---	('Edward', 'Eliotson', 'eeliotson', 'password', 'salt', 'eeliotson@revature.net', 1)
+--	('Eva', 'Eliotson', 'eeliotson', 'password', 'salt', 'eeliotson@revature.net', 1)
 ;
 
 --	reimb_id 				serial, 
