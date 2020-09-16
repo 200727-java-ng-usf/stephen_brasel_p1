@@ -7,6 +7,7 @@ import com.revature.dtos.Principal;
 import com.revature.dtos.UserDto;
 import com.revature.exceptions.InvalidRequestException;
 import com.revature.exceptions.ResourceNotFoundException;
+import com.revature.exceptions.ResourcePersistenceException;
 import com.revature.models.AppUser;
 import com.revature.models.Role;
 import com.revature.services.UserService;
@@ -142,7 +143,79 @@ public class UserServlet extends HttpServlet {
 	}
 
 	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+		resp.setContentType("application/json");
+
+		ObjectMapper mapper = new ObjectMapper();
+		PrintWriter respWriter = resp.getWriter();
+
+		try {
+
+			UserDto userDto = mapper.readValue(req.getInputStream(), UserDto.class);
+			System.out.println(userDto);
+			AppUser updatedUser = new AppUser(
+					userDto.getFirstName(),
+					userDto.getLastName(),
+					userDto.getUsername(),
+					userDto.getPassword(),
+					userDto.getEmail()
+			);
+			System.out.println(updatedUser);
+			updatedUser.setRole(Role.getByName(userDto.getRole()));
+			System.out.println(updatedUser);
+			userService.updateUser(updatedUser);
+			System.out.println(updatedUser);
+			String updatedUserJSON = mapper.writeValueAsString(updatedUser);
+			respWriter.write(updatedUserJSON);
+			resp.setStatus(200); // 200 = SUCCESS
+		} catch (MismatchedInputException me){
+			me.printStackTrace();
+			resp.setStatus(400); // 400 = BAD REQUEST
+
+			ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed user object found in request\n" + me);
+			respWriter.write(mapper.writeValueAsString(err));
+
+		} catch(Exception e) {
+
+			e.printStackTrace();
+			resp.setStatus(500); // 500 = INTERNAL SERVER ERRORS
+
+			ErrorResponse err = new ErrorResponse(500, "It's not you, it's us. Our bad...");
+			respWriter.write(mapper.writeValueAsString(err));
+		}
+	}
+
+	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doDelete(req, resp);
+
+		resp.setContentType("application/json");
+
+		ObjectMapper mapper = new ObjectMapper();
+		PrintWriter respWriter = resp.getWriter();
+
+		try {
+			Principal principal = mapper.readValue(req.getInputStream(), Principal.class);
+			boolean result = userService.deleteUserById(principal.getId());
+			if(!result){
+				throw new ResourcePersistenceException();
+			}else {
+				resp.setStatus(204); // 204
+			}
+		} catch (MismatchedInputException me){
+			me.printStackTrace();
+			resp.setStatus(400); // 400 = BAD REQUEST
+
+			ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed user object found in request\n" + me);
+			respWriter.write(mapper.writeValueAsString(err));
+
+		} catch(Exception e) {
+
+			e.printStackTrace();
+			resp.setStatus(500); // 500 = INTERNAL SERVER ERRORS
+
+			ErrorResponse err = new ErrorResponse(500, "It's not you, it's us. Our bad...");
+			respWriter.write(mapper.writeValueAsString(err));
+		}
 	}
 }

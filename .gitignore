@@ -44,3 +44,9 @@ buildNumber.properties
 
 # Properties files
 *.properties
+
+# VSCode Java files
+*/.classpath
+*/.project
+*/.settings
+*/.factorypath

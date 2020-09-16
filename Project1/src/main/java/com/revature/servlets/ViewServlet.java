@@ -15,7 +15,9 @@ public class ViewServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.getRequestDispatcher(com.revature.util.RequestViewHelper.process(req)).forward(req, resp);
+		String processedRequest = RequestViewHelper.process(req);
+		RequestDispatcher requestDispatcher = req.getRequestDispatcher(processedRequest);
+		requestDispatcher.forward(req, resp);
 	}
 
 }

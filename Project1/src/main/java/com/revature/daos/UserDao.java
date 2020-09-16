@@ -75,8 +75,28 @@ public class UserDao implements CrudDao<AppUser> {
 		Transaction tx = null;
 		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
-			session.createQuery("delete AppUser au where au.id = :id")
-				.setParameter("id", id);
+			Query query = session.createQuery("delete AppUser au where au.id = :id")
+					.setParameter("id", id);
+			int result = query.executeUpdate();
+			if(result <= 0) return false;
+			tx.commit();
+		} catch(Exception e) {
+			e.printStackTrace();
+			if(tx != null) tx.rollback();
+			return false;
+		}
+		return true;
+	}
+
+
+	public boolean deleteByUsername(String username) {
+		Transaction tx = null;
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
+			tx = session.beginTransaction();
+			Query query = session.createQuery("delete AppUser au where au.username = :username")
+					.setParameter("username", username);
+			int result = query.executeUpdate();
+			if(result <= 0) return false;
 			tx.commit();
 		} catch(Exception e) {
 			e.printStackTrace();

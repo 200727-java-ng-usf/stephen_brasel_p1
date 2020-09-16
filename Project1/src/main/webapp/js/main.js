@@ -1,7 +1,29 @@
 const APP_VIEW = document.getElementById('app-view');
 const NAV_BAR = document.getElementById('navbar');
 
+<<<<<<< Updated upstream
 window.onload = function(){ //function w/out a name = anon function
+=======
+window.addEventListener('beforeunload', unload);
+window.addEventListener('load', init);
+
+function unload(e) {
+    // window.localStorage.setItem('unloadTime') = JSON.stringify(new Date());
+};
+
+function init(){ //function w/out a name = anon function
+	// if(window.localStorage.getItem('unloadTime')){
+	// 	let loadTime = new Date();
+	// 	let unloadTime = new Date(JSON.parse(window.localStorage.getItem('unloadTime')));
+	// 	let refreshTime = loadTime.getTime() - unloadTime.getTime();
+
+	// 	if(refreshTime>3000)//3000 milliseconds
+	// 	{
+	// 		window.localStorage.removeItem("authUser");
+	// 		logout();
+	// 	}
+	// }
+>>>>>>> Stashed changes
 	loadView("login.view");
 	$('.dropdown-toggle').dropdown();
 }
@@ -59,6 +81,7 @@ function eventLoadView(evt){
 	loadView(evt.currentTarget.desiredView);
 }
 
+<<<<<<< Updated upstream
 // function loadLogin(){
 // 	console.log('in loadLogin()');
 // 	let xhr = new XMLHttpRequest;
@@ -108,6 +131,8 @@ function loadHome(){
 	}
 }
 
+=======
+>>>>>>> Stashed changes
 function loadNavBar(){
 	console.log('in loadNavBar');
 	let xhr = new XMLHttpRequest;
@@ -341,6 +366,114 @@ function register(){
 	}
 }
 
+<<<<<<< Updated upstream
+=======
+function populateUserView(){
+	console.log('in populateUserView');
+
+	let tableBody = document.getElementById('userTableBody');
+
+    let xhr = new XMLHttpRequest();
+
+    xhr.open('GET', 'users');
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.send();
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+			let users = JSON.parse(xhr.responseText);
+			for(var i = 0; i < users.length; i++){
+				let row = document.createElement("tr");
+				row.classList.add("userEntry");
+				let id = document.createElement("td");
+				id.innerText = users[i].id;
+				row.id=users[i].id;
+				let firstName = document.createElement("td");
+				firstName.innerText = users[i].firstName;
+				let lastName = document.createElement("td");
+				lastName.innerText = users[i].lastName;
+				let username = document.createElement("td");
+				username.innerText = users[i].username;
+				let email = document.createElement("td");
+				email.innerText = users[i].email;
+				let role = document.createElement("td");
+				role.innerText = titleCase(users[i].role);
+				let modify = document.createElement('td');
+
+				let pid = users[i].id;
+				let un = users[i].username;
+				let rl = titleCase(users[i].role);
+
+				let principal = {
+					"id": pid,
+					"username": un,
+					"role": rl
+				}
+
+				let editInteract = document.createElement('a');
+				editInteract.href = "#";
+				editInteract.className += 'edit';
+				editInteract.innerText = "Edit";
+				editInteract.addEventListener('click', eventEditUser);
+				editInteract.principal = principal;
+				let slash = document.createTextNode(' / ');
+				let deleteInteract = document.createElement('a');
+				deleteInteract.href = "#";
+				deleteInteract.className += 'remove';
+				deleteInteract.innerText = "Delete";
+				deleteInteract.addEventListener('click', eventDeleteUser);
+				deleteInteract.principal = principal;
+				// modify.innerHTML = `<a href="" class="editor_edit">Edit</a> / <a href="" class="editor_remove">Delete</a>`;
+				modify.appendChild(editInteract);
+				modify.appendChild(slash);
+				modify.appendChild(deleteInteract);
+
+				row.appendChild(id);
+				row.appendChild(firstName);
+				row.appendChild(lastName);
+				row.appendChild(username);
+				row.appendChild(email);
+				row.appendChild(role);
+				row.appendChild(modify);
+
+				tableBody.appendChild(row);
+				$('#userTable').DataTable();
+				$('.dataTables_length').addClass('bs-select');
+			}
+			console.log(users);
+			// tableBody.innerText = JSON.stringify(users);
+		}
+	}
+}
+// Edit record
+function editUser(principal) {
+}
+
+function eventEditUser(evt){
+	editUser (evt.currentTarget.principal);
+}
+// Delete a record
+function deleteUser(principal) {
+	console.log(principal);
+	if(!principal) return;
+    let xhr = new XMLHttpRequest();
+    xhr.open('DELETE', 'users');
+    xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(principal));
+	
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('User removed successfully!');
+			let deleteMe = document.getElementById(principal.id);
+			deleteMe.remove();
+		}
+	} 
+}
+function eventDeleteUser(evt){
+	deleteUser(evt.currentTarget.principal);
+}
+
+>>>>>>> Stashed changes
 function isUsernameAvailable() {
 
     console.log('in isUsernameAvailable()');
@@ -363,7 +496,6 @@ function isUsernameAvailable() {
             document.getElementById('register').setAttribute('disabled', true);
         }
     }
-
 }
 
 function isEmailAvailable() {
@@ -390,6 +522,17 @@ function isEmailAvailable() {
     }
 }
 
+//#endregion
+
+
+//#region helper functions
+function titleCase(string) {
+	var sentence = string.toLowerCase().split(" ");
+	for(var i = 0; i< sentence.length; i++){
+		sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+	}
+	return (sentence.join(" "));
+}
 //#endregion
 
 //#region formValidation
