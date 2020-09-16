@@ -1,6 +1,7 @@
 const APP_VIEW = document.getElementById('app-view');
 const NAV_BAR = document.getElementById('navbar');
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 window.onload = function(){ //function w/out a name = anon function
 =======
@@ -24,6 +25,24 @@ function init(){ //function w/out a name = anon function
 	// 	}
 	// }
 >>>>>>> Stashed changes
+=======
+window.onbeforeunload = function (e) {
+    window.localStorage.setItem('unloadTime') = JSON.stringify(new Date());
+};
+
+window.onload = function(){ //function w/out a name = anon function
+	if(window.localStorage.getItem('unloadTime')){
+		let loadTime = new Date();
+		let unloadTime = new Date(JSON.parse(window.localStorage.getItem('unloadTime')));
+		let refreshTime = loadTime.getTime() - unloadTime.getTime();
+
+		if(refreshTime>3000)//3000 milliseconds
+		{
+			window.localStorage.removeItem("authUser");
+			logout();
+		}
+	}
+>>>>>>> FEAT_ViewUsers
 	loadView("login.view");
 	$('.dropdown-toggle').dropdown();
 }
@@ -32,11 +51,18 @@ function init(){ //function w/out a name = anon function
 
 function loadView(pageToLoad){
 	console.log('in ' + pageToLoad);
-	if(pageToLoad == 'home.view'){
+	var authRole = "main";
+	if(pageToLoad != 'login.view'){
 		if(!localStorage.getItem('authUser')){
 			console.log('No user logged in, navigating to login screen');
 			loadView("login.view");
 			return;
+		} else{
+			let authUser = JSON.parse(localStorage.getItem('authUser'));
+			if(authUser){
+				console.log(authUser);
+				authRole = authUser.role.toLowerCase();
+			}
 		}
 	}
 	let xhr = new XMLHttpRequest;
@@ -111,25 +137,25 @@ function eventLoadView(evt){
 // 	}
 // }
 
-function loadHome(){
-	console.log('in loadHome()');
-	if(!localStorage.getItem('authUser')){
-		console.log('No user logged in, navigating to login screen');
-		loadView("login.view");
-		return;
-	}
-	let xhr = new XMLHttpRequest;
-	// xhr.responseType();
-	xhr.open("GET", "home.view", true); 
-	xhr.send();
-	xhr.onreadystatechange = function(){
-		if(xhr.readyState == 4 && xhr.status == 200){
-			// console.log('response received');
-			APP_VIEW.innerHTML = xhr.responseText;
-			configureHomeView();
-		}
-	}
-}
+// function loadHome(){
+// 	console.log('in loadHome()');
+// 	if(!localStorage.getItem('authUser')){
+// 		console.log('No user logged in, navigating to login screen');
+// 		loadView("login.view");
+// 		return;
+// 	}
+// 	let xhr = new XMLHttpRequest;
+// 	// xhr.responseType();
+// 	xhr.open("GET", "home.view", true); 
+// 	xhr.send();
+// 	xhr.onreadystatechange = function(){
+// 		if(xhr.readyState == 4 && xhr.status == 200){
+// 			// console.log('response received');
+// 			APP_VIEW.innerHTML = xhr.responseText;
+// 			configureHomeView();
+// 		}
+// 	}
+// }
 
 =======
 >>>>>>> Stashed changes
@@ -154,7 +180,9 @@ function loadNavBar(){
 				default:
 				case 'main':
 					// configureNavbarUserDropdown();
-					document.getElementById('toLogin').addEventListener('click', login);
+					const LoginButton = document.getElementById('toLogin')
+					LoginButton.addEventListener('click', eventLoadView);
+					LoginButton.desiredView = 'login.view';
 					break;
 				case 'admin':
 					configureNavbarUserDropdown();
@@ -207,6 +235,15 @@ function configureHomeView(){
 
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
 	document.getElementById('loggedInUsername').innerText = authUser.username;
+}
+
+function 
+configureUsersView(){
+	console.log('in configureUsersView');
+
+	populateUserView();
+	// $('#userTable').DataTable();
+	// $('.dataTables_length').addClass('bs-select');
 }
 
 function configureDefaultViewButtons(){
@@ -366,8 +403,11 @@ function register(){
 	}
 }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> FEAT_ViewUsers
 function populateUserView(){
 	console.log('in populateUserView');
 
@@ -387,7 +427,11 @@ function populateUserView(){
 				row.classList.add("userEntry");
 				let id = document.createElement("td");
 				id.innerText = users[i].id;
+<<<<<<< HEAD
 				row.id=users[i].id;
+=======
+				row.id=id;
+>>>>>>> FEAT_ViewUsers
 				let firstName = document.createElement("td");
 				firstName.innerText = users[i].firstName;
 				let lastName = document.createElement("td");
@@ -397,6 +441,7 @@ function populateUserView(){
 				let email = document.createElement("td");
 				email.innerText = users[i].email;
 				let role = document.createElement("td");
+<<<<<<< HEAD
 				role.innerText = titleCase(users[i].role);
 				let modify = document.createElement('td');
 
@@ -410,19 +455,33 @@ function populateUserView(){
 					"role": rl
 				}
 
+=======
+				role.innerText = users[i].role;
+				let modify = document.createElement('td');
+>>>>>>> FEAT_ViewUsers
 				let editInteract = document.createElement('a');
 				editInteract.href = "#";
 				editInteract.className += 'edit';
 				editInteract.innerText = "Edit";
+<<<<<<< HEAD
 				editInteract.addEventListener('click', eventEditUser);
 				editInteract.principal = principal;
+=======
+				editInteract.userId = id;
+				editInteract.addEventListener('click', editUser);
+>>>>>>> FEAT_ViewUsers
 				let slash = document.createTextNode(' / ');
 				let deleteInteract = document.createElement('a');
 				deleteInteract.href = "#";
 				deleteInteract.className += 'remove';
 				deleteInteract.innerText = "Delete";
+<<<<<<< HEAD
 				deleteInteract.addEventListener('click', eventDeleteUser);
 				deleteInteract.principal = principal;
+=======
+				deleteInteract.userId = id;
+				deleteInteract.addEventListener('click', deleteUser);
+>>>>>>> FEAT_ViewUsers
 				// modify.innerHTML = `<a href="" class="editor_edit">Edit</a> / <a href="" class="editor_remove">Delete</a>`;
 				modify.appendChild(editInteract);
 				modify.appendChild(slash);
@@ -437,14 +496,18 @@ function populateUserView(){
 				row.appendChild(modify);
 
 				tableBody.appendChild(row);
+<<<<<<< HEAD
 				$('#userTable').DataTable();
 				$('.dataTables_length').addClass('bs-select');
+=======
+>>>>>>> FEAT_ViewUsers
 			}
 			console.log(users);
 			// tableBody.innerText = JSON.stringify(users);
 		}
 	}
 }
+<<<<<<< HEAD
 // Edit record
 function editUser(principal) {
 }
@@ -466,14 +529,44 @@ function deleteUser(principal) {
 			console.log('User removed successfully!');
 			let deleteMe = document.getElementById(principal.id);
 			deleteMe.remove();
+=======
+$('#userTable').DataTable();
+$('.dataTables_length').addClass('bs-select');
+// Edit record
+function editUser(id) {
+}
+
+function eventEditUser(evt){
+	editUser (evt.currentTarget.userId);
+}
+// Delete a record
+function deleteUser(id) {
+	console.log(id);
+	if(!id) return;
+    let xhr = new XMLHttpRequest();
+    xhr.open('DELETE', 'users');
+    xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(id));
+	
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+			console.log('User removed successfully!');
+			document.removeChild($(this).closest('tr'));
+>>>>>>> FEAT_ViewUsers
 		}
 	} 
 }
 function eventDeleteUser(evt){
+<<<<<<< HEAD
 	deleteUser(evt.currentTarget.principal);
 }
 
 >>>>>>> Stashed changes
+=======
+	editUser (evt.currentTarget.userId);
+}
+
+>>>>>>> FEAT_ViewUsers
 function isUsernameAvailable() {
 
     console.log('in isUsernameAvailable()');
