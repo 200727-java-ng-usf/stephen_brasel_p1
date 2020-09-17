@@ -41,7 +41,7 @@ public class UserDao implements CrudDao<AppUser> {
 			CriteriaBuilder cb = session.getCriteriaBuilder();
 			CriteriaQuery<AppUser> query = cb.createQuery(AppUser.class);
 			Root<AppUser> root = query.from(AppUser.class);
-			query.select(root);
+			query.orderBy(cb.asc(root.get("id")));
 			_users = session.createQuery(query).list();
 			System.out.println(_users);
 			tx.commit();

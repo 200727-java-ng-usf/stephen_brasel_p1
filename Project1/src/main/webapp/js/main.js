@@ -31,47 +31,47 @@ function init() { //function w/out a name = anon function
 function loadView(pageToLoad) {
   console.log('in ' + pageToLoad);
   if (pageToLoad == 'home.view') {
-    if (!localStorage.getItem('authUser')) {
-      console.log('No user logged in, navigating to login screen');
-      loadView("login.view");
-      return;
-    }
+	if (!localStorage.getItem('authUser')) {
+	  console.log('No user logged in, navigating to login screen');
+	  loadView("login.view");
+	  return;
+	}
   }
   let xhr = new XMLHttpRequest;
   // xhr.responseType();
   xhr.open("GET", pageToLoad, true); // third parameter of this method is optional (defaults to true)
   xhr.send();
   xhr.onreadystatechange = async function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      APP_VIEW.innerHTML = xhr.responseText;
-      switch (pageToLoad) {
-        default:
-          console.log('loading default page');
-        case 'login.view':
-          configureLoginView();
-          break;
-        case 'home.view':
-          configureHomeView();
-          break;
-        case 'profile.view':
-          configureProfileView();
-          break;
-        case 'user_register.view':
-          configureRegisterView();
-          break;
-        case 'user_update.view':
-        case 'user_view.view':
-        case 'user_delete.view':
-          configureUsersView();
-          break;
-        case 'reimbursement_create.view':
-        case 'reimbursement_update.view':
-        case 'reimbursement_view.view':
-          configureReimbursementsView();
-          break;
-      }
-      loadNavBar();
-    }
+	if (xhr.readyState == 4 && xhr.status == 200) {
+	  APP_VIEW.innerHTML = xhr.responseText;
+	  switch (pageToLoad) {
+		default:
+		  console.log('loading default page');
+		case 'login.view':
+		  configureLoginView();
+		  break;
+		case 'home.view':
+		  configureHomeView();
+		  break;
+		case 'profile.view':
+		  configureProfileView();
+		  break;
+		case 'user_register.view':
+		  configureRegisterView();
+		  break;
+		case 'user_update.view':
+		case 'user_view.view':
+		case 'user_delete.view':
+		  configureUsersView();
+		  break;
+		case 'reimbursement_create.view':
+		case 'reimbursement_update.view':
+		case 'reimbursement_view.view':
+		  configureReimbursementsView();
+		  break;
+	  }
+	  loadNavBar();
+	}
   }
 }
 
@@ -86,40 +86,40 @@ function loadNavBar() {
   let authUser = JSON.parse(localStorage.getItem('authUser'));
   var authRole = "main";
   if (authUser) {
-    console.log(authUser);
-    authRole = authUser.role.toLowerCase();
-    destNav = authRole + ".nav";
+	console.log(authUser);
+	authRole = authUser.role.toLowerCase();
+	destNav = authRole + ".nav";
   }
   console.log(destNav);
   xhr.open("GET", destNav, true);
   xhr.send();
   xhr.onreadystatechange = async function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      NAV_BAR.innerHTML = xhr.responseText;
-      switch (authRole) {
-        default:
-        case 'main':
-          // configureNavbarUserDropdown();
-          document.getElementById('toLogin').addEventListener('click', login);
-          break;
-        case 'admin':
-          configureNavbarUserDropdown();
-          configureNavbarReimbursementDropdown();
-          configureDefaultViewButtons();
-          document.getElementById('toLogout').addEventListener('click', logout);
-          break;
-        case 'employee':
-          configureNavbarReimbursementDropdown();
-          configureDefaultViewButtons();
-          document.getElementById('toLogout').addEventListener('click', logout);
-          break;
-        case 'manager':
-          configureNavbarReimbursementDropdown();
-          configureDefaultViewButtons();
-          document.getElementById('toLogout').addEventListener('click', logout);
-          break;
-      }
-    }
+	if (xhr.readyState == 4 && xhr.status == 200) {
+	  NAV_BAR.innerHTML = xhr.responseText;
+	  switch (authRole) {
+		default:
+		case 'main':
+		  // configureNavbarUserDropdown();
+		  document.getElementById('toLogin').addEventListener('click', login);
+		  break;
+		case 'admin':
+		  configureNavbarUserDropdown();
+		  configureNavbarReimbursementDropdown();
+		  configureDefaultViewButtons();
+		  document.getElementById('toLogout').addEventListener('click', logout);
+		  break;
+		case 'employee':
+		  configureNavbarReimbursementDropdown();
+		  configureDefaultViewButtons();
+		  document.getElementById('toLogout').addEventListener('click', logout);
+		  break;
+		case 'manager':
+		  configureNavbarReimbursementDropdown();
+		  configureDefaultViewButtons();
+		  document.getElementById('toLogout').addEventListener('click', logout);
+		  break;
+	  }
+	}
   }
 }
 
@@ -228,8 +228,8 @@ function login() {
   let pw = document.getElementById('login-password').value;
 
   let credentials = {
-    username: un,
-    password: pw
+	username: un,
+	password: pw
   }
 
   let credentialsJSON = JSON.stringify(credentials);
@@ -240,20 +240,20 @@ function login() {
   xhr.send(credentialsJSON);
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
+	if (xhr.readyState == 4 && xhr.status == 200) {
 
-      console.log('login successful!');
-      document.getElementById('login-message').setAttribute('hidden', true);
-      localStorage.setItem('authUser', xhr.responseText);
-      loadView('home.view');
+	  console.log('login successful!');
+	  document.getElementById('login-message').setAttribute('hidden', true);
+	  localStorage.setItem('authUser', xhr.responseText);
+	  loadView('home.view');
 
-    } else if (xhr.readyState == 4 && xhr.status == 401) {
+	} else if (xhr.readyState == 4 && xhr.status == 401) {
 
-      document.getElementById('login-message').removeAttribute('hidden');
-      let err = JSON.parse(xhr.responseText);
-      document.getElementById('login-message').innerText = err.message;
+	  document.getElementById('login-message').removeAttribute('hidden');
+	  let err = JSON.parse(xhr.responseText);
+	  document.getElementById('login-message').innerText = err.message;
 
-    }
+	}
   }
 }
 
@@ -263,11 +263,11 @@ function logout() {
   xhr.open('GET', 'auth');
   xhr.send();
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 204) {
-      console.log('logout successful!');
-      localStorage.removeItem('authUser');
-      loadView("login.view");
-    }
+	if (xhr.readyState == 4 && xhr.status == 204) {
+	  console.log('logout successful!');
+	  localStorage.removeItem('authUser');
+	  loadView("login.view");
+	}
   }
 }
 
@@ -282,12 +282,12 @@ function register() {
   let rl = document.getElementById('roleSelectButton').value;
 
   let credentials = {
-    email: em,
-    firstName: fn,
-    lastName: ln,
-    username: un,
-    password: pw,
-    role: rl
+	email: em,
+	firstName: fn,
+	lastName: ln,
+	username: un,
+	password: pw,
+	role: rl
   }
   console.log(credentials);
 
@@ -299,21 +299,21 @@ function register() {
   xhr.send(credentialsJSON);
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 201) {
+	if (xhr.readyState == 4 && xhr.status == 201) {
 
-      let msg = JSON.parse(xhr.responseText);
-      console.log(msg);
-      // document.getElementById('reg-message').innerText = msg;
-      document.getElementById('reg-message').setAttribute('hidden', true);
-      loadView("user_register.view");
+	  let msg = JSON.parse(xhr.responseText);
+	  console.log(msg);
+	  // document.getElementById('reg-message').innerText = msg;
+	  document.getElementById('reg-message').setAttribute('hidden', true);
+	  loadView("user_register.view");
 
-    } else if (xhr.readyState == 4 && xhr.status == 400) {
+	} else if (xhr.readyState == 4 && xhr.status == 400) {
 
-      document.getElementById('reg-message').removeAttribute('hidden');
-      let err = JSON.parse(xhr.responseText);
-      document.getElementById('reg-message').innerText = err.message;
+	  document.getElementById('reg-message').removeAttribute('hidden');
+	  let err = JSON.parse(xhr.responseText);
+	  document.getElementById('reg-message').innerText = err.message;
 
-    }
+	}
   }
 }
 
@@ -328,12 +328,12 @@ function update() {
   let rl = document.getElementById('roleSelectButton').value;
 
   let credentials = {
-    email: em,
-    firstName: fn,
-    lastName: ln,
-    username: un,
-    password: pw,
-    role: rl
+	email: em,
+	firstName: fn,
+	lastName: ln,
+	username: un,
+	password: pw,
+	role: rl
   }
   console.log(credentials);
 
@@ -345,21 +345,21 @@ function update() {
   xhr.send(credentialsJSON);
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
+	if (xhr.readyState == 4 && xhr.status == 200) {
 
-      let msg = JSON.parse(xhr.responseText);
-      console.log(msg);
-      // document.getElementById('reg-message').innerText = msg;
-      document.getElementById('reg-message').setAttribute('hidden', true);
-      loadView("user_update.view");
+	  let msg = JSON.parse(xhr.responseText);
+	  console.log(msg);
+	  // document.getElementById('reg-message').innerText = msg;
+	  document.getElementById('reg-message').setAttribute('hidden', true);
+	  loadView("user_update.view");
 
-    } else if (xhr.readyState == 4 && xhr.status == 400) {
+	} else if (xhr.readyState == 4 && xhr.status == 400) {
 
-      document.getElementById('reg-message').removeAttribute('hidden');
-      let err = JSON.parse(xhr.responseText);
-      document.getElementById('reg-message').innerText = err.message;
+	  document.getElementById('reg-message').removeAttribute('hidden');
+	  let err = JSON.parse(xhr.responseText);
+	  document.getElementById('reg-message').innerText = err.message;
 
-    }
+	}
   }
 }
 
@@ -375,86 +375,89 @@ function populateUserView() {
   xhr.send();
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      let users = JSON.parse(xhr.responseText);
-      for (var i = 0; i < users.length; i++) {
-        let row = document.createElement("tr");
-        row.classList.add("userEntry");
-        let active = users[i].active;
-        if (!active) {
-          row.classList.add('disabled');
-        }
-        let id = document.createElement("td");
-        id.innerText = users[i].id;
-        row.id = users[i].id;
-        let firstName = document.createElement("td");
-        firstName.innerText = users[i].firstName;
-        let lastName = document.createElement("td");
-        lastName.innerText = users[i].lastName;
-        let username = document.createElement("td");
-        username.innerText = users[i].username;
-        let email = document.createElement("td");
-        email.innerText = users[i].email;
-        let role = document.createElement("td");
-        role.innerText = titleCase(users[i].role);
-        let modify = document.createElement('td');
+	if (xhr.readyState == 4 && xhr.status == 200) {
+		for(let child of tableBody.childNodes){
+			child.remove();
+		}
+		let users = JSON.parse(xhr.responseText);
+		for (var i = 0; i < users.length; i++) {
+		let row = document.createElement("tr");
+		row.classList.add("userEntry");
+		let active = users[i].active;
+		if (!active) {
+			row.classList.add('disabled');
+		}
+		let id = document.createElement("td");
+		id.innerText = users[i].id;
+		row.id = users[i].id;
+		let firstName = document.createElement("td");
+		firstName.innerText = users[i].firstName;
+		let lastName = document.createElement("td");
+		lastName.innerText = users[i].lastName;
+		let username = document.createElement("td");
+		username.innerText = users[i].username;
+		let email = document.createElement("td");
+		email.innerText = users[i].email;
+		let role = document.createElement("td");
+		role.innerText = titleCase(users[i].role);
+		let modify = document.createElement('td');
 		modify.id = `modify:${users[i].id}`;
 
-        let pid = users[i].id;
-        let un = users[i].username;
-        let rl = titleCase(users[i].role);
+		let pid = users[i].id;
+		let un = users[i].username;
+		let rl = titleCase(users[i].role);
 
-        let principal = {
-          "id": pid,
-          "username": un,
-          "role": rl
-        }
+		let principal = {
+			"id": pid,
+			"username": un,
+			"role": rl
+		}
 
-        let editInteract = document.createElement('a');
-        editInteract.href = "#";
-        editInteract.className += 'edit';
-        editInteract.innerText = "Edit";
-        editInteract.addEventListener('click', eventEditUser);
-        editInteract.principal = principal;
-        modify.appendChild(editInteract);
+		let editInteract = document.createElement('a');
+		editInteract.href = "#";
+		editInteract.className += 'edit';
+		editInteract.innerText = "Edit";
+		editInteract.addEventListener('click', eventEditUser);
+		editInteract.principal = principal;
+		modify.appendChild(editInteract);
 		let slash = document.createTextNode(' / ');
 		modify.appendChild(slash);
-        if (active) {
-		  let deactivateInteract = document.createElement('a');
-		  deactivateInteract.id = `deactivate:${users[i].id}`;
-          deactivateInteract.href = "#";
-          deactivateInteract.className += 'remove';
-          deactivateInteract.innerText = "Deactivate";
-          deactivateInteract.addEventListener('click', eventDeactivateUser);
-          deactivateInteract.principal = principal;
-          modify.appendChild(deactivateInteract);
-        } else {
-          let reactivateInteract = document.createElement('a');
-		  reactivateInteract.id = `reactivate:${users[i].id}`;
-          reactivateInteract.href = "#";
-          reactivateInteract.className += 'remove';
-          reactivateInteract.innerText = "Activate";
-          reactivateInteract.addEventListener('click', eventActivateUser);
-          reactivateInteract.principal = principal;
-          modify.appendChild(reactivateInteract);
-        }
+		if (active) {
+			let deactivateInteract = document.createElement('a');
+			deactivateInteract.id = `deactivate:${users[i].id}`;
+			deactivateInteract.href = "#";
+			deactivateInteract.className += 'remove';
+			deactivateInteract.innerText = "Deactivate";
+			deactivateInteract.addEventListener('click', eventDeactivateUser);
+			deactivateInteract.principal = principal;
+			modify.appendChild(deactivateInteract);
+		} else {
+			let reactivateInteract = document.createElement('a');
+			reactivateInteract.id = `reactivate:${users[i].id}`;
+			reactivateInteract.href = "#";
+			reactivateInteract.className += 'remove';
+			reactivateInteract.innerText = "Activate";
+			reactivateInteract.addEventListener('click', eventActivateUser);
+			reactivateInteract.principal = principal;
+			modify.appendChild(reactivateInteract);
+		}
 
-        row.appendChild(id);
-        row.appendChild(firstName);
-        row.appendChild(lastName);
-        row.appendChild(username);
-        row.appendChild(email);
-        row.appendChild(role);
-        row.appendChild(modify);
+		row.appendChild(id);
+		row.appendChild(firstName);
+		row.appendChild(lastName);
+		row.appendChild(username);
+		row.appendChild(email);
+		row.appendChild(role);
+		row.appendChild(modify);
 
-        tableBody.appendChild(row);
-        $('#userTable').DataTable();
-        $('.dataTables_length').addClass('bs-select');
-      }
-      console.log(users);
-      // tableBody.innerText = JSON.stringify(users);
-    }
-  }
+		tableBody.appendChild(row);
+		}
+		$('#userTable').DataTable();
+		$('.dataTables_length').addClass('bs-select');
+		console.log(users);
+		// tableBody.innerText = JSON.stringify(users);
+	}
+	}
 }
 // Edit record
 function editUser(principal) {
@@ -476,11 +479,11 @@ function deleteUser(principal) {
   xhr.send(JSON.stringify(principal));
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 204) {
-      console.log('User removed successfully!');
-      let deleteMe = document.getElementById(principal.id);
-      deleteMe.remove();
-    }
+	if (xhr.readyState == 4 && xhr.status == 204) {
+	  console.log('User removed successfully!');
+	  let deleteMe = document.getElementById(principal.id);
+	  deleteMe.remove();
+	}
   }
 }
 function eventDeleteUser(evt) {
@@ -490,15 +493,19 @@ function eventDeleteUser(evt) {
 function deactivateUser(principal) {
   console.log(principal);
   if (!principal) return;
+  if(isSelf(principal)){
+	  console.log(`You cannot deactivate yourself.`);
+	  return;
+  }
   let xhr = new XMLHttpRequest();
   xhr.open('DELETE', 'users');
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(JSON.stringify(principal));
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 204) {
-      console.log('User removed successfully!');
-      let disabledRow = document.getElementById(principal.id);
+	if (xhr.readyState == 4 && xhr.status == 204) {
+	  console.log('User removed successfully!');
+	  let disabledRow = document.getElementById(principal.id);
 	  disabledRow.classList.add('disabled');
 	  let deactivateInteract = document.getElementById(`deactivate:${principal.id}`);
 	  deactivateInteract.remove();
@@ -514,7 +521,7 @@ function deactivateUser(principal) {
 	  let modify = document.getElementById(`modify:${principal.id}`);
 	  modify.appendChild(reactivateInteract);
 
-    }
+	}
   }
 }
 function eventDeactivateUser(evt) {
@@ -531,10 +538,10 @@ function activateUser(principal) {
   xhr.send(JSON.stringify(principal));
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 204) {
-      console.log('User reactivated successfully!');
-      let deleteMe = document.getElementById(principal.id);
-      deleteMe.classList.remove('disabled');
+	if (xhr.readyState == 4 && xhr.status == 204) {
+	  console.log('User reactivated successfully!');
+	  let deleteMe = document.getElementById(principal.id);
+	  deleteMe.classList.remove('disabled');
 	  let reactivateInteract = document.getElementById(`reactivate:${principal.id}`);
 	  reactivateInteract.remove();
 
@@ -570,14 +577,14 @@ function isUsernameAvailable() {
   xhr.send(JSON.stringify(username));
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 204) {
-      console.log('Provided username is available!');
-      document.getElementById('reg-message').setAttribute('hidden', true);
-    } else if (xhr.readyState == 4 && xhr.status == 409) {
-      document.getElementById('reg-message').removeAttribute('hidden')
-      document.getElementById('reg-message').innerText = 'The provided username is already taken!';
-      document.getElementById('register').setAttribute('disabled', true);
-    }
+	if (xhr.readyState == 4 && xhr.status == 204) {
+	  console.log('Provided username is available!');
+	  document.getElementById('reg-message').setAttribute('hidden', true);
+	} else if (xhr.readyState == 4 && xhr.status == 409) {
+	  document.getElementById('reg-message').removeAttribute('hidden')
+	  document.getElementById('reg-message').innerText = 'The provided username is already taken!';
+	  document.getElementById('register').setAttribute('disabled', true);
+	}
   }
 }
 
@@ -594,19 +601,15 @@ function isEmailAvailable() {
   xhr.send(JSON.stringify(email));
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 204) {
-      console.log('Provided email is available!');
-      document.getElementById('reg-message').setAttribute('hidden', true);
-    } else if (xhr.readyState == 4 && xhr.status == 409) {
-      document.getElementById('reg-message').removeAttribute('hidden');
-      document.getElementById('reg-message').innerText = 'The provided email address is already taken!';
-      document.getElementById('register').setAttribute('disabled', true);
-    }
+	if (xhr.readyState == 4 && xhr.status == 204) {
+	  console.log('Provided email is available!');
+	  document.getElementById('reg-message').setAttribute('hidden', true);
+	} else if (xhr.readyState == 4 && xhr.status == 409) {
+	  document.getElementById('reg-message').removeAttribute('hidden');
+	  document.getElementById('reg-message').innerText = 'The provided email address is already taken!';
+	  document.getElementById('register').setAttribute('disabled', true);
+	}
   }
-}
-
-function redundancyCheck(var1, var2) {
-  return var1 === var2;
 }
 
 //#endregion
@@ -616,7 +619,7 @@ function redundancyCheck(var1, var2) {
 function titleCase(string) {
   var sentence = string.toLowerCase().split(" ");
   for (var i = 0; i < sentence.length; i++) {
-    sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+	sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
   }
   return (sentence.join(" "));
 }
@@ -631,19 +634,19 @@ function validateLoginForm() {
   let msg = document.getElementById('login-message').innerText;
 
   if (msg == 'User authentication failed!') {
-    return;
+	return;
   }
 
   let un = document.getElementById('login-username').value;
   let pw = document.getElementById('login-password').value;
 
   if (!un || !pw) {
-    document.getElementById('login-message').removeAttribute('hidden');
-    document.getElementById('login-message').innerText = 'You must provided values for all fields in the form!'
-    document.getElementById('login').setAttribute('disabled', true);
+	document.getElementById('login-message').removeAttribute('hidden');
+	document.getElementById('login-message').innerText = 'You must provided values for all fields in the form!'
+	document.getElementById('login').setAttribute('disabled', true);
   } else {
-    document.getElementById('login').removeAttribute('disabled');
-    document.getElementById('login-message').setAttribute('hidden', true);
+	document.getElementById('login').removeAttribute('disabled');
+	document.getElementById('login-message').setAttribute('hidden', true);
   }
 
 }
@@ -660,13 +663,17 @@ function validateRegisterForm() {
   let rl = document.getElementById('roleSelectButton').value;
 
   if (!fn || !ln || !email || !un || !pw || !rl) {
-    document.getElementById('reg-message').removeAttribute('hidden');
-    document.getElementById('reg-message').innerText = 'You must provided values for all fields in the form!'
-    document.getElementById('register').setAttribute('disabled', true);
+	document.getElementById('reg-message').removeAttribute('hidden');
+	document.getElementById('reg-message').innerText = 'You must provided values for all fields in the form!'
+	document.getElementById('register').setAttribute('disabled', true);
   } else {
-    document.getElementById('register').removeAttribute('disabled');
-    document.getElementById('reg-message').setAttribute('hidden', true);
+	document.getElementById('register').removeAttribute('disabled');
+	document.getElementById('reg-message').setAttribute('hidden', true);
   }
 }
 
+function isSelf(principal){
+	let authUser = JSON.parse(localStorage.getItem('authUser'));
+	return principal.id == authUser.id;
+}
 //#endregion
