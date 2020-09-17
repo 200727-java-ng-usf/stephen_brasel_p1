@@ -258,17 +258,17 @@ function login() {
 }
 
 function logout() {
-  console.log('in logout()');
-  let xhr = new XMLHttpRequest();
-  xhr.open('GET', 'auth');
-  xhr.send();
-  xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 204) {
-	  console.log('logout successful!');
-	  localStorage.removeItem('authUser');
-	  loadView("login.view");
+	console.log('in logout()');
+	localStorage.removeItem('authUser');
+	loadView("login.view");
+	let xhr = new XMLHttpRequest();
+	xhr.open('GET', 'auth');
+	xhr.send();
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('logout successful!');
+		}
 	}
-  }
 }
 
 function register() {
@@ -381,82 +381,82 @@ function populateUserView() {
 		}
 		let users = JSON.parse(xhr.responseText);
 		for (var i = 0; i < users.length; i++) {
-		let row = document.createElement("tr");
-		row.classList.add("userEntry");
-		let active = users[i].active;
-		if (!active) {
-			row.classList.add('disabled');
+			let row = document.createElement("tr");
+			row.classList.add("userEntry");
+			let active = users[i].active;
+			if (!active) {
+				row.classList.add('disabled');
+			}
+			let id = document.createElement("td");
+			id.innerText = users[i].id;
+			row.id = users[i].id;
+			let firstName = document.createElement("td");
+			firstName.innerText = users[i].firstName;
+			let lastName = document.createElement("td");
+			lastName.innerText = users[i].lastName;
+			let username = document.createElement("td");
+			username.innerText = users[i].username;
+			let email = document.createElement("td");
+			email.innerText = users[i].email;
+			let role = document.createElement("td");
+			role.innerText = titleCase(users[i].role);
+			let modify = document.createElement('td');
+			modify.id = `modify:${users[i].id}`;
+
+			let pid = users[i].id;
+			let un = users[i].username;
+			let rl = titleCase(users[i].role);
+
+			let principal = {
+				"id": pid,
+				"username": un,
+				"role": rl
+			}
+
+			let editInteract = document.createElement('a');
+			editInteract.href = "#";
+			editInteract.className += 'edit';
+			editInteract.innerText = "Edit";
+			editInteract.addEventListener('click', eventEditUser);
+			editInteract.principal = principal;
+			modify.appendChild(editInteract);
+			let slash = document.createTextNode(' / ');
+			modify.appendChild(slash);
+			if (active) {
+				let deactivateInteract = document.createElement('a');
+				deactivateInteract.id = `deactivate:${users[i].id}`;
+				deactivateInteract.href = "#";
+				deactivateInteract.className += 'remove';
+				deactivateInteract.innerText = "Deactivate";
+				deactivateInteract.addEventListener('click', eventDeactivateUser);
+				deactivateInteract.principal = principal;
+				modify.appendChild(deactivateInteract);
+			} else {
+				let reactivateInteract = document.createElement('a');
+				reactivateInteract.id = `reactivate:${users[i].id}`;
+				reactivateInteract.href = "#";
+				reactivateInteract.className += 'remove';
+				reactivateInteract.innerText = "Activate";
+				reactivateInteract.addEventListener('click', eventActivateUser);
+				reactivateInteract.principal = principal;
+				modify.appendChild(reactivateInteract);
+			}
+
+			row.appendChild(id);
+			row.appendChild(firstName);
+			row.appendChild(lastName);
+			row.appendChild(username);
+			row.appendChild(email);
+			row.appendChild(role);
+			row.appendChild(modify);
+
+			tableBody.appendChild(row);
+			}
+			$('#userTable').DataTable();
+			$('.dataTables_length').addClass('bs-select');
+			console.log(users);
+			// tableBody.innerText = JSON.stringify(users);
 		}
-		let id = document.createElement("td");
-		id.innerText = users[i].id;
-		row.id = users[i].id;
-		let firstName = document.createElement("td");
-		firstName.innerText = users[i].firstName;
-		let lastName = document.createElement("td");
-		lastName.innerText = users[i].lastName;
-		let username = document.createElement("td");
-		username.innerText = users[i].username;
-		let email = document.createElement("td");
-		email.innerText = users[i].email;
-		let role = document.createElement("td");
-		role.innerText = titleCase(users[i].role);
-		let modify = document.createElement('td');
-		modify.id = `modify:${users[i].id}`;
-
-		let pid = users[i].id;
-		let un = users[i].username;
-		let rl = titleCase(users[i].role);
-
-		let principal = {
-			"id": pid,
-			"username": un,
-			"role": rl
-		}
-
-		let editInteract = document.createElement('a');
-		editInteract.href = "#";
-		editInteract.className += 'edit';
-		editInteract.innerText = "Edit";
-		editInteract.addEventListener('click', eventEditUser);
-		editInteract.principal = principal;
-		modify.appendChild(editInteract);
-		let slash = document.createTextNode(' / ');
-		modify.appendChild(slash);
-		if (active) {
-			let deactivateInteract = document.createElement('a');
-			deactivateInteract.id = `deactivate:${users[i].id}`;
-			deactivateInteract.href = "#";
-			deactivateInteract.className += 'remove';
-			deactivateInteract.innerText = "Deactivate";
-			deactivateInteract.addEventListener('click', eventDeactivateUser);
-			deactivateInteract.principal = principal;
-			modify.appendChild(deactivateInteract);
-		} else {
-			let reactivateInteract = document.createElement('a');
-			reactivateInteract.id = `reactivate:${users[i].id}`;
-			reactivateInteract.href = "#";
-			reactivateInteract.className += 'remove';
-			reactivateInteract.innerText = "Activate";
-			reactivateInteract.addEventListener('click', eventActivateUser);
-			reactivateInteract.principal = principal;
-			modify.appendChild(reactivateInteract);
-		}
-
-		row.appendChild(id);
-		row.appendChild(firstName);
-		row.appendChild(lastName);
-		row.appendChild(username);
-		row.appendChild(email);
-		row.appendChild(role);
-		row.appendChild(modify);
-
-		tableBody.appendChild(row);
-		}
-		$('#userTable').DataTable();
-		$('.dataTables_length').addClass('bs-select');
-		console.log(users);
-		// tableBody.innerText = JSON.stringify(users);
-	}
 	}
 }
 // Edit record

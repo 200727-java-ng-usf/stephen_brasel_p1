@@ -56,5 +56,5 @@ table.dataTable thead .sorting_desc_disabled:before {
 }
 
 .disabled {
-	background-color: lightcoral;
+	text-decoration: line-through;
 }
