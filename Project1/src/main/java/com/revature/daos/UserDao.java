@@ -62,7 +62,72 @@ public class UserDao implements CrudDao<AppUser> {
 		Transaction tx = null;
 		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
-			session.update(appUser);
+//			session.update(appUser);
+			String hql = "update AppUser au ";
+			hql += "set au.active = :active, ";
+
+			// id
+			// active
+			// firstName
+			// lastName
+			// username
+			// passwordHash
+			// passwordSalt
+			// email
+			// role
+
+			if(appUser.getFirstName() != null && !appUser.getFirstName().trim().equals("")){
+				System.out.println("firstname present.");
+				hql += "au.firstName = :firstName, ";
+			}
+			if(appUser.getLastName() != null && !appUser.getLastName().trim().equals("")){
+				System.out.println("lastname present.");
+				hql += "au.lastName = :lastName, ";
+			}
+			if(appUser.getUsername() != null && !appUser.getUsername().trim().equals("")){
+				System.out.println("username present.");
+				hql += "au.username = :username, ";
+			}
+			if(appUser.getPasswordHash() != null && appUser.getPasswordHash().length > 0){
+				System.out.println("passwordHash present.");
+				hql += "au.passwordHash = :passwordHash, ";
+			}
+			if(appUser.getPasswordSalt() != null && appUser.getPasswordSalt().length > 0){
+				System.out.println("passwordSalt present.");
+				hql += "au.passwordSalt = :passwordSalt, ";
+			}
+			if(appUser.getEmail() != null && !appUser.getEmail().trim().equals("")){
+				System.out.println("email present.");
+				hql += "au.email = :email, ";
+			}
+			hql += "au.role = :role ";
+			hql += "where au.id = :id ";
+			Query query = session.createQuery(hql);
+			query.setParameter("active", appUser.isActive());
+
+			if(appUser.getFirstName() != null && !appUser.getFirstName().trim().equals("")) {
+				query.setParameter("firstName", appUser.getFirstName());
+			}
+			if(appUser.getLastName() != null && !appUser.getLastName().trim().equals("")) {
+				query.setParameter("lastName", appUser.getLastName());
+			}
+			if(appUser.getUsername() != null && !appUser.getUsername().trim().equals("")) {
+				query.setParameter("username", appUser.getUsername());
+			}
+			if(appUser.getPasswordHash() != null && appUser.getPasswordHash().length > 0) {
+				query.setParameter("passwordHash", appUser.getPasswordHash());
+			}
+			if(appUser.getPasswordSalt() != null && appUser.getPasswordSalt().length > 0) {
+				query.setParameter("passwordSalt", appUser.getPasswordSalt());
+			}
+			if(appUser.getEmail() != null && !appUser.getEmail().trim().equals("")) {
+				query.setParameter("email", appUser.getEmail());
+			}
+
+			query.setParameter("role", appUser.getRole());
+			query.setParameter("id", appUser.getId());
+			int result = query.executeUpdate();
+			if(result <= 0) return false;
 			tx.commit();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -77,7 +142,7 @@ public class UserDao implements CrudDao<AppUser> {
 		Transaction tx = null;
 		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
 			tx = session.beginTransaction();
-			Query query = session.createQuery("delete AppUser au where au.id = :id")
+			Query query = session.createQuery("delete AppUser au where au.id = :id ")
 					.setParameter("id", id);
 			int result = query.executeUpdate();
 			if(result <= 0) return false;

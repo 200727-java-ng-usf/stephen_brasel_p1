@@ -176,6 +176,11 @@ public class AppUser {
 
 	//region Methods
 	public boolean saltAndHashPassword(String password){
+		if(password == null || password.trim().equals("")){
+			passwordHash = new byte[0];
+			passwordSalt = new byte[0];
+			return false;
+		}
 		try {
 			SecureRandom random = new SecureRandom();
 			passwordSalt = new byte[256];
@@ -247,5 +252,5 @@ public class AppUser {
 				'}';
 	}
 
-	//endregion
+//endregion
 }

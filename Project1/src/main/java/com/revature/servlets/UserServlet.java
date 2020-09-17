@@ -183,7 +183,7 @@ public class UserServlet extends HttpServlet {
 						Role.getByName(userDto.getRole())
 				);
 				System.out.println(updatedUser);
-//				userService.updateUser(updatedUser);
+				userService.updateUser(updatedUser);
 				System.out.println(updatedUser);
 				String updatedUserJSON = mapper.writeValueAsString(updatedUser);
 				respWriter.write(updatedUserJSON);

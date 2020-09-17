@@ -45,7 +45,8 @@ async function loadView(pageToLoad) {
 		APP_VIEW.innerHTML = xhr.responseText;
 		switch (pageToLoad) {
 		default:
-			console.log('loading default page');
+			loadView('login.view');
+			return;
 		case 'login.view':
 			configureLoginView();
 			break;
@@ -373,7 +374,7 @@ function update() {
 		console.log(msg);
 		// document.getElementById('reg-message').innerText = msg;
 		document.getElementById('reg-message').setAttribute('hidden', true);
-		loadView("users.view");
+		loadView("user_view.view");
 
 		} else if (xhr.readyState == 4 && xhr.status == 400) {
 
