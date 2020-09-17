@@ -174,16 +174,16 @@ public class UserServlet extends HttpServlet {
 				UserDto userDto = mapper.readValue(req.getInputStream(), UserDto.class);
 				System.out.println(userDto);
 				AppUser updatedUser = new AppUser(
+						userDto.getId(),
 						userDto.getFirstName(),
 						userDto.getLastName(),
 						userDto.getUsername(),
 						userDto.getPassword(),
-						userDto.getEmail()
+						userDto.getEmail(),
+						Role.getByName(userDto.getRole())
 				);
 				System.out.println(updatedUser);
-				updatedUser.setRole(Role.getByName(userDto.getRole()));
-				System.out.println(updatedUser);
-				userService.updateUser(updatedUser);
+//				userService.updateUser(updatedUser);
 				System.out.println(updatedUser);
 				String updatedUserJSON = mapper.writeValueAsString(updatedUser);
 				respWriter.write(updatedUserJSON);
