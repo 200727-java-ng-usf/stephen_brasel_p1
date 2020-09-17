@@ -1,5 +1,6 @@
 package com.revature.servlets;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.revature.dtos.ErrorResponse;
@@ -19,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/users/*")
@@ -31,34 +35,16 @@ public class UserServlet extends HttpServlet {
 		ObjectMapper mapper = new ObjectMapper();
 		PrintWriter respWriter = resp.getWriter();
 		resp.setContentType("application/json");
-//		Enumeration<String> paramNames = req.getParameterNames();
-//		while(paramNames.hasMoreElements()){
-////			System.out.println(paramNames.nextElement());
-//			String paramValue = req.getParameter(paramNames.nextElement());
-//			System.out.println(paramValue);
-//		}
 
-		String principalJSON = (String) req.getSession().getAttribute("principal");
-		System.out.println(principalJSON);
-
-		if(principalJSON == null){
-			ErrorResponse err = new ErrorResponse(401, "No principal object found on request. ");
+		ErrorResponse err = authorize(req, new ArrayList<>(Collections.singletonList("Admin")));
+		if (err.getStatus() != 202) {
 			respWriter.write(mapper.writeValueAsString(err));
-			resp.setStatus(401);
+			resp.setStatus(err.getStatus());
 			return; // necessary so that we do not continue with the rest of this method's logic.
 		}
-		Principal principal = mapper.readValue(principalJSON, Principal.class);
-
-		if(!principal.getRole().equalsIgnoreCase("Admin")){
-			ErrorResponse err = new ErrorResponse(403, "Forbidding: Your role does not permit you to access this endpoint. ");
-			respWriter.write(mapper.writeValueAsString(err));
-			resp.setStatus(403);
-			return; // necessary so that we do not continue with the rest of this method's logic.
-		}
-
 		try {
 			String idParam = req.getParameter("id");
-			if(idParam != null){
+			if (idParam != null) {
 				int id = Integer.parseInt(idParam);
 				AppUser user = userService.getUserById(id);
 				String userJSON = mapper.writeValueAsString(user);
@@ -70,28 +56,48 @@ public class UserServlet extends HttpServlet {
 				respWriter.write(usersJSON);
 				resp.setStatus(200); // not required, 200 by default so long as no exceptions/errors are thrown
 			}
-		} catch(ResourceNotFoundException rnfe){
+		} catch (ResourceNotFoundException rnfe) {
 			resp.setStatus(404);
 
-			ErrorResponse err = new ErrorResponse(404, rnfe.getMessage());
+			err = new ErrorResponse(404, rnfe.getMessage());
 			respWriter.write(mapper.writeValueAsString(err));
-		} catch(NumberFormatException | InvalidRequestException e){
+		} catch (NumberFormatException | InvalidRequestException e) {
 			resp.setStatus(400); // BAD REQUEST
 
-			ErrorResponse err = new ErrorResponse(400, "Malformed user id parameter value provided");
+			err = new ErrorResponse(400, "Malformed user id parameter value provided");
 			respWriter.write(mapper.writeValueAsString(err));
-		} catch(Exception e) {
+		} catch (Exception e) {
 
 			e.printStackTrace();
 			resp.setStatus(500); // 500 = INTERNAL SERVER ERRORS
 
-			ErrorResponse err = new ErrorResponse(500, " It's not you, it's us. Our bad...");
+			err = new ErrorResponse(500, " It's not you, it's us. Our bad...");
 			respWriter.write(mapper.writeValueAsString(err));
 		}
 	}
 
+	private static ErrorResponse authorize(HttpServletRequest req, ArrayList<String> RolesAccepted) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String principalJSON = (String) req.getSession().getAttribute("principal");
+		System.out.println(principalJSON);
+
+		if (principalJSON == null) {
+			ErrorResponse err = new ErrorResponse(401, "No principal object found on request. ");
+			return err;
+		}
+		Principal principal = mapper.readValue(principalJSON, Principal.class);
+
+
+		if (RolesAccepted.stream().noneMatch(role -> principal.getRole().equalsIgnoreCase(role))) {
+			ErrorResponse err = new ErrorResponse(403, "Forbidding: Your role does not permit you to access this endpoint. ");
+			return err;
+		}
+		return new ErrorResponse(202, "Authorized.");
+	}
+
 	/**
 	 * Used to handle incoming requests to register new users for the application
+	 *
 	 * @param req
 	 * @param resp
 	 * @throws ServletException
@@ -124,16 +130,16 @@ public class UserServlet extends HttpServlet {
 			String newUserJSON = mapper.writeValueAsString(newUser);
 			respWriter.write(newUserJSON);
 			resp.setStatus(201); // 201 = CREATED
-		} catch (MismatchedInputException me){
+		} catch (MismatchedInputException me) {
 			resp.setStatus(400); // 400 = BAD REQUEST
 
 			ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed user object found in request");
 			respWriter.write(mapper.writeValueAsString(err));
 
-		} catch(Exception e) {
+		} catch (Exception e) {
 
 			e.printStackTrace();
-		    resp.setStatus(500); // 500 = INTERNAL SERVER ERRORS
+			resp.setStatus(500); // 500 = INTERNAL SERVER ERRORS
 
 			ErrorResponse err = new ErrorResponse(500, "It's not you, it's us. Our bad...");
 			respWriter.write(mapper.writeValueAsString(err));
@@ -150,32 +156,47 @@ public class UserServlet extends HttpServlet {
 		PrintWriter respWriter = resp.getWriter();
 
 		try {
+			String activeParam = req.getHeader("activate");
+			System.out.println(activeParam);
+			if (activeParam != null) {
+				if (Boolean.parseBoolean(activeParam)) {
+					System.out.println(Boolean.parseBoolean(activeParam));
+					Principal principal = mapper.readValue(req.getInputStream(), Principal.class);
+					boolean result = userService.activateUserById(principal.getId());
+					if (!result) {
+						throw new ResourcePersistenceException();
+					} else {
+						resp.setStatus(204); // 204
+					}
+				}
+			} else {
 
-			UserDto userDto = mapper.readValue(req.getInputStream(), UserDto.class);
-			System.out.println(userDto);
-			AppUser updatedUser = new AppUser(
-					userDto.getFirstName(),
-					userDto.getLastName(),
-					userDto.getUsername(),
-					userDto.getPassword(),
-					userDto.getEmail()
-			);
-			System.out.println(updatedUser);
-			updatedUser.setRole(Role.getByName(userDto.getRole()));
-			System.out.println(updatedUser);
-			userService.updateUser(updatedUser);
-			System.out.println(updatedUser);
-			String updatedUserJSON = mapper.writeValueAsString(updatedUser);
-			respWriter.write(updatedUserJSON);
-			resp.setStatus(200); // 200 = SUCCESS
-		} catch (MismatchedInputException me){
+				UserDto userDto = mapper.readValue(req.getInputStream(), UserDto.class);
+				System.out.println(userDto);
+				AppUser updatedUser = new AppUser(
+						userDto.getFirstName(),
+						userDto.getLastName(),
+						userDto.getUsername(),
+						userDto.getPassword(),
+						userDto.getEmail()
+				);
+				System.out.println(updatedUser);
+				updatedUser.setRole(Role.getByName(userDto.getRole()));
+				System.out.println(updatedUser);
+				userService.updateUser(updatedUser);
+				System.out.println(updatedUser);
+				String updatedUserJSON = mapper.writeValueAsString(updatedUser);
+				respWriter.write(updatedUserJSON);
+				resp.setStatus(200); // 200 = SUCCESS
+			}
+		} catch (MismatchedInputException me) {
 			me.printStackTrace();
 			resp.setStatus(400); // 400 = BAD REQUEST
 
 			ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed user object found in request\n" + me);
 			respWriter.write(mapper.writeValueAsString(err));
 
-		} catch(Exception e) {
+		} catch (Exception e) {
 
 			e.printStackTrace();
 			resp.setStatus(500); // 500 = INTERNAL SERVER ERRORS
@@ -195,20 +216,20 @@ public class UserServlet extends HttpServlet {
 
 		try {
 			Principal principal = mapper.readValue(req.getInputStream(), Principal.class);
-			boolean result = userService.deleteUserById(principal.getId());
-			if(!result){
+			boolean result = userService.deactivateUserById(principal.getId());
+			if (!result) {
 				throw new ResourcePersistenceException();
-			}else {
+			} else {
 				resp.setStatus(204); // 204
 			}
-		} catch (MismatchedInputException me){
+		} catch (MismatchedInputException me) {
 			me.printStackTrace();
 			resp.setStatus(400); // 400 = BAD REQUEST
 
 			ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed user object found in request\n" + me);
 			respWriter.write(mapper.writeValueAsString(err));
 
-		} catch(Exception e) {
+		} catch (Exception e) {
 
 			e.printStackTrace();
 			resp.setStatus(500); // 500 = INTERNAL SERVER ERRORS

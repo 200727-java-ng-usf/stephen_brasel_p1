@@ -1,6 +1,7 @@
 package com.revature.util;
 
 import com.revature.controllers.*;
+import org.hibernate.sql.Update;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,13 +26,14 @@ public class RequestViewHelper {
 
 			case "/revabursement/user_register.view":
 			case "/user_register.view":
-				return RegisterController.register(req);
+				return UsersController.register(req);
 //				return "partials/user_register.html";
+			case "/revabursement/user_update.view":
+			case "/user_update.view":
+				return UsersController.update(req);
 
 			case "/revabursement/users.view":
 			case "/users.view":
-			case "/revabursement/user_update.view":
-			case "/user_update.view":
 			case "/revabursement/user_view.view":
 			case "/user_view.view":
 			case "/revabursement/user_delete.view":

@@ -108,6 +108,46 @@ public class UserDao implements CrudDao<AppUser> {
 		return true;
 	}
 
+	public boolean deactivateById(int id) {
+		Transaction tx = null;
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
+			tx = session.beginTransaction();
+			Query query = session.createQuery("update AppUser au " +
+					"set au.active = :false " +
+					"where au.id = :id")
+					.setParameter("false", false)
+					.setParameter("id", id);
+			int result = query.executeUpdate();
+			if(result <= 0) return false;
+			tx.commit();
+		} catch(Exception e) {
+			e.printStackTrace();
+			if(tx != null) tx.rollback();
+			return false;
+		}
+		return true;
+	}
+
+	public boolean deactivateByUsername(String username) {
+		Transaction tx = null;
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
+			tx = session.beginTransaction();
+			Query query = session.createQuery("update AppUser au " +
+					"set au.active = :false " +
+					"where au.username = :username")
+					.setParameter("false", false)
+					.setParameter("username", username);
+			int result = query.executeUpdate();
+			if(result <= 0) return false;
+			tx.commit();
+		} catch(Exception e) {
+			e.printStackTrace();
+			if(tx != null) tx.rollback();
+			return false;
+		}
+		return true;
+	}
+
 	public Optional<AppUser> findUserByUsername(String userName) {
 		Optional<AppUser> _user = Optional.empty();
 
@@ -210,5 +250,25 @@ public class UserDao implements CrudDao<AppUser> {
 			if (tx != null) tx.rollback();
 		}
 		return _users;
+	}
+
+	public boolean reactivateById(int id) {
+		Transaction tx = null;
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
+			tx = session.beginTransaction();
+			Query query = session.createQuery("update AppUser au " +
+					"set au.active = :true " +
+					"where au.id = :id")
+					.setParameter("true", true)
+					.setParameter("id", id);
+			int result = query.executeUpdate();
+			if(result <= 0) return false;
+			tx.commit();
+		} catch(Exception e) {
+			e.printStackTrace();
+			if(tx != null) tx.rollback();
+			return false;
+		}
+		return true;
 	}
 }

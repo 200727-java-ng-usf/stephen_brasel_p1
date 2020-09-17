@@ -88,21 +88,14 @@ public class UserService {
 		}
 		AppUser user = userDao.findUserByUsername(credentials.getUsername())
 				.orElseThrow(AuthenticationException::new);
-		if(user.validatePassword(
+		if(!user.validatePassword(
 				credentials.getPassword(),
 				user.getPasswordHash(),
-				user.getPasswordSalt())){
-			return user;
+				user.getPasswordSalt())
+		|| !user.isActive()){
+			throw new AuthenticationException();
 		}
-		throw new AuthenticationException();
-
-//		app.setCurrentUser(authUser);
-
-//		if(authUser == null){
-//			throw new AuthenticationException("No user found with the provided credentials");
-//		}
-//
-//		return authUser;
+		return user;
 	}
 
 	/**
@@ -149,12 +142,34 @@ public class UserService {
 	/**
 	 * This method deletes a <code>{@link AppUser}</code> with the given id from
 	 * the the database, along with any records only pertinent to them.
-	 * @param id the id of the <code>{@link AppUser}</code>.
+	 * @param username the id of the <code>{@link AppUser}</code>.
 	 * @return returns true if the deletion was successful, false if otherwise.
 	 * 		If there was no such user, returns true.
 	 */
 	public boolean deleteUserByUsername(String username){
 		return userDao.deleteByUsername(username);
+	}
+
+	/**
+	 * This method deletes a <code>{@link AppUser}</code> with the given id from
+	 * the the database, along with any records only pertinent to them.
+	 * @param id the id of the <code>{@link AppUser}</code>.
+	 * @return returns true if the deletion was successful, false if otherwise.
+	 * 		If there was no such user, returns true.
+	 */
+	public boolean deactivateUserById(int id){
+		return userDao.deactivateById(id);
+	}
+
+	/**
+	 * This method deletes a <code>{@link AppUser}</code> with the given id from
+	 * the the database, along with any records only pertinent to them.
+	 * @param username the id of the <code>{@link AppUser}</code>.
+	 * @return returns true if the deletion was successful, false if otherwise.
+	 * 		If there was no such user, returns true.
+	 */
+	public boolean deactivateUserByUsername(String username){
+		return userDao.deactivateByUsername(username);
 	}
 
 	public boolean isUsernameAvailable(String username) {
@@ -184,6 +199,9 @@ public class UserService {
 		if(user.getEmail() == null || user.getEmail().trim().equals("")) return false;
 
 		return true;
+	}
+
+	public boolean activateUserById(int id) { return userDao.reactivateById(id);
 	}
 	//endregion
 }

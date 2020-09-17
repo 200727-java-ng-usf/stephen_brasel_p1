@@ -7,6 +7,7 @@ import java.util.Objects;
 public class UserDto {
 	//region Fields
 	private int id;
+	private boolean active;
 	private String firstName;
 	private String lastName;
 	private String username;
@@ -17,8 +18,9 @@ public class UserDto {
 	public UserDto() {
 	}
 
-	public UserDto(int id, String firstName, String lastName, String username, String password, String email, String role) {
+	public UserDto(int id, boolean active, String firstName, String lastName, String username, String password, String email, String role) {
 		this.id = id;
+		this.active = active;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
@@ -33,6 +35,14 @@ public class UserDto {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public String getFirstName() {
@@ -89,6 +99,7 @@ public class UserDto {
 		if (o == null || getClass() != o.getClass()) return false;
 		UserDto userDto = (UserDto) o;
 		return id == userDto.id &&
+				active == userDto.active &&
 				Objects.equals(firstName, userDto.firstName) &&
 				Objects.equals(lastName, userDto.lastName) &&
 				Objects.equals(username, userDto.username) &&
@@ -99,16 +110,18 @@ public class UserDto {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, firstName, lastName, username, password, email, role);
+		return Objects.hash(id, active, firstName, lastName, username, password, email, role);
 	}
 
 	@Override
 	public String toString() {
 		return "UserDto{" +
 				"id=" + id +
+				", active=" + active +
 				", firstName='" + firstName + '\'' +
 				", lastName='" + lastName + '\'' +
 				", username='" + username + '\'' +
+				", password='" + password + '\'' +
 				", email='" + email + '\'' +
 				", role='" + role + '\'' +
 				'}';

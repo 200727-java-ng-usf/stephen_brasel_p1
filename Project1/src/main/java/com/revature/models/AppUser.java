@@ -1,6 +1,7 @@
 package com.revature.models;
 
 import com.sun.crypto.provider.PBKDF2HmacSHA1Factory;
+import org.hibernate.sql.Delete;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -9,9 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "revabursement.ers_users")
@@ -21,6 +20,8 @@ public class AppUser {
 	@Column(name="ers_user_id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
+	@Column(name = "active")
+	private boolean active = true;
 	@Column(name="firstname")
 	private String firstName;
 	@Column(name="lastname")
@@ -99,6 +100,14 @@ public class AppUser {
 		this.id = id;
 	}
 
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -162,26 +171,10 @@ public class AppUser {
 	public void setRole(Role role) {
 		this.role = role;
 	}
+
 	//endregion
 
 	//region Methods
-	//endregion
-
-	//region OverRidden Methods
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		AppUser appUser = (AppUser) o;
-		return id == appUser.id &&
-				Objects.equals(firstName, appUser.firstName) &&
-				Objects.equals(lastName, appUser.lastName) &&
-				Objects.equals(username, appUser.username) &&
-				Objects.equals(passwordHash, appUser.passwordHash) &&
-				Objects.equals(email, appUser.email) &&
-				role == appUser.role;
-	}
 	public boolean saltAndHashPassword(String password){
 		try {
 			SecureRandom random = new SecureRandom();
@@ -207,18 +200,35 @@ public class AppUser {
 			char[] pca = password.toCharArray();
 			KeySpec spec = new PBEKeySpec(pca, salt, iterationCount, keyLength);
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-//			System.out.println(Arrays.toString(hash));
-//			System.out.println(Arrays.toString(factory.generateSecret(spec).getEncoded()));
 			return Arrays.equals(hash, factory.generateSecret(spec).getEncoded());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
+	//endregion
+
+	//region OverRidden Methods
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		AppUser appUser = (AppUser) o;
+		return id == appUser.id &&
+				active == appUser.active &&
+				Objects.equals(firstName, appUser.firstName) &&
+				Objects.equals(lastName, appUser.lastName) &&
+				Objects.equals(username, appUser.username) &&
+				Arrays.equals(passwordHash, appUser.passwordHash) &&
+				Arrays.equals(passwordSalt, appUser.passwordSalt) &&
+				Objects.equals(email, appUser.email) &&
+				role == appUser.role;
+	}
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(id, firstName, lastName, username, email, role);
+		int result = Objects.hash(id, active, firstName, lastName, username, email, role);
 		result = 31 * result + Arrays.hashCode(passwordHash);
 		result = 31 * result + Arrays.hashCode(passwordSalt);
 		return result;
@@ -228,9 +238,10 @@ public class AppUser {
 	public String toString() {
 		return "AppUser{" +
 				"id=" + id +
+				", active=" + active +
 				", firstName='" + firstName + '\'' +
 				", lastName='" + lastName + '\'' +
-				", userName='" + username + '\'' +
+				", username='" + username + '\'' +
 				", email='" + email + '\'' +
 				", role=" + role +
 				'}';

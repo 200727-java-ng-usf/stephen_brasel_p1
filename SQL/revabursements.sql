@@ -43,6 +43,9 @@ create table ers_users(
 --		references ers_user_roles (role_id) 
 );
 
+alter table ers_users 
+add column active boolean default true;
+
 create table ers_reimbursements( 
 	reimb_id 				serial, 
 	amount 					numeric(6, 2), 
@@ -114,8 +117,8 @@ values
 
 insert into ers_users (firstname, lastname , username , password_hash , password_salt,  email , role )
 values
-	('Alice', 'Anderson', 'aanderson', 'chæÁØ/s�½ô´', 'Å *÷_   _F^+Ò` ã¥f ùÌÀ H"  ùGï»rsgA ã>ÈPq:@? É kÂ|Î-: Ìj%ø 8|u³ g äì­è¡ÁÏÝ  ¾ «75;ù#½^A  4ÊõÞÂæ` c  å B¯< Î Zúæ£ <-£ãï<þ Py/þ£b  Â ö={  T·®ã8cKUá "µ¿/ ÿ/±×A*Ý SnH£o> ÄSn ð u#Ø ¥ðç t Ù¶F+ ,Ä )Ît jê Zá  V waL  ï/¦¿_XÌ J Xï#ÿ1>£  HÞT þ [.©%RI)¡×ÏÝý4ÅZ x$ F  V', 'aanderson@revature.net', 'ADMIN')
---	('Stanley', 'Yelnats', 'yelnats', '1äÄL2ÞX¥…q'í°³', 'üª#rä{*Yæ" ï f   ¬, 3Ý  A¬ ÕÑIlö"ß ôêë~Ü ²Æ<êmÛ 5ÌyPj¿7ñ9]cøó¦µK¸  QÇÉÅ '  d¹B  ò á Û­Y   ¨m ¹vS#=  m"Pg Ä1 Ó¥­  8£. º5§ GT³ G^ 7eÝ÷¾ uc"ä Õ,  #[- dW ½dKºÏ   âÞÅ   M(ä´  [#  ßvn«bñ Ïð2Ø]  :P åÎü  1*ÈïOïã%&   £Ö«MLG¾  Í  Ó i  á  Ò©Ú §õÒµé¬$ÙèCpq© ~±²@   c j', 'stanley.yelnats@gmail.com')
+	('Alice', 'Anderson', 'aanderson', 'chÃ¦Ã�Ã˜/sï¿½Â½Ã´Â´', 'Ã… *Ã·_   _F^+Ã’` Ã£Â¥f Ã¹ÃŒÃ€ H"  Ã¹GÃ¯Â»rsgA Ã£>ÃˆPq:@? Ã‰ kÃ‚|ÃŽ-: ÃŒj%Ã¸ 8|uÂ³ g Ã¤Ã¬Â­Ã¨Â¡Ã�Ã�Ã�  Â¾ Â«75;Ã¹#Â½^A  4ÃŠÃµÃžÃ‚Ã¦` c  Ã¥ BÂ¯< ÃŽ ZÃºÃ¦Â£ <-Â£Ã£Ã¯<Ã¾ Py/Ã¾Â£b  Ã‚ Ã¶={  TÂ·Â®Ã£8cKUÃ¡ "ÂµÂ¿/ Ã¿/Â±Ã—A*Ã� SnHÂ£o> Ã„Sn Ã° u#Ã˜ Â¥Ã°Ã§ t Ã™Â¶F+ ,Ã„ )ÃŽt jÃª ZÃ¡  V waL  Ã¯/Â¦Â¿_XÃŒ J XÃ¯#Ã¿1>Â£  HÃžT Ã¾ [.Â©%RI)Â¡Ã—Ã�Ã�Ã½4Ã…Z x$ F  V', 'aanderson@revature.net', 'ADMIN')
+--	('Stanley', 'Yelnats', 'yelnats', '1Ã¤Ã„L2ÃžXÂ¥â€¦q'Ã­Â°Â³', 'Ã¼Âª#rÃ¤{*YÃ¦" Ã¯ f   Â¬, 3Ã�  AÂ¬ Ã•Ã‘IlÃ¶"ÃŸ Ã´ÃªÃ«~Ãœ Â²Ã†<ÃªmÃ› 5ÃŒyPjÂ¿7Ã±9]cÃ¸Ã³Â¦ÂµKÂ¸  QÃ‡Ã‰Ã… '  dÂ¹B  Ã² Ã¡ Ã›Â­Y   Â¨m Â¹vS#=  m"Pg Ã„1 Ã“Â¥Â­  8Â£. Âº5Â§ GTÂ³ G^ 7eÃ�Ã·Â¾ uc"Ã¤ Ã•,  #[- dW Â½dKÂºÃ�   Ã¢ÃžÃ…   M(Ã¤Â´  [#  ÃŸvnÂ«bÃ± Ã�Ã°2Ã˜]  :P Ã¥ÃŽÃ¼  1*ÃˆÃ¯OÃ¯Ã£%&   Â£Ã–Â«MLGÂ¾  Ã�  Ã“ i  Ã¡  Ã’Â©Ãš Â§ÃµÃ’ÂµÃ©Â¬$Ã™Ã¨CpqÂ© ~Â±Â²@   c j', 'stanley.yelnats@gmail.com')
 	--	('Benjamin', 'Barker', 'bbarker', 'password', 'salt', 'bbarker@revature.net', 2),
 --	('Charlie', 'Courtson', 'ccourtson', 'password', 'salt', 'ccourtson@revature.net', 1),
 --	('Debra', 'Delion', 'ddelion', 'password', 'salt', 'ddelion@revature.net', 1),
@@ -204,7 +207,9 @@ from ers_reimbursements er ;
 
 delete from ers_users where ers_user_id = 7;
 
-
+update ers_users 
+set firstname = 'Charlotte'
+where ers_user_id = 10;
 
 
 

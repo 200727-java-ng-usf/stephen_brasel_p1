@@ -1,5 +1,7 @@
 package com.revature.models;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -9,6 +11,7 @@ import java.util.Objects;
 public class Reimbursement {
 	@Id
 	@Column(name = "reimb_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	@Column(name = "amount")
 	private double amount;
@@ -20,7 +23,7 @@ public class Reimbursement {
 	private String description;
 	@Column(name = "receipt")
 	private String receiptURI;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "author_id")
 	private AppUser author;
 	@ManyToOne(fetch = FetchType.LAZY)
