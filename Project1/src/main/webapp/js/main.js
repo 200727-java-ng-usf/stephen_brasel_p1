@@ -496,7 +496,7 @@ function updateReimbursementRequest(){
 	console.log('in updateReimbursementRequest()');
 
 	let rid = document.getElementById('id').value;
-	let amt = document.getElementById('amount').checked == true;
+	let amt = document.getElementById('amount').value;
 	let sub = document.getElementById('submitted').value;
 	let res = document.getElementById('resolved').value;
 	let des = document.getElementById('description').value;
@@ -683,8 +683,10 @@ function populateReimbursementsView(){
 
 			let rid = reimbursements[i].id;
 			let amt = reimbursements[i].amount;
+			let submitd = reimbursements[i].submitted;
 			let submtd = reimbursements[i].submitted;
 			if(submtd) submtd = (new Date(submtd)).toString();
+			let reslvd = reimbursements[i].resolved;
 			let rslvd = reimbursements[i].resolved;
 			if(rslvd) rslvd = (new Date(rslvd)).toString();
 			let desc = reimbursements[i].description;
@@ -725,8 +727,8 @@ function populateReimbursementsView(){
 			let reimbursement = {
 				id:rid,
 				amount:amt,
-				submitted:submtd,
-				resolved:rslvd,
+				submitted:submitd,
+				resolved:reslvd,
 				description:desc,
 				receiptURI:rcptURI,
 				author:authr,
@@ -830,7 +832,8 @@ function populateReimbursementsUpdateView(){
 	updateViewHeader.innerText = 'Revabursement Update: Updating Reimbursement for ' + reimbursement.author;
 
 	editDisabledValue('id', reimbursement.id);
-	editDisabledValue('submitted', reimbursement.submitted);
+	// editDisabledValue('submitted', Date.parse(reimbursement.submitted));
+	editDisabledValue('submitted', new Date(reimbursement.submitted).toISOString().slice(0, 16));
 	editDisabledValue('author', reimbursement.author);
 	editDisabledValue('resolver', reimbursement.resolver);
 	selectChosenOption('reimbursementStatus', reimbursement.reimbursementStatus);
@@ -838,8 +841,10 @@ function populateReimbursementsUpdateView(){
 
 	let amount = document.getElementById('amount');
 	amount.value = reimbursement.amount;
-	let resolved = document.getElementById('resolved');
-	resolved.value = reimbursement.resolved;
+	if(reimbursement.resolved){ 
+		let resolved = document.getElementById('resolved');
+		resolved.value = new Date(reimbursement.resolved).toISOString().slice(0, 16);
+	}
 	let description = document.getElementById('description');
 	description.value = reimbursement.description;
 	let receiptURI = document.getElementById('receiptURI');
