@@ -8,6 +8,7 @@ import com.revature.models.Reimbursement;
 import com.revature.models.ReimbursementStatus;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,7 +113,7 @@ public class ReimbursementService {
 		if(isReimbursementValid(reimbursement)) {
 			return reimbursementDao.update(reimbursement);
 		}
-		return false;
+		throw new InvalidRequestException("Update request was malformed.");
 	}
 
 	/**
@@ -148,14 +149,18 @@ public class ReimbursementService {
 		}
 		if(reimbursement.getSubmitted() == null
 				|| reimbursement.getSubmitted().before(new Timestamp(1597648962389L)) //1970 in millis
-				|| reimbursement.getSubmitted().after(new Timestamp(System.currentTimeMillis()))) {
+				) {
 			System.out.println("Reimbursement invalid due to: time submitted is null, before 1970, or after current date.");
 			return false;
 		}
 		if(reimbursement.getResolved() != null){
-			if(reimbursement.getResolved().before(reimbursement.getSubmitted())
-					|| reimbursement.getResolved().after(new Timestamp(System.currentTimeMillis()))) {
-				System.out.println("Reimbursement invalid due to: time resolved is either before time submitted or after current date.");
+			if(reimbursement.getResolved().before(reimbursement.getSubmitted())) {
+				System.out.println("Reimbursement invalid due to: time resolved: " +
+						reimbursement.getResolved() +
+						" is either before time submitted: " +
+						reimbursement.getSubmitted() +
+						", or after current date: " +
+						new Timestamp(System.currentTimeMillis()));
 				return false;
 			}
 		}

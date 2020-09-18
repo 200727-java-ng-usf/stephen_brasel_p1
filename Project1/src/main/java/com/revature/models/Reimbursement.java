@@ -50,6 +50,20 @@ public class Reimbursement {
 		this.reimb_status_id = reimb_status_id;
 		this.reimb_type_id = reimb_type_id;
 	}
+
+	public Reimbursement(int id, double amount, Timestamp submitted, Timestamp resolved, String description, String receiptURI, AppUser author, AppUser resolver, ReimbursementStatus reimb_status_id, ReimbursementType reimb_type_id) {
+		this.id = id;
+		this.amount = amount;
+		this.submitted = submitted;
+		this.resolved = resolved;
+		this.description = description;
+		this.receiptURI = receiptURI;
+		this.author = author;
+		this.resolver = resolver;
+		this.reimb_status_id = reimb_status_id;
+		this.reimb_type_id = reimb_type_id;
+	}
+
 	public Reimbursement(double amount, String description, String receiptURI, AppUser author, ReimbursementType reimb_type_id) {
 		this.amount = amount;
 		this.description = description;

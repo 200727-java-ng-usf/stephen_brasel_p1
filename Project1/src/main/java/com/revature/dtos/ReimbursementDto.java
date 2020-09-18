@@ -1,23 +1,46 @@
 package com.revature.dtos;
 
+import com.revature.models.AppUser;
+import com.revature.models.ReimbursementStatus;
+import com.revature.models.ReimbursementType;
+
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class ReimbursementDto {
+	private int id;
 	private double amount;
+	private Timestamp submitted;
+	private Timestamp resolved;
 	private String description;
 	private String receiptURI;
 	private String author;
-	private String type;
+	private String resolver;
+	private String reimb_status_id;
+	private String reimb_type_id;
 
 	public ReimbursementDto() {
 	}
 
-	public ReimbursementDto(double amount, String description, String receiptURI, String author, String type) {
+	public ReimbursementDto(int id, double amount, Timestamp submitted, Timestamp resolved, String description, String receiptURI, String author, String resolver, String reimb_status_id, String reimb_type_id) {
+		this.id = id;
 		this.amount = amount;
+		this.submitted = submitted;
+		this.resolved = resolved;
 		this.description = description;
 		this.receiptURI = receiptURI;
 		this.author = author;
-		this.type = type;
+		this.resolver = resolver;
+		this.reimb_status_id = reimb_status_id;
+		this.reimb_type_id = reimb_type_id;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public double getAmount() {
@@ -26,6 +49,22 @@ public class ReimbursementDto {
 
 	public void setAmount(double amount) {
 		this.amount = amount;
+	}
+
+	public Timestamp getSubmitted() {
+		return submitted;
+	}
+
+	public void setSubmitted(Timestamp submitted) {
+		this.submitted = submitted;
+	}
+
+	public Timestamp getResolved() {
+		return resolved;
+	}
+
+	public void setResolved(Timestamp resolved) {
+		this.resolved = resolved;
 	}
 
 	public String getDescription() {
@@ -52,12 +91,28 @@ public class ReimbursementDto {
 		this.author = author;
 	}
 
-	public String getType() {
-		return type;
+	public String getResolver() {
+		return resolver;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setResolver(String resolver) {
+		this.resolver = resolver;
+	}
+
+	public String getReimb_status_id() {
+		return reimb_status_id;
+	}
+
+	public void setReimb_status_id(String reimb_status_id) {
+		this.reimb_status_id = reimb_status_id;
+	}
+
+	public String getReimb_type_id() {
+		return reimb_type_id;
+	}
+
+	public void setReimb_type_id(String reimb_type_id) {
+		this.reimb_type_id = reimb_type_id;
 	}
 
 	@Override
@@ -65,26 +120,36 @@ public class ReimbursementDto {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		ReimbursementDto that = (ReimbursementDto) o;
-		return Double.compare(that.amount, amount) == 0 &&
+		return id == that.id &&
+				Double.compare(that.amount, amount) == 0 &&
+				Objects.equals(submitted, that.submitted) &&
+				Objects.equals(resolved, that.resolved) &&
 				Objects.equals(description, that.description) &&
 				Objects.equals(receiptURI, that.receiptURI) &&
 				Objects.equals(author, that.author) &&
-				Objects.equals(type, that.type);
+				Objects.equals(resolver, that.resolver) &&
+				Objects.equals(reimb_status_id, that.reimb_status_id) &&
+				Objects.equals(reimb_type_id, that.reimb_type_id);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(amount, description, receiptURI, author, type);
+		return Objects.hash(id, amount, submitted, resolved, description, receiptURI, author, resolver, reimb_status_id, reimb_type_id);
 	}
 
 	@Override
 	public String toString() {
 		return "ReimbursementDto{" +
-				"amount=" + amount +
+				"id=" + id +
+				", amount=" + amount +
+				", submitted=" + submitted +
+				", resolved=" + resolved +
 				", description='" + description + '\'' +
 				", receiptURI='" + receiptURI + '\'' +
 				", author='" + author + '\'' +
-				", type='" + type + '\'' +
+				", resolver='" + resolver + '\'' +
+				", reimb_status_id='" + reimb_status_id + '\'' +
+				", reimb_type_id='" + reimb_type_id + '\'' +
 				'}';
 	}
 }

@@ -4,17 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.revature.dtos.ErrorResponse;
-import com.revature.dtos.IntegerDto;
-import com.revature.dtos.Principal;
-import com.revature.dtos.ReimbursementDto;
+import com.revature.dtos.*;
 import com.revature.exceptions.InvalidRequestException;
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.exceptions.ResourcePersistenceException;
-import com.revature.models.AppUser;
-import com.revature.models.Reimbursement;
-import com.revature.models.ReimbursementStatus;
-import com.revature.models.ReimbursementType;
+import com.revature.models.*;
 import com.revature.services.ReimbursementService;
 import com.revature.services.UserService;
 
@@ -27,7 +21,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/reimbursements/*")
@@ -158,14 +151,14 @@ public class ReimbursementServlet extends HttpServlet {
 
 		try {
 
-			ReimbursementDto reimbursementDto = mapper.readValue(req.getInputStream(), ReimbursementDto.class);
-			System.out.println(reimbursementDto);
+			ReimbDto reimbDto = mapper.readValue(req.getInputStream(), ReimbDto.class);
+			System.out.println(reimbDto);
 			Reimbursement newReimbursement = new Reimbursement(
-					reimbursementDto.getAmount(),
-					reimbursementDto.getDescription(),
-					reimbursementDto.getReceiptURI(),
-					userService.getUserByUsername(reimbursementDto.getAuthor()),
-					ReimbursementType.getByName(reimbursementDto.getType())
+					reimbDto.getAmount(),
+					reimbDto.getDescription(),
+					reimbDto.getReceiptURI(),
+					userService.getUserByUsername(reimbDto.getAuthor()),
+					ReimbursementType.getByName(reimbDto.getType())
 			);
 			System.out.println(newReimbursement);
 			reimbursementService.submit(newReimbursement);
@@ -197,32 +190,52 @@ public class ReimbursementServlet extends HttpServlet {
 
 		ObjectMapper mapper = new ObjectMapper();
 		PrintWriter respWriter = resp.getWriter();
+		ErrorResponse err;
+		String principalJSON = (String) req.getSession().getAttribute("principal");
+		System.out.println(principalJSON);
+		if (principalJSON == null) {
+			err = new ErrorResponse(401, "No principal object found on request. ");
+			respWriter.write(mapper.writeValueAsString(err));
+			return;
+		}
+		Principal principal = mapper.readValue(principalJSON, Principal.class);
 
 		try {
-			Reimbursement updatedReimbursement = mapper.readValue(req.getInputStream(), Reimbursement.class);
+			ReimbursementDto upReDt = mapper.readValue(req.getInputStream(), ReimbursementDto.class);
+			System.out.println(upReDt);
+			Reimbursement updatedReimbursement = new Reimbursement(
+					upReDt.getId(),
+					upReDt.getAmount(),
+					upReDt.getSubmitted(),
+					upReDt.getResolved(),
+					upReDt.getDescription(),
+					upReDt.getReceiptURI(),
+					userService.getUserByUsername(upReDt.getAuthor()),
+					null,
+					ReimbursementStatus.getByName(upReDt.getReimb_status_id()),
+					ReimbursementType.getByName(upReDt.getReimb_type_id())
+			);
 			System.out.println(updatedReimbursement);
 			if (ReimbursementStatus.PENDING != updatedReimbursement.getReimb_status_id()) {
-				String principalJSON = (String) req.getSession().getAttribute("principal");
-				System.out.println(principalJSON);
-				if (principalJSON == null) {
-					ErrorResponse err = new ErrorResponse(401, "No principal object found on request. ");
-					respWriter.write(mapper.writeValueAsString(err));
-					return;
-				}
-				Principal principal = mapper.readValue(principalJSON, Principal.class);
 				AppUser resolver = userService.getUserById(principal.getId());
 				updatedReimbursement.setResolver(resolver);
+				reimbursementService.updateReimbursement(updatedReimbursement);
+				System.out.println(updatedReimbursement);
+				String updatedReimbursementJSON = mapper.writeValueAsString(updatedReimbursement);
+				respWriter.write(updatedReimbursementJSON);
+				resp.setStatus(200); // 200 = SUCCESS
+			} else if (Role.getByName(principal.getRole()) == Role.EMPLOYEE) {
+				reimbursementService.updateReimbursement(updatedReimbursement);
+				System.out.println(updatedReimbursement);
+				String updatedReimbursementJSON = mapper.writeValueAsString(updatedReimbursement);
+				respWriter.write(updatedReimbursementJSON);
+				resp.setStatus(200); // 200 = SUCCESS
 			}
-			reimbursementService.updateReimbursement(updatedReimbursement);
-			System.out.println(updatedReimbursement);
-			String updatedReimbursementJSON = mapper.writeValueAsString(updatedReimbursement);
-			respWriter.write(updatedReimbursementJSON);
-			resp.setStatus(200); // 200 = SUCCESS
 		} catch (MismatchedInputException me) {
 			me.printStackTrace();
 			resp.setStatus(400); // 400 = BAD REQUEST
 
-			ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed user object found in request\n" + me);
+			err = new ErrorResponse(400, "Bad Request: Malformed user object found in request\n" + me);
 			respWriter.write(mapper.writeValueAsString(err));
 
 		} catch (Exception e) {
@@ -230,7 +243,7 @@ public class ReimbursementServlet extends HttpServlet {
 			e.printStackTrace();
 			resp.setStatus(500); // 500 = INTERNAL SERVER ERRORS
 
-			ErrorResponse err = new ErrorResponse(500, "It's not you, it's us. Our bad...");
+			err = new ErrorResponse(500, "It's not you, it's us. Our bad...");
 			respWriter.write(mapper.writeValueAsString(err));
 		}
 	}

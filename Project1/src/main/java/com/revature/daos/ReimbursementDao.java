@@ -115,7 +115,7 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 			tx = session.beginTransaction();
 //			session.update(Reimbursement);
 			String hql = "update Reimbursement rb ";
-			hql += "set rb.reimbursementStatus = :reimbursementStatus, ";
+			hql += "set rb.reimb_status_id = :reimbursementStatus, ";
 
 			// author
 			// resolver
@@ -152,7 +152,7 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 				hql += "rb.resolver = :resolver, ";
 			}
 
-			hql += "rb.reimbursementType = :reimbursementType ";
+			hql += "rb.reimb_type_id = :reimbursementType ";
 			hql += "where rb.id = :id ";
 			Query query = session.createQuery(hql);
 			query.setParameter("reimbursementStatus", reimbursement.getReimb_status_id());
@@ -162,11 +162,10 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 			}
 			if(reimbursement.getSubmitted() != null
 					&& reimbursement.getSubmitted().after(new Timestamp(1597648962389L)) //1970 in millis
-					&& reimbursement.getSubmitted().before(new Timestamp(System.currentTimeMillis()))){
+			){
 				query.setParameter("submitted", reimbursement.getSubmitted());
 			}
-			if(reimbursement.getResolved() != null && reimbursement.getResolved().after(reimbursement.getSubmitted())
-					&& reimbursement.getResolved().before(new Timestamp(System.currentTimeMillis()))){
+			if(reimbursement.getResolved() != null && reimbursement.getResolved().after(reimbursement.getSubmitted())){
 				query.setParameter("resolved", reimbursement.getResolved());
 			}
 			if(reimbursement.getDescription() != null && !reimbursement.getDescription().trim().equals("")){

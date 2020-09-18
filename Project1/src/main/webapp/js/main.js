@@ -215,7 +215,6 @@ function configureReimbursementUpdateView(){
 	document.getElementById('update-reimbursement').addEventListener('click', updateReimbursementRequest); 
 	// $('.file-upload').file_upload();
 	populateReimbursementsUpdateView();
-
 }
 function configureReimbursementCreateView(){
 	console.log('in configureReimbursementCreateView();');
@@ -407,16 +406,16 @@ function submitReimbursementRequest(){
 	let author = JSON.parse(localStorage.getItem('authUser')).username;
 	let reimb_type = document.getElementById('reimbursementType').value;
 	
-	let reimbursementDto = {
+	let reimbDto = {
 		amount:amt,
 		description:desc,
 		receiptURI:rcpt,
 		author:author,
 		type:reimb_type
 	}
-	console.log(reimbursementDto);
+	console.log(reimbDto);
 	
-	let reimbDtoJSON = JSON.stringify(reimbursementDto);
+	let reimbDtoJSON = JSON.stringify(reimbDto);
 
 	let xhr = new XMLHttpRequest;
 	xhr.open('POST', 'reimbursements');
@@ -811,28 +810,23 @@ function populateUserUpdateInputFields(){
 
 function populateReimbursementsUpdateView(){
 	console.log('in populateReimbursementsUpdateView()');
+	//if user is Employee AND reimbursementStatus is NOT pending
+	let authUser = JSON.parse(localStorage.getItem('authUser'));
+	if(authUser){
+		if(authUser.role.toLowerCase() == "employee" 
+		&& reimbursement.reimbursementStatus.toLowerCase() != "pending"){
+			document.getElementById('sub-button-container').removeEventListener('mouseover', validateReimbursementUpdateForm); 
+			document.getElementById('update-reimbursement').removeEventListener('click', updateReimbursementRequest);
+		}
+	}
 	
 	let reimbursement = JSON.parse(localStorage.getItem('updateReimbursement'));
 	console.log(reimbursement);
-
-	// let reimbursement = {
-		// id:rid,
-	// 	amount:amt,
-		// submitted:submtd,
-	// 	resolved:rslvd,
-	// 	description:desc,
-	// 	receiptURI:rcptURI,
-		// author:authr,
-		// resolver:rslvr,
-		// 	reimbursementStatus:reimb_status,
-		// 	reimbursementType:reimb_type
-	// }
 	
 	let updateViewHeader = document.getElementById('updateViewHeader');
 	updateViewHeader.innerText = 'Revabursement Update: Updating Reimbursement for ' + reimbursement.author;
 
 	editDisabledValue('id', reimbursement.id);
-	// editDisabledValue('submitted', Date.parse(reimbursement.submitted));
 	editDisabledValue('submitted', new Date(reimbursement.submitted).toISOString().slice(0, 16));
 	editDisabledValue('author', reimbursement.author);
 	editDisabledValue('resolver', reimbursement.resolver);
@@ -851,6 +845,27 @@ function populateReimbursementsUpdateView(){
 	receiptURI.value = reimbursement.receiptURI;
 	
 	localStorage.removeItem('updateReimbursement');
+	//if user is Employee AND reimbursementStatus is NOT pending
+	authUser = JSON.parse(localStorage.getItem('authUser'));
+	if(authUser){
+		if(authUser.role.toLowerCase() == "employee" 
+		&& reimbursement.reimbursementStatus.toLowerCase() != "pending"){
+			//disable all controls. 
+			
+			document.getElementById('id').disabled = true;
+			document.getElementById('amount').disabled = true;
+			document.getElementById('submitted').disabled = true;
+			document.getElementById('resolved').disabled = true;
+			document.getElementById('description').disabled = true;
+			document.getElementById('receipts').disabled = true;
+			document.getElementById('author').disabled = true;
+			document.getElementById('resolver').disabled = true;
+			document.getElementById('reimbursementStatus').disabled = true;
+			document.getElementById('reimbursementType').disabled = true;
+			document.getElementById('sub-button-container').removeEventListener('mouseover', validateReimbursementUpdateForm); 
+			document.getElementById('update-reimbursement').removeEventListener('click', updateReimbursementRequest);
+		}
+	}
 }
 
 function selectChosenOption(id, option){
@@ -1033,12 +1048,12 @@ function isAuthorized(listOfRoles){
 	}
 	let authorized = false;
 	for (var i = 0; i < listOfRoles.length; i++) {
-		if (authUser.role.toLowerCase() == listOfRoles[i]){
+		if (authUser.role.toLowerCase() == listOfRoles[i].toLowerCase()){
 			authorized = true;
 		}
 	}
 	return authorized;
-}
+} 
 
 function editDisabledValue(id, newVal){
 	let element = document.getElementById(id);
