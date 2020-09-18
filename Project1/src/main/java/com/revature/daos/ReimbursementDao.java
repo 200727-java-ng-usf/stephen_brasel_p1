@@ -42,7 +42,31 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 			CriteriaBuilder cb = session.getCriteriaBuilder();
 			CriteriaQuery<Reimbursement> query = cb.createQuery(Reimbursement.class);
 			Root<Reimbursement> root = query.from(Reimbursement.class);
-			query.orderBy(cb.asc(root.get("id")));
+			query.orderBy(cb.asc(root.get("submitted")));
+			_reimbursements = session.createQuery(query).list();
+			System.out.println(_reimbursements);
+			tx.commit();
+		} catch (NoResultException nre) {
+			System.out.println("This is here so that Hibernate doesn't bypass the try/catch system.");
+			nre.printStackTrace();
+			if (tx != null) tx.rollback();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (tx != null) tx.rollback();
+		}
+		return _reimbursements;
+	}
+	public List<Reimbursement> findByAuthor(int id) {
+		List<Reimbursement> _reimbursements = new ArrayList<>();
+
+		Transaction tx = null;
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
+			tx = session.beginTransaction();
+			CriteriaBuilder cb = session.getCriteriaBuilder();
+			CriteriaQuery<Reimbursement> query = cb.createQuery(Reimbursement.class);
+			Root<Reimbursement> root = query.from(Reimbursement.class);
+			query.orderBy(cb.asc(root.get("submitted")));
+			query.select(root).where(cb.equal(root.get("author"), id));
 			_reimbursements = session.createQuery(query).list();
 			System.out.println(_reimbursements);
 			tx.commit();

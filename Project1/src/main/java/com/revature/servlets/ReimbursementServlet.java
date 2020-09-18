@@ -2,6 +2,7 @@ package com.revature.servlets;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.revature.dtos.ErrorResponse;
 import com.revature.dtos.IntegerDto;
@@ -10,7 +11,9 @@ import com.revature.dtos.ReimbursementDto;
 import com.revature.exceptions.InvalidRequestException;
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.exceptions.ResourcePersistenceException;
+import com.revature.models.AppUser;
 import com.revature.models.Reimbursement;
+import com.revature.models.ReimbursementStatus;
 import com.revature.models.ReimbursementType;
 import com.revature.services.ReimbursementService;
 import com.revature.services.UserService;
@@ -23,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,28 +39,67 @@ public class ReimbursementServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		PrintWriter respWriter = resp.getWriter();
+		ErrorResponse err;
 		resp.setContentType("application/json");
 
-		ErrorResponse err = authorize(req, new ArrayList<>(Collections.singletonList("Admin")));
-		if (err.getStatus() != 202) {
-			respWriter.write(mapper.writeValueAsString(err));
-			resp.setStatus(err.getStatus());
-			return; // necessary so that we do not continue with the rest of this method's logic.
-		}
 		try {
+			//Always be able to get your own reimbursements.
+			String authorParam = req.getParameter("author");
 			String idParam = req.getParameter("id");
-			if (idParam != null) {
-				int id = Integer.parseInt(idParam);
-				Reimbursement reimbursement = reimbursementService.getReimbursementById(id);
-				String userJSON = mapper.writeValueAsString(reimbursement);
-				respWriter.write(userJSON);
-				resp.setStatus(200);
+			String principalJSON = (String) req.getSession().getAttribute("principal");
+			System.out.println(principalJSON);
+			if (principalJSON == null) {
+				err = new ErrorResponse(401, "No principal object found on request. ");
+				respWriter.write(mapper.writeValueAsString(err));
+				return;
+			}
+			Principal principal = mapper.readValue(principalJSON, Principal.class);
+			err = authorize(req, new ArrayList<>(Arrays.asList("Admin", "Manager")));
+			if (err.getStatus() == 202) { // authorized
+				if (authorParam != null) {
+					// GET ALL REIMBURSEMENTS FOR ONE PERSON
+					int id = Integer.parseInt(authorParam);
+					List<Reimbursement> reimbursement = reimbursementService.getReimbursementByAuthor(id);
+					String userJSON = mapper.writeValueAsString(reimbursement);
+					respWriter.write(userJSON);
+					resp.setStatus(200);
+				} else if (idParam != null) {
+					// GET ONE REIMBURSEMENT BY IT'S ID
+					int id = Integer.parseInt(idParam);
+					Reimbursement reimbursement = reimbursementService.getReimbursementById(id);
+					String userJSON = mapper.writeValueAsString(reimbursement);
+					respWriter.write(userJSON);
+					resp.setStatus(200);
+				} else {
+					// GET ALL THE REIMBURSEMENTS
+					List<Reimbursement> reimbursements = reimbursementService.getAllReimbursements();
+					String reimbursementsJSON = mapper.writeValueAsString(reimbursements);
+					respWriter.write(reimbursementsJSON);
+					resp.setStatus(200); // not required, 200 by default so long as no exceptions/errors are thrown
+				}
 			} else {
-				List<Reimbursement> users = reimbursementService.getAllReimbursements();
-				String usersJSON = mapper.writeValueAsString(users);
-				respWriter.write(usersJSON);
-				resp.setStatus(200); // not required, 200 by default so long as no exceptions/errors are thrown
+				if (authorParam != null || idParam != null) {
+					if (principal.getId() == Integer.parseInt(authorParam)) {
+						// GET ALL REIMBURSEMENTS FOR ME
+						int id = Integer.parseInt(authorParam);
+						List<Reimbursement> reimbursement = reimbursementService.getReimbursementByAuthor(id);
+						String userJSON = mapper.writeValueAsString(reimbursement);
+						respWriter.write(userJSON);
+						resp.setStatus(200);
+					} else if (principal.getId() == Integer.parseInt(idParam)) {
+						// GET ONE OF MY REIMBURSEMENTS
+						int id = Integer.parseInt(idParam);
+						List<Reimbursement> reimbursement = reimbursementService.getReimbursementByAuthor(id);
+						String userJSON = mapper.writeValueAsString(reimbursement);
+						respWriter.write(userJSON);
+						resp.setStatus(200);
+					}
+				} else {
+					respWriter.write(mapper.writeValueAsString(err));
+					resp.setStatus(err.getStatus());
+				}
 			}
 		} catch (ResourceNotFoundException rnfe) {
 			resp.setStatus(404);
@@ -91,7 +134,7 @@ public class ReimbursementServlet extends HttpServlet {
 
 
 		if (RolesAccepted.stream().noneMatch(role -> principal.getRole().equalsIgnoreCase(role))) {
-			ErrorResponse err = new ErrorResponse(403, "Forbidding: Your role does not permit you to access this endpoint. ");
+			ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint. ");
 			return err;
 		}
 		return new ErrorResponse(202, "Authorized.");
@@ -158,6 +201,18 @@ public class ReimbursementServlet extends HttpServlet {
 		try {
 			Reimbursement updatedReimbursement = mapper.readValue(req.getInputStream(), Reimbursement.class);
 			System.out.println(updatedReimbursement);
+			if (ReimbursementStatus.PENDING != updatedReimbursement.getReimb_status_id()) {
+				String principalJSON = (String) req.getSession().getAttribute("principal");
+				System.out.println(principalJSON);
+				if (principalJSON == null) {
+					ErrorResponse err = new ErrorResponse(401, "No principal object found on request. ");
+					respWriter.write(mapper.writeValueAsString(err));
+					return;
+				}
+				Principal principal = mapper.readValue(principalJSON, Principal.class);
+				AppUser resolver = userService.getUserById(principal.getId());
+				updatedReimbursement.setResolver(resolver);
+			}
 			reimbursementService.updateReimbursement(updatedReimbursement);
 			System.out.println(updatedReimbursement);
 			String updatedReimbursementJSON = mapper.writeValueAsString(updatedReimbursement);

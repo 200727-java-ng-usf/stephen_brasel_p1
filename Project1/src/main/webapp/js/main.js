@@ -73,22 +73,24 @@ async function loadView(pageToLoad) {
 			configureProfileView();
 			break;
 		case 'user_register.view':
-			if (!isAuthorized()) return;
+			if (!isAuthorized(['admin'])) return;
 			configureRegisterView();
 			break;
 		case 'user_update.view':
-			if (!isAuthorized()) return;
+			if (!isAuthorized(['admin'])) return;
 			configureUserUpdateView();
 			break;
 		case 'user_view.view':
 		case 'user_delete.view':
-			if (!isAuthorized()) return;
+			if (!isAuthorized(['admin'])) return;
 			configureUsersView();
 			break;
 		case 'reimbursement_create.view':
 			configureReimbursementCreateView();
+			break;
 		case 'reimbursement_update.view':
 			configureReimbursementUpdateView();
+			break;
 		case 'reimbursement_view.view':
 			configureReimbursementsView();
 			break;
@@ -209,9 +211,9 @@ function configureReimbursementUpdateView(){
 	document.getElementById('reg-message').setAttribute('hidden', true);
 
 	document.getElementById('update-reimbursement').setAttribute('disabled', true);
-	document.getElementById('reg-button-container').addEventListener('mouseover', validateReimbursementUpdateForm); // TODO
-	document.getElementById('update-reimbursement').addEventListener('click', updateReimbursementRequest); // TODO
-	$('.file-upload').file_upload();
+	document.getElementById('sub-button-container').addEventListener('mouseover', validateReimbursementUpdateForm); 
+	document.getElementById('update-reimbursement').addEventListener('click', updateReimbursementRequest); 
+	// $('.file-upload').file_upload();
 	populateReimbursementsUpdateView();
 
 }
@@ -490,6 +492,61 @@ function updateUserRequest() {
 	}
 }
 
+function updateReimbursementRequest(){
+	console.log('in updateReimbursementRequest()');
+
+	let rid = document.getElementById('id').value;
+	let amt = document.getElementById('amount').checked == true;
+	let sub = document.getElementById('submitted').value;
+	let res = document.getElementById('resolved').value;
+	let des = document.getElementById('description').value;
+	let rec = document.getElementById('receipts').value;
+	let aut = document.getElementById('author').value;
+	let olv = document.getElementById('resolver').value;
+	let sta = document.getElementById('reimbursementStatus').value;
+	let typ = document.getElementById('reimbursementType').value;
+
+	let reimbursementDTO = {
+		id:rid,
+		amount:amt,
+		submitted:sub,
+		resolved:res,
+		description:des,
+		receiptURI:rec,
+		author:aut,
+		resolver:olv,
+		reimb_status_id:sta,
+		reimb_type_id:typ
+	}
+	console.log(reimbursementDTO);
+
+	let reimbursementDTOJSON = JSON.stringify(reimbursementDTO);
+
+	let xhr = new XMLHttpRequest;
+	xhr.open('PUT', 'reimbursements');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(reimbursementDTOJSON);
+
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+
+		let msg = JSON.parse(xhr.responseText);
+		console.log(msg);
+		// document.getElementById('reg-message').innerText = msg;
+		document.getElementById('reg-message').setAttribute('hidden', true);
+		loadView("reimbursement_view.view");
+
+		} else if (xhr.readyState == 4 && xhr.status == 400) {
+
+		document.getElementById('reg-message').removeAttribute('hidden');
+		let err = JSON.parse(xhr.responseText);
+		document.getElementById('reg-message').innerText = err.message;
+
+		}
+	}
+
+}
+
 function populateUserView() {
   console.log('in populateUserView');
 
@@ -604,8 +661,12 @@ function populateReimbursementsView(){
 	let tableBody = document.getElementById('reimbursementTableBody');
 
 	let xhr = new XMLHttpRequest();
-
-	xhr.open('GET', 'users');
+	let authUser = JSON.parse(localStorage.getItem('authUser'));
+	if(isAuthorized(['admin','manager'])){
+		xhr.open('GET', 'reimbursements');
+	} else {
+		xhr.open('GET', `reimbursements?author=${authUser.id}`);
+	}
 	xhr.setRequestHeader('Content-type', 'application/json');
 	xhr.send();
 
@@ -623,13 +684,19 @@ function populateReimbursementsView(){
 			let rid = reimbursements[i].id;
 			let amt = reimbursements[i].amount;
 			let submtd = reimbursements[i].submitted;
+			if(submtd) submtd = (new Date(submtd)).toString();
 			let rslvd = reimbursements[i].resolved;
+			if(rslvd) rslvd = (new Date(rslvd)).toString();
 			let desc = reimbursements[i].description;
 			let rcptURI = reimbursements[i].receiptURI;
 			let authr = reimbursements[i].author;
+			if(authr) authr = authr.username;
 			let rslvr = reimbursements[i].resolver;
-			let reimb_status = titleCase(reimbursements[i].reimbursementStatus);
-			let reimb_type= titleCase(reimbursements[i].reimbursementType);
+			if(rslvr) rslvr = rslvr.username;
+			let reimb_status = reimbursements[i].reimb_status_id;
+			if(reimb_status) reimb_status = titleCase(reimb_status);
+			let reimb_type= reimbursements[i].reimb_type_id;
+			if(reimb_type) reimb_type = titleCase(reimb_type);
 
 			let idElem = document.createElement("td");
 			idElem.innerText = rid;
@@ -678,10 +745,10 @@ function populateReimbursementsView(){
 			editInteract.innerText = "Edit";
 			editInteract.addEventListener('click', eventUpdateReimbursement);
 			editInteract.reimbursement = reimbursement;
-			modify.appendChild(editInteract);
+			modifyElem.appendChild(editInteract);
 
 			let slash = document.createTextNode(' / ');
-			modify.appendChild(slash);
+			modifyElem.appendChild(slash);
 
 			let deactivateInteract = document.createElement('a');
 			deactivateInteract.id = `deactivate:${reimbursements[i].id}`;
@@ -690,7 +757,7 @@ function populateReimbursementsView(){
 			deactivateInteract.innerText = "Delete";
 			deactivateInteract.addEventListener('click', eventDeleteReimbursement);
 			deactivateInteract.id = deleteId;
-			modify.appendChild(deactivateInteract);
+			modifyElem.appendChild(deactivateInteract);
 			
 
 			row.appendChild(idElem);
@@ -707,7 +774,7 @@ function populateReimbursementsView(){
 
 			tableBody.appendChild(row);
 			}
-		$('#userTable').DataTable();
+		$('#reimbursementTable').DataTable();
 		$('.dataTables_length').addClass('bs-select');
 		console.log(reimbursements);
 		// tableBody.innerText = JSON.stringify(reimbursements);
@@ -738,6 +805,59 @@ function populateUserUpdateInputFields(){
 		}
 	}
 	localStorage.removeItem('updateUser');
+}
+
+function populateReimbursementsUpdateView(){
+	console.log('in populateReimbursementsUpdateView()');
+	
+	let reimbursement = JSON.parse(localStorage.getItem('updateReimbursement'));
+	console.log(reimbursement);
+
+	// let reimbursement = {
+		// id:rid,
+	// 	amount:amt,
+		// submitted:submtd,
+	// 	resolved:rslvd,
+	// 	description:desc,
+	// 	receiptURI:rcptURI,
+		// author:authr,
+		// resolver:rslvr,
+		// 	reimbursementStatus:reimb_status,
+		// 	reimbursementType:reimb_type
+	// }
+	
+	let updateViewHeader = document.getElementById('updateViewHeader');
+	updateViewHeader.innerText = 'Revabursement Update: Updating Reimbursement for ' + reimbursement.author;
+
+	editDisabledValue('id', reimbursement.id);
+	editDisabledValue('submitted', reimbursement.submitted);
+	editDisabledValue('author', reimbursement.author);
+	editDisabledValue('resolver', reimbursement.resolver);
+	selectChosenOption('reimbursementStatus', reimbursement.reimbursementStatus);
+	selectChosenOption('reimbursementType', reimbursement.reimbursementType);
+
+	let amount = document.getElementById('amount');
+	amount.value = reimbursement.amount;
+	let resolved = document.getElementById('resolved');
+	resolved.value = reimbursement.resolved;
+	let description = document.getElementById('description');
+	description.value = reimbursement.description;
+	let receiptURI = document.getElementById('receiptURI');
+	receiptURI.value = reimbursement.receiptURI;
+	
+	localStorage.removeItem('updateReimbursement');
+}
+
+function selectChosenOption(id, option){
+	let selection = document.getElementById(id);
+	for (let i = 0; i < selection.options.length; i++) {
+		const opt = selection.options[i];
+		if(opt.value == option.toLowerCase()){
+			opt.selected = true;
+			break;
+		}
+	}
+
 }
 
 // Edit record
@@ -850,6 +970,40 @@ function eventActivateUser(evt) {
   activateUser(evt.currentTarget.principal);
 }
 
+function updateReimbursement(reimbursement){
+	localStorage.setItem('updateReimbursement', JSON.stringify(reimbursement));
+	loadView('reimbursement_update.view');
+}
+
+function eventUpdateReimbursement(evt){
+	console.log('in eventUpdateReimbursement()');
+	updateReimbursement(evt.currentTarget.reimbursement);
+	
+}
+
+function deleteReimbursement(id){
+	id = JSON.stringify(id);
+	console.log(id);
+	if (!id) return;
+	let xhr = new XMLHttpRequest();
+	xhr.open('DELETE', 'reimbursements');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(id);
+  
+	xhr.onreadystatechange = function () {
+	  if (xhr.readyState == 4 && xhr.status == 204) {
+		console.log('User removed successfully!');
+		let deleteMe = document.getElementById(id.id);
+		deleteMe.remove();
+	  }
+	}
+}
+
+function eventDeleteReimbursement(evt){
+	console.log('in eventDeleteReimbursement()');
+	deleteReimbursement(evt.currentTarget.id);
+}
+
 //#endregion
 
 // ___ ___         .__                        ___________                   __  .__                      
@@ -867,15 +1021,25 @@ function titleCase(string) {
   return (sentence.join(" "));
 }
 
-function isAuthorized(){
+function isAuthorized(listOfRoles){
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
-	if (!authUser) return false;
-	if (authUser.role.toLowerCase() != 'admin') {
-		console.log('This role is not authorized for this view.');
-		loadView("login.view");
+	if (!authUser) {
 		return false;
 	}
-	return true;
+	let authorized = false;
+	for (var i = 0; i < listOfRoles.length; i++) {
+		if (authUser.role.toLowerCase() == listOfRoles[i]){
+			authorized = true;
+		}
+	}
+	return authorized;
+}
+
+function editDisabledValue(id, newVal){
+	let element = document.getElementById(id);
+	element.removeAttribute('disabled');
+	element.value = newVal;
+	element.disabled = true;
 }
 //#endregion
 
@@ -1015,6 +1179,23 @@ function validateReimbursementCreateForm(){
 		document.getElementById('reg-message').removeAttribute('hidden');
 		document.getElementById('reg-message').innerText = 'You need an amount and a description!';
 		document.getElementById('submit-reimbursement').setAttribute('disabled', true);
+	}
+}
+
+function validateReimbursementUpdateForm(){
+	console.log('in validateReimbursementUpdateForm()');
+	
+	let amnt = document.getElementById('amount').value;
+	let desc = document.getElementById('description').value;
+	let recpt = document.getElementById('receipts').value;
+	
+	if (amnt && desc) {
+		document.getElementById('update-reimbursement').removeAttribute('disabled');
+		document.getElementById('reg-message').setAttribute('hidden', true);
+	} else {
+		document.getElementById('reg-message').removeAttribute('hidden');
+		document.getElementById('reg-message').innerText = 'You need an amount and a description!';
+		document.getElementById('update-reimbursement').setAttribute('disabled', true);
 	}
 }
 

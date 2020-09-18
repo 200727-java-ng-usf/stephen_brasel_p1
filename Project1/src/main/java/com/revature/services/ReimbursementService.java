@@ -5,6 +5,7 @@ import com.revature.exceptions.AuthenticationException;
 import com.revature.exceptions.InvalidRequestException;
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.models.Reimbursement;
+import com.revature.models.ReimbursementStatus;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -37,6 +38,23 @@ public class ReimbursementService {
 
 		return reimbursementDao.findById(id)
 				.orElseThrow(ResourceNotFoundException::new);
+	}
+
+	/**
+	 * Returns the first <code>{@link Reimbursement}</code> found with the given id.
+	 * @param id the int id to search by
+	 * @return the first <code>{@link Reimbursement}</code> found with the given id.
+	 */
+	public List<Reimbursement> getReimbursementByAuthor(int id) throws ResourceNotFoundException {
+		if(id <= 0){
+			throw new InvalidRequestException("The provided id cannot be less than or equal to zero.");
+		}
+
+		List<Reimbursement> reimbursements = reimbursementDao.findByAuthor(id);
+		if(reimbursements.isEmpty()){
+			throw new ResourceNotFoundException();
+		}
+		return reimbursements;
 	}
 //
 //	/**
