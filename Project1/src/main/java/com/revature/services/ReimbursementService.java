@@ -1,12 +1,10 @@
 package com.revature.services;
 
 import com.revature.daos.ReimbursementDao;
-import com.revature.dtos.Credentials;
 import com.revature.exceptions.AuthenticationException;
 import com.revature.exceptions.InvalidRequestException;
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.models.Reimbursement;
-import com.revature.models.Role;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -70,16 +68,16 @@ public class ReimbursementService {
 	 * This method registers a new <code>{@link Reimbursement}</code> into the database.
 	 * @param newReimbursement the <code>{@link Reimbursement}</code> to store/register in the database.
 	 */
-	public void register(Reimbursement newReimbursement){
+	public void submit(Reimbursement newReimbursement){
 		//
 		if(!isReimbursementValid(newReimbursement)){
 			throw new InvalidRequestException("Invalid reimbursement field values provided during submission!");
 		}
-		Optional<Reimbursement> existingReimbursemennt = reimbursementDao.findById(newReimbursement.getId());
-
-		if(existingReimbursemennt.isPresent()){
-			throw new AuthenticationException("Provided reimbursement id is already in use!");
-		}
+//		Optional<Reimbursement> existingReimbursemennt = reimbursementDao.findById(newReimbursement.getId());
+//
+//		if(existingReimbursemennt.isPresent()){
+//			throw new AuthenticationException("Provided reimbursement id is already in use!");
+//		}
 
 		reimbursementDao.save(newReimbursement);
 
@@ -147,11 +145,11 @@ public class ReimbursementService {
 			System.out.println("Reimbursement invalid due to: author is null");
 			return false;
 		}
-		if(reimbursement.getReimbursementStatus() == null) {
+		if(reimbursement.getReimb_status_id() == null) {
 			System.out.println("Reimbursement invalid due to: no reimbursement status");
 			return false;
 		}
-		if(reimbursement.getReimbursementType() == null) {
+		if(reimbursement.getReimb_type_id() == null) {
 			System.out.println("Reimbursement invalid due to: no reimbursement type");
 			return false;
 		}

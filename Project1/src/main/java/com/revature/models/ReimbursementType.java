@@ -18,7 +18,7 @@ public enum ReimbursementType {
 
 	public static ReimbursementType getByName(String name){
 		return Arrays.stream(ReimbursementType.values())
-				.filter(role -> role.type.equals(name))
+				.filter(role -> role.type.toLowerCase().equals(name.toLowerCase()))
 				.findFirst()
 				.orElse(OTHER);
 	}

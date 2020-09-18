@@ -1,6 +1,5 @@
 package com.revature.daos;
 
-import com.revature.models.AppUser;
 import com.revature.models.Reimbursement;
 import com.revature.util.HibernateSessionFactory;
 import org.hibernate.Session;
@@ -8,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -46,6 +46,10 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 			_reimbursements = session.createQuery(query).list();
 			System.out.println(_reimbursements);
 			tx.commit();
+		} catch (NoResultException nre) {
+			System.out.println("This is here so that Hibernate doesn't bypass the try/catch system.");
+			nre.printStackTrace();
+			if (tx != null) tx.rollback();
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (tx != null) tx.rollback();
@@ -68,6 +72,10 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 			_reimbursement = Optional.of(session.createQuery(query).getSingleResult());
 			System.out.println(_reimbursement);
 			tx.commit();
+		} catch (NoResultException nre) {
+			System.out.println("This is here so that Hibernate doesn't bypass the try/catch system.");
+			nre.printStackTrace();
+			if (tx != null) tx.rollback();
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (tx != null) tx.rollback();
@@ -123,7 +131,7 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 			hql += "rb.reimbursementType = :reimbursementType ";
 			hql += "where rb.id = :id ";
 			Query query = session.createQuery(hql);
-			query.setParameter("reimbursementStatus", reimbursement.getReimbursementStatus());
+			query.setParameter("reimbursementStatus", reimbursement.getReimb_status_id());
 
 			if(reimbursement.getAmount() > 0d){
 				query.setParameter("amount", reimbursement.getAmount());
@@ -150,7 +158,7 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 				query.setParameter("resolver", reimbursement.getResolver());
 			}
 
-			query.setParameter("reimbursementType", reimbursement.getReimbursementType());
+			query.setParameter("reimbursementType", reimbursement.getReimb_type_id());
 			query.setParameter("id", reimbursement.getId());
 			int result = query.executeUpdate();
 			if(result <= 0) return false;

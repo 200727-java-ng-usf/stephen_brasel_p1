@@ -1,3 +1,11 @@
+
+// .___       .__  __  .__       .__  .__               
+// |   | ____ |__|/  |_|__|____  |  | |__|_______ ____  
+// |   |/    \|  \   __\  \__  \ |  | |  \___   // __ \ 
+// |   |   |  \  ||  | |  |/ __ \|  |_|  |/    /\  ___/ 
+// |___|___|  /__||__| |__(____  /____/__/_____ \\___  >
+//          \/                 \/              \/    \/ 
+//#region Initialize
 const APP_VIEW = document.getElementById('app-view');
 const NAV_BAR = document.getElementById('navbar');
 
@@ -9,7 +17,7 @@ function unload(e) {
 
 };
 
-function init() { //function w/out a name = anon function
+function init() { 
 	// if(window.localStorage.getItem('unloadTime')){
 	// 	let loadTime = new Date();
 	// 	let unloadTime = new Date(JSON.parse(window.localStorage.getItem('unloadTime')));
@@ -25,6 +33,14 @@ function init() { //function w/out a name = anon function
 	$('.dropdown-toggle').dropdown();
 }
 
+//#endregion
+
+// .____                     .___                   
+// |    |    _________     __| _/___________  ______
+// |    |   /  _ \__  \   / __ |/ __ \_  __ \/  ___/
+// |    |__(  <_> ) __ \_/ /_/ \  ___/|  | \/\___ \ 
+// |_______ \____(____  /\____ |\___  >__|  /____  >
+//         \/         \/      \/    \/           \/ 
 //#region loaders
 
 async function loadView(pageToLoad) {
@@ -70,7 +86,9 @@ async function loadView(pageToLoad) {
 			configureUsersView();
 			break;
 		case 'reimbursement_create.view':
+			configureReimbursementCreateView();
 		case 'reimbursement_update.view':
+			configureReimbursementUpdateView();
 		case 'reimbursement_view.view':
 			configureReimbursementsView();
 			break;
@@ -130,6 +148,12 @@ function loadNavBar() {
 
 //#endregion
 
+// _________                _____.__                            __  .__                      
+// \_   ___ \  ____   _____/ ____\__| ____  __ ______________ _/  |_|__| ____   ____   ______
+// /    \  \/ /  _ \ /    \   __\|  |/ ___\|  |  \_  __ \__  \\   __\  |/  _ \ /    \ /  ___/
+// \     \___(  <_> )   |  \  |  |  / /_/  >  |  /|  | \// __ \|  | |  (  <_> )   |  \\___ \ 
+//  \______  /\____/|___|  /__|  |__\___  /|____/ |__|  (____  /__| |__|\____/|___|  /____  >
+//         \/            \/        /_____/                   \/                    \/     \/ 
 //#region configurations
 
 function configureLoginView() {
@@ -150,7 +174,7 @@ function configureRegisterView() {
 
   document.getElementById('register').setAttribute('disabled', true);
   document.getElementById('reg-button-container').addEventListener('mouseover', validateRegisterForm);
-  document.getElementById('register').addEventListener('click', register);
+  document.getElementById('register').addEventListener('click', registerUserRequest);
 }
 
 function configureUserUpdateView(){
@@ -163,7 +187,7 @@ function configureUserUpdateView(){
   
 	document.getElementById('register').setAttribute('disabled', true);
 	document.getElementById('reg-button-container').addEventListener('mouseover', validateUpdateForm);
-	document.getElementById('register').addEventListener('click', update);
+	document.getElementById('register').addEventListener('click', updateUserRequest);
 	populateUserUpdateInputFields();
 }
 
@@ -177,6 +201,36 @@ function configureHomeView() {
 function configureUsersView() {
   console.log('in configureUsersView()');
   populateUserView();
+}
+
+function configureReimbursementUpdateView(){
+	console.log('in configureReimbursementUpdateView();');
+
+	document.getElementById('reg-message').setAttribute('hidden', true);
+
+	document.getElementById('update-reimbursement').setAttribute('disabled', true);
+	document.getElementById('reg-button-container').addEventListener('mouseover', validateReimbursementUpdateForm); // TODO
+	document.getElementById('update-reimbursement').addEventListener('click', updateReimbursementRequest); // TODO
+	$('.file-upload').file_upload();
+	populateReimbursementsUpdateView();
+
+}
+function configureReimbursementCreateView(){
+	console.log('in configureReimbursementCreateView();');
+
+	document.getElementById('reg-message').setAttribute('hidden', true);
+
+	document.getElementById('submit-reimbursement').setAttribute('disabled', true);
+	document.getElementById('sub-button-container').addEventListener('mouseover', validateReimbursementCreateForm);
+	document.getElementById('submit-reimbursement').addEventListener('click', submitReimbursementRequest);
+	// $('.file-upload').file_upload();
+
+}
+
+function configureReimbursementsView(){
+	console.log('in configureReimbursementsView()');
+	populateReimbursementsView();
+
 }
 
 function configureDefaultViewButtons() {
@@ -238,6 +292,12 @@ function configureNavbarReimbursementDropdown() {
 
 //#endregion
 
+// ________                              __  .__                      
+// \_____  \ ______   ________________ _/  |_|__| ____   ____   ______
+//  /   |   \\____ \_/ __ \_  __ \__  \\   __\  |/  _ \ /    \ /  ___/
+// /    |    \  |_> >  ___/|  | \// __ \|  | |  (  <_> )   |  \\___ \ 
+// \_______  /   __/ \___  >__|  (____  /__| |__|\____/|___|  /____  >
+//         \/|__|        \/           \/                    \/     \/ 
 //#region operations
 
 function login() {
@@ -290,7 +350,7 @@ function logout() {
 	}
 }
 
-function register() {
+function registerUserRequest() {
 	console.log('in register()');
 
 	let fn = document.getElementById('fn').value;
@@ -336,7 +396,51 @@ function register() {
 	}
 }
 
-function update() {
+function submitReimbursementRequest(){
+	console.log('in submitReimbursementRequest()');
+
+	let amt = document.getElementById('amount').value;
+	let desc = document.getElementById('description').value;
+	let rcpt =  ''; //document.getElementById('').value; //TODO coming soon
+	let author = JSON.parse(localStorage.getItem('authUser')).username;
+	let reimb_type = document.getElementById('reimbursementType').value;
+	
+	let reimbursementDto = {
+		amount:amt,
+		description:desc,
+		receiptURI:rcpt,
+		author:author,
+		type:reimb_type
+	}
+	console.log(reimbursementDto);
+	
+	let reimbDtoJSON = JSON.stringify(reimbursementDto);
+
+	let xhr = new XMLHttpRequest;
+	xhr.open('POST', 'reimbursements');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(reimbDtoJSON);
+
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 201) {
+
+			let msg = JSON.parse(xhr.responseText);
+			console.log(msg);
+			// document.getElementById('reg-message').innerText = msg;
+			document.getElementById('reg-message').setAttribute('hidden', true);
+			loadView("reimbursement_create.view");
+
+		} else if (xhr.readyState == 4 && xhr.status == 400) {
+
+			document.getElementById('reg-message').removeAttribute('hidden');
+			let err = JSON.parse(xhr.responseText);
+			document.getElementById('reg-message').innerText = err.message;
+
+		}
+	}
+}
+
+function updateUserRequest() {
 	console.log('in update()');
 
 	let eid = document.getElementById('id').value;
@@ -493,6 +597,124 @@ function populateUserView() {
 	}
 }
 
+function populateReimbursementsView(){
+	
+	console.log('in populateReimbursementsView');
+
+	let tableBody = document.getElementById('reimbursementTableBody');
+
+	let xhr = new XMLHttpRequest();
+
+	xhr.open('GET', 'users');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send();
+
+	xhr.onreadystatechange = function () {
+	if (xhr.readyState == 4 && xhr.status == 200) {
+		//remove previous table states, if any.
+		for(let child of tableBody.childNodes){
+			child.remove();
+		}
+		let reimbursements = JSON.parse(xhr.responseText);
+		for (var i = 0; i < reimbursements.length; i++) {
+			let row = document.createElement("tr");
+			row.classList.add("reimbursementEntry");
+
+			let rid = reimbursements[i].id;
+			let amt = reimbursements[i].amount;
+			let submtd = reimbursements[i].submitted;
+			let rslvd = reimbursements[i].resolved;
+			let desc = reimbursements[i].description;
+			let rcptURI = reimbursements[i].receiptURI;
+			let authr = reimbursements[i].author;
+			let rslvr = reimbursements[i].resolver;
+			let reimb_status = titleCase(reimbursements[i].reimbursementStatus);
+			let reimb_type= titleCase(reimbursements[i].reimbursementType);
+
+			let idElem = document.createElement("td");
+			idElem.innerText = rid;
+			row.id = rid;
+			let amountElem = document.createElement("td");
+			amountElem.innerText = amt;
+			let submittedElem = document.createElement("td");
+			submittedElem.innerText = submtd;
+			let resolvedElem = document.createElement("td");
+			resolvedElem.innerText = rslvd;
+			let descriptionElem = document.createElement("td");
+			descriptionElem.innerText = desc;
+			let receiptURIElem = document.createElement("td");
+			receiptURIElem.innerText = rcptURI;
+			let authorElem = document.createElement("td");
+			authorElem.innerText = authr;
+			let resolverElem = document.createElement("td");
+			resolverElem.innerText = rslvr;
+			let reimbursementStatusElem = document.createElement("td");
+			reimbursementStatusElem.innerText = reimb_status;
+			let reimbursementTypeElem = document.createElement("td");
+			reimbursementTypeElem.innerText = reimb_type;
+			let modifyElem = document.createElement('td');
+			modifyElem.id = `modify:${rid}`;
+
+			let reimbursement = {
+				id:rid,
+				amount:amt,
+				submitted:submtd,
+				resolved:rslvd,
+				description:desc,
+				receiptURI:rcptURI,
+				author:authr,
+				resolver:rslvr,
+				reimbursementStatus:reimb_status,
+				reimbursementType:reimb_type
+			}
+
+			let deleteId = {
+				id:rid
+			}
+
+			let editInteract = document.createElement('a');
+			editInteract.href = "#";
+			editInteract.className += 'edit';
+			editInteract.innerText = "Edit";
+			editInteract.addEventListener('click', eventUpdateReimbursement);
+			editInteract.reimbursement = reimbursement;
+			modify.appendChild(editInteract);
+
+			let slash = document.createTextNode(' / ');
+			modify.appendChild(slash);
+
+			let deactivateInteract = document.createElement('a');
+			deactivateInteract.id = `deactivate:${reimbursements[i].id}`;
+			deactivateInteract.href = "#";
+			deactivateInteract.className += 'remove';
+			deactivateInteract.innerText = "Delete";
+			deactivateInteract.addEventListener('click', eventDeleteReimbursement);
+			deactivateInteract.id = deleteId;
+			modify.appendChild(deactivateInteract);
+			
+
+			row.appendChild(idElem);
+			row.appendChild(amountElem);
+			row.appendChild(submittedElem);
+			row.appendChild(resolvedElem);
+			row.appendChild(descriptionElem);
+			row.appendChild(receiptURIElem);
+			row.appendChild(authorElem);
+			row.appendChild(resolverElem);
+			row.appendChild(reimbursementStatusElem);
+			row.appendChild(reimbursementTypeElem);
+			row.appendChild(modifyElem);
+
+			tableBody.appendChild(row);
+			}
+		$('#userTable').DataTable();
+		$('.dataTables_length').addClass('bs-select');
+		console.log(reimbursements);
+		// tableBody.innerText = JSON.stringify(reimbursements);
+		}
+	}
+}
+
 function populateUserUpdateInputFields(){
 	console.log('in populateUserUpdateInputFields()');
 	
@@ -547,7 +769,10 @@ function deleteUser(principal) {
 function eventDeleteUser(evt) {
   deleteUser(evt.currentTarget.principal);
 }
-// Delete a record
+/**
+ * 
+ * @param {Principal} principal 
+ */
 function deactivateUser(principal) {
   console.log(principal);
   if (!principal) return;
@@ -585,7 +810,10 @@ function deactivateUser(principal) {
 function eventDeactivateUser(evt) {
   deactivateUser(evt.currentTarget.principal);
 }
-// Delete a record
+/**
+ * 
+ * @param {Principal} principal 
+ */
 function activateUser(principal) {
   console.log(principal);
   if (!principal) return;
@@ -622,57 +850,14 @@ function eventActivateUser(evt) {
   activateUser(evt.currentTarget.principal);
 }
 
-function isUsernameAvailable() {
-
-  console.log('in isUsernameAvailable()');
-
-  let username = document.getElementById('reg-username').value;
-
-  let xhr = new XMLHttpRequest();
-
-  xhr.open('POST', 'username.validate');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(JSON.stringify(username));
-
-  xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 204) {
-	  console.log('Provided username is available!');
-	  document.getElementById('reg-message').setAttribute('hidden', true);
-	} else if (xhr.readyState == 4 && xhr.status == 409) {
-	  document.getElementById('reg-message').removeAttribute('hidden')
-	  document.getElementById('reg-message').innerText = 'The provided username is already taken!';
-	  document.getElementById('register').setAttribute('disabled', true);
-	}
-  }
-}
-
-function isEmailAvailable() {
-
-  console.log('in isEmailAvailable()');
-
-  let email = document.getElementById('email').value;
-
-  let xhr = new XMLHttpRequest();
-
-  xhr.open('POST', 'email.validate');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(JSON.stringify(email));
-
-  xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 204) {
-	  console.log('Provided email is available!');
-	  document.getElementById('reg-message').setAttribute('hidden', true);
-	} else if (xhr.readyState == 4 && xhr.status == 409) {
-	  document.getElementById('reg-message').removeAttribute('hidden');
-	  document.getElementById('reg-message').innerText = 'The provided email address is already taken!';
-	  document.getElementById('register').setAttribute('disabled', true);
-	}
-  }
-}
-
 //#endregion
 
-
+// ___ ___         .__                        ___________                   __  .__                      
+// /   |   \   ____ |  | ______   ___________  \_   _____/_ __  ____   _____/  |_|__| ____   ____   ______
+// /    ~    \_/ __ \|  | \____ \_/ __ \_  __ \  |    __)|  |  \/    \_/ ___\   __\  |/  _ \ /    \ /  ___/
+// \    Y    /\  ___/|  |_|  |_> >  ___/|  | \/  |     \ |  |  /   |  \  \___|  | |  (  <_> )   |  \\___ \ 
+// \___|_  /  \___  >____/   __/ \___  >__|     \___  / |____/|___|  /\___  >__| |__|\____/|___|  /____  >
+// 	  \/       \/     |__|        \/             \/             \/     \/                    \/     \/ 
 //#region helper functions
 function titleCase(string) {
   var sentence = string.toLowerCase().split(" ");
@@ -694,72 +879,143 @@ function isAuthorized(){
 }
 //#endregion
 
+// ___________                    ____   ____      .__  .__    .___       __  .__               
+// \_   _____/__________  _____   \   \ /   /____  |  | |__| __| _/____ _/  |_|__| ____   ____  
+//  |    __)/  _ \_  __ \/     \   \   Y   /\__  \ |  | |  |/ __ |\__  \\   __\  |/  _ \ /    \ 
+//  |     \(  <_> )  | \/  Y Y  \   \     /  / __ \|  |_|  / /_/ | / __ \|  | |  (  <_> )   |  \
+//  \___  / \____/|__|  |__|_|  /    \___/  (____  /____/__\____ |(____  /__| |__|\____/|___|  /
+//      \/                    \/                 \/             \/     \/                    \/ 
 //#region formValidation
+
+function isUsernameAvailable() {
+
+	console.log('in isUsernameAvailable()');
+
+	let username = document.getElementById('reg-username').value;
+
+	let xhr = new XMLHttpRequest();
+
+	xhr.open('POST', 'username.validate');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(username));
+
+	xhr.onreadystatechange = function () {
+	if (xhr.readyState == 4 && xhr.status == 204) {
+		console.log('Provided username is available!');
+		document.getElementById('reg-message').setAttribute('hidden', true);
+	} else if (xhr.readyState == 4 && xhr.status == 409) {
+		document.getElementById('reg-message').removeAttribute('hidden')
+		document.getElementById('reg-message').innerText = 'The provided username is already taken!';
+		document.getElementById('register').setAttribute('disabled', true);
+	}
+	}
+}
+
+function isEmailAvailable() {
+
+	console.log('in isEmailAvailable()');
+
+	let email = document.getElementById('email').value;
+
+	let xhr = new XMLHttpRequest();
+
+	xhr.open('POST', 'email.validate');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(email));
+
+	xhr.onreadystatechange = function () {
+	if (xhr.readyState == 4 && xhr.status == 204) {
+		console.log('Provided email is available!');
+		document.getElementById('reg-message').setAttribute('hidden', true);
+	} else if (xhr.readyState == 4 && xhr.status == 409) {
+		document.getElementById('reg-message').removeAttribute('hidden');
+		document.getElementById('reg-message').innerText = 'The provided email address is already taken!';
+		document.getElementById('register').setAttribute('disabled', true);
+	}
+	}
+}
 
 function validateLoginForm() {
 
-  console.log('in validateLoginForm()');
+	console.log('in validateLoginForm()');
 
-  let msg = document.getElementById('login-message').innerText;
+	let msg = document.getElementById('login-message').innerText;
 
-  if (msg == 'User authentication failed!') {
-	return;
-  }
+	if (msg == 'User authentication failed!') {
+		return;
+	}
 
-  let un = document.getElementById('login-username').value;
-  let pw = document.getElementById('login-password').value;
+	let un = document.getElementById('login-username').value;
+	let pw = document.getElementById('login-password').value;
 
-  if (!un || !pw) {
-	document.getElementById('login-message').removeAttribute('hidden');
-	document.getElementById('login-message').innerText = 'You must provided values for all fields in the form!'
-	document.getElementById('login').setAttribute('disabled', true);
-  } else {
-	document.getElementById('login').removeAttribute('disabled');
-	document.getElementById('login-message').setAttribute('hidden', true);
-  }
+	if (!un || !pw) {
+		document.getElementById('login-message').removeAttribute('hidden');
+		document.getElementById('login-message').innerText = 'You must provided values for all fields in the form!'
+		document.getElementById('login').setAttribute('disabled', true);
+	} else {
+		document.getElementById('login').removeAttribute('disabled');
+		document.getElementById('login-message').setAttribute('hidden', true);
+	}
 
 }
 
 function validateRegisterForm() {
 
-  console.log('in validateRegisterForm()');
+	console.log('in validateRegisterForm()');
 
-  let fn = document.getElementById('fn').value;
-  let ln = document.getElementById('ln').value;
-  let email = document.getElementById('email').value;
-  let un = document.getElementById('reg-username').value;
-  let pw = document.getElementById('reg-password').value;
-  let rl = document.getElementById('roleSelectButton').value;
+	let fn = document.getElementById('fn').value;
+	let ln = document.getElementById('ln').value;
+	let email = document.getElementById('email').value;
+	let un = document.getElementById('reg-username').value;
+	let pw = document.getElementById('reg-password').value;
+	let rl = document.getElementById('roleSelectButton').value;
 
-  if (!fn || !ln || !email || !un || !pw || !rl) {
-	document.getElementById('reg-message').removeAttribute('hidden');
-	document.getElementById('reg-message').innerText = 'You must provide values for all fields in the form!'
-	document.getElementById('register').setAttribute('disabled', true);
-  } else {
-	document.getElementById('register').removeAttribute('disabled');
-	document.getElementById('reg-message').setAttribute('hidden', true);
-  }
+	if (!fn || !ln || !email || !un || !pw || !rl) {
+		document.getElementById('reg-message').removeAttribute('hidden');
+		document.getElementById('reg-message').innerText = 'You must provide values for all fields in the form!'
+		document.getElementById('register').setAttribute('disabled', true);
+	} else {
+		document.getElementById('register').removeAttribute('disabled');
+		document.getElementById('reg-message').setAttribute('hidden', true);
+	}
 }
 
 function validateUpdateForm() {
 
-  console.log('in validateRegisterForm()');
+	console.log('in validateRegisterForm()');
 
-  let fn = document.getElementById('fn').value;
-  let ln = document.getElementById('ln').value;
-  let email = document.getElementById('email').value;
-  let un = document.getElementById('reg-username').value;
-  let pw = document.getElementById('reg-password').value;
-  let rl = document.getElementById('roleSelectButton').value;
+	let fn = document.getElementById('fn').value;
+	let ln = document.getElementById('ln').value;
+	let email = document.getElementById('email').value;
+	let un = document.getElementById('reg-username').value;
+	let pw = document.getElementById('reg-password').value;
+	let rl = document.getElementById('roleSelectButton').value;
 
-  if (fn || ln || email || un || pw || rl) {
-	document.getElementById('register').removeAttribute('disabled');
-	document.getElementById('reg-message').setAttribute('hidden', true);
-  } else {
-	document.getElementById('reg-message').removeAttribute('hidden');
-	document.getElementById('reg-message').innerText = 'You have not changed a single value in the form!'
-	document.getElementById('register').setAttribute('disabled', true);
-  }
+	if (fn || ln || email || un || pw || rl) {
+		document.getElementById('register').removeAttribute('disabled');
+		document.getElementById('reg-message').setAttribute('hidden', true);
+	} else {
+		document.getElementById('reg-message').removeAttribute('hidden');
+		document.getElementById('reg-message').innerText = 'You have not changed a single value in the form!'
+		document.getElementById('register').setAttribute('disabled', true);
+	}
+}
+
+function validateReimbursementCreateForm(){
+	console.log('in validateReimbursementForm()');
+	
+	let amnt = document.getElementById('amount').value;
+	let desc = document.getElementById('description').value;
+	let recpt = document.getElementById('receipts').value;
+	
+	if (amnt && desc) {
+		document.getElementById('submit-reimbursement').removeAttribute('disabled');
+		document.getElementById('reg-message').setAttribute('hidden', true);
+	} else {
+		document.getElementById('reg-message').removeAttribute('hidden');
+		document.getElementById('reg-message').innerText = 'You need an amount and a description!';
+		document.getElementById('submit-reimbursement').setAttribute('disabled', true);
+	}
 }
 
 function isSelf(principal){
