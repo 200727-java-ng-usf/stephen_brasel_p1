@@ -286,7 +286,7 @@ public class UserDao implements CrudDao<AppUser> {
 			CriteriaQuery<AppUser> query = cb.createQuery(AppUser.class);
 			Root<AppUser> root = query.from(AppUser.class);
 			System.out.println(id);
-			query.select(root).where(cb.equal(root.get("email"), id));
+			query.select(root).where(cb.equal(root.get("id"), id));
 			_user = Optional.of(session.createQuery(query).getSingleResult());
 			System.out.println(_user);
 			tx.commit();

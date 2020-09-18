@@ -1,0 +1,66 @@
+<div id="register-container">
+	<header class="h2">Revabursements</header>
+	<hr/>
+    <header class="h3">Revabursements Reimbursements</header>
+	<div class="form-group">
+		<label for="id">Id</label>
+		<input type="text" class="form-control" id="id" disabled>
+	</div>
+    <div class="form-group">
+		<label for="amount">Amount</label> 
+		<input type="number" min="1" step="0.01" class="form-control" id="amount" placeholder="Enter amount">
+    </div>
+    <div class="form-group">
+		<label for="submitted">Submitted</label> 
+		<input type="datetime-local" class="form-control" id="submitted" disabled>
+    </div>
+    <div class="form-group">
+		<label for="resolved">Resolved</label>
+		<input type="datetime-local" class="form-control" id="resolved">
+    </div>
+    <div class="form-group">
+		<label for="description">Description</label> 
+		<input type="text" class="form-control" id="description" placeholder="Enter description of what you want reimbursement for">
+    </div>
+    <div class="form-group">
+		<label for="receipts">Receipts</label> 
+		<!-- $('.file-upload').file_upload(); -->
+		<div class="file-upload-wrapper">
+			<input type="file" id="receipts" class="file-upload" data-max-file-size="2M"/>
+		</div>
+		<label for="recieptURI">RecieptURI</label>
+		<a type="text" class="form-control" id="recieptURI" placeholder="Reimbursement recieptURI" disabled>
+		<!-- <input type="email" class="form-control" id="receipts" placeholder="Enter email address"> -->
+    </div>
+	<div class="form-group">
+		<label for="reg-author">Author</label>
+		<input type="text" class="form-control" id="reg-author" placeholder="Reimbursement author" disabled>
+	</div>
+	<div class="form-group">
+		<label for="reg-resolver">Resolver</label>
+		<input type="text" class="form-control" id="reg-resolver" placeholder="Enter username of resolver.">
+	</div>
+	<div class="form-group">
+		<label for="reimbursementStatus">Status</label>
+		<select class="form-control" id="reimbursementStatus">
+			<option value="approved" >Approved</option>
+			<option value="pending" selected>Pending</option>
+			<option value="denied" >Denied</option>
+		</select>
+	</div>
+	<div class="form-group">
+		<label for="reimbursementType">Type</label>
+		<select class="form-control" id="reimbursementType">
+			<option value="lodging" >Lodging</option>
+			<option value="travel" selected>Travel</option>
+			<option value="food" >Food</option>
+			<option value="other" >Other</option>
+		</select>
+	</div>
+    <div id="sub-button-container">
+        <button type="submit" class="btn btn-primary" id="submit-reimbursement">Submit</button>
+    </div>
+	<br/>
+	<br/>
+	<div class="alert alert-danger" id="reg-message"></div>
+</div>

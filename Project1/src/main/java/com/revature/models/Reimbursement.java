@@ -101,19 +101,19 @@ public class Reimbursement {
 		this.receiptURI = receiptURI;
 	}
 
-	public AppUser getAuthorId() {
+	public AppUser getAuthor() {
 		return author;
 	}
 
-	public void setAuthorId(AppUser author) {
+	public void setAuthor(AppUser author) {
 		this.author = author;
 	}
 
-	public AppUser getResolverId() {
+	public AppUser getResolver() {
 		return resolver;
 	}
 
-	public void setResolverId(AppUser resolver) {
+	public void setResolver(AppUser resolver) {
 		this.resolver = resolver;
 	}
 
