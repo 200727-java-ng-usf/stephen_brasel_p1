@@ -150,6 +150,9 @@ public class ReimbursementService {
 	 * 		If there was no such user, returns true.
 	 */
 	public boolean deleteReimbursementById(int id){
+		if(id <= 0){
+			throw new InvalidRequestException("The provided id cannot be less than or equal to zero.");
+		}
 		return reimbursementDao.deleteById(id);
 	}
 	/**

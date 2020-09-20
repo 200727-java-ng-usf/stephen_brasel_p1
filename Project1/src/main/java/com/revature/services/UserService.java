@@ -14,7 +14,14 @@ import java.util.Optional;
 public class UserService {
 	private UserDao userDao = new UserDao();
 
-	//region Constructors
+	public UserDao getUserDao() {
+		return userDao;
+	}
+
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
+//region Constructors
 //	public UserService(UserDao repo){
 ////		System.out.println("[LOG] - Instantiating " + this.getClass().getName());
 //		userDao = repo;
