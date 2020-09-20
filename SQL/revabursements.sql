@@ -206,6 +206,7 @@ select *
 from ers_reimbursements er ;
 
 delete from ers_users where ers_user_id = 7;
+delete from ers_reimbursements ;
 
 update ers_users 
 set firstname = 'Charlotte'

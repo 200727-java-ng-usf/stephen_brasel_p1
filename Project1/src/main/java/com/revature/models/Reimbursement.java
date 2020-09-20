@@ -73,6 +73,9 @@ public class Reimbursement {
 
 		this.id = 0;
 		this.submitted = new Timestamp(System.currentTimeMillis());
+		System.out.println();
+		System.out.println(this.submitted);
+		System.out.println();
 		this.resolved = null;
 		this.resolver = null;
 		this.reimb_status_id = ReimbursementStatus.PENDING;

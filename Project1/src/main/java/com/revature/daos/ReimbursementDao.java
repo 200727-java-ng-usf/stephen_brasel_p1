@@ -1,6 +1,7 @@
 package com.revature.daos;
 
 import com.revature.models.Reimbursement;
+import com.revature.models.ReimbursementStatus;
 import com.revature.util.HibernateSessionFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -80,6 +81,31 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 		}
 		return _reimbursements;
 	}
+	public List<Reimbursement> findPendingReimbursementsByAuthor(int id) {
+		List<Reimbursement> _reimbursements = new ArrayList<>();
+
+		Transaction tx = null;
+		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
+			tx = session.beginTransaction();
+			CriteriaBuilder cb = session.getCriteriaBuilder();
+			CriteriaQuery<Reimbursement> query = cb.createQuery(Reimbursement.class);
+			Root<Reimbursement> root = query.from(Reimbursement.class);
+			query.orderBy(cb.asc(root.get("submitted")));
+			query.select(root).where(cb.equal(root.get("author"), id));
+			query.select(root).where(cb.equal(root.get("reimb_status_id"), ReimbursementStatus.PENDING));
+			_reimbursements = session.createQuery(query).list();
+			System.out.println(_reimbursements);
+			tx.commit();
+		} catch (NoResultException nre) {
+			System.out.println("This is here so that Hibernate doesn't bypass the try/catch system.");
+			nre.printStackTrace();
+			if (tx != null) tx.rollback();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (tx != null) tx.rollback();
+		}
+		return _reimbursements;
+	}
 
 	@Override
 	public Optional<Reimbursement> findById(int id) {
@@ -130,11 +156,8 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 				System.out.println("submitted after 1970 and before current date.");
 				hql += "rb.submitted = :submitted, ";
 			}
-			if(reimbursement.getResolved() != null && reimbursement.getResolved().after(reimbursement.getSubmitted())
-					&& reimbursement.getResolved().before(new Timestamp(System.currentTimeMillis()))){
-				System.out.println("resolved after 1970 and before current date.");
-				hql += "rb.resolved = :resolved, ";
-			}
+			hql += "rb.resolved = :resolved, ";
+
 			if(reimbursement.getDescription() != null && !reimbursement.getDescription().trim().equals("")){
 				System.out.println("description present.");
 				hql += "rb.description = :description, ";
@@ -165,9 +188,8 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 			){
 				query.setParameter("submitted", reimbursement.getSubmitted());
 			}
-			if(reimbursement.getResolved() != null && reimbursement.getResolved().after(reimbursement.getSubmitted())){
-				query.setParameter("resolved", reimbursement.getResolved());
-			}
+			query.setParameter("resolved", reimbursement.getResolved());
+
 			if(reimbursement.getDescription() != null && !reimbursement.getDescription().trim().equals("")){
 				query.setParameter("description", reimbursement.getDescription());
 			}

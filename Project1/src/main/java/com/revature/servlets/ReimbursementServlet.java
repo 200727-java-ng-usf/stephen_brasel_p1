@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,16 +76,16 @@ public class ReimbursementServlet extends HttpServlet {
 			} else {
 				if (authorParam != null || idParam != null) {
 					if (principal.getId() == Integer.parseInt(authorParam)) {
-						// GET ALL REIMBURSEMENTS FOR ME
+						// GET ALL PENDING REIMBURSEMENTS FOR ME
 						int id = Integer.parseInt(authorParam);
-						List<Reimbursement> reimbursement = reimbursementService.getReimbursementByAuthor(id);
-						String userJSON = mapper.writeValueAsString(reimbursement);
+						List<Reimbursement> reimbursements = reimbursementService.getReimbursementByAuthor(id);
+						String userJSON = mapper.writeValueAsString(reimbursements);
 						respWriter.write(userJSON);
 						resp.setStatus(200);
 					} else if (principal.getId() == Integer.parseInt(idParam)) {
 						// GET ONE OF MY REIMBURSEMENTS
 						int id = Integer.parseInt(idParam);
-						List<Reimbursement> reimbursement = reimbursementService.getReimbursementByAuthor(id);
+						Reimbursement reimbursement = reimbursementService.getReimbursementById(id);
 						String userJSON = mapper.writeValueAsString(reimbursement);
 						respWriter.write(userJSON);
 						resp.setStatus(200);
@@ -211,25 +212,42 @@ public class ReimbursementServlet extends HttpServlet {
 					upReDt.getDescription(),
 					upReDt.getReceiptURI(),
 					userService.getUserByUsername(upReDt.getAuthor()),
-					null,
+					userService.getUserByUsername(upReDt.getResolver()),
 					ReimbursementStatus.getByName(upReDt.getReimb_status_id()),
 					ReimbursementType.getByName(upReDt.getReimb_type_id())
 			);
 			System.out.println(updatedReimbursement);
-			if (ReimbursementStatus.PENDING != updatedReimbursement.getReimb_status_id()) {
+			if (Role.getByName(principal.getRole()) == Role.EMPLOYEE && updatedReimbursement.getReimb_status_id() == ReimbursementStatus.PENDING){
+				// if the current user is an employee, they can only edit their reimbursements if it's in a Pending state.
+				reimbursementService.updateReimbursement(updatedReimbursement);
+				System.out.println(updatedReimbursement);
+				String updatedReimbursementJSON = mapper.writeValueAsString(updatedReimbursement);
+				respWriter.write(updatedReimbursementJSON);
+				resp.setStatus(200); // 200 = SUCCESS
+			} else if (Role.getByName(principal.getRole()) != Role.EMPLOYEE && updatedReimbursement.getReimb_status_id() != ReimbursementStatus.PENDING) {
+				//If the status has changed, set the resolver to the current user.
 				AppUser resolver = userService.getUserById(principal.getId());
 				updatedReimbursement.setResolver(resolver);
+				System.out.println(new Timestamp(System.currentTimeMillis()));
+				updatedReimbursement.setResolved(new Timestamp(System.currentTimeMillis()));
 				reimbursementService.updateReimbursement(updatedReimbursement);
 				System.out.println(updatedReimbursement);
 				String updatedReimbursementJSON = mapper.writeValueAsString(updatedReimbursement);
 				respWriter.write(updatedReimbursementJSON);
 				resp.setStatus(200); // 200 = SUCCESS
-			} else if (Role.getByName(principal.getRole()) == Role.EMPLOYEE) {
+			} else if( Role.getByName(principal.getRole()) != Role.EMPLOYEE){
+				// if a manager or admin wants to edit, but not resolve their reimbursement
+				updatedReimbursement.setResolved(null);
 				reimbursementService.updateReimbursement(updatedReimbursement);
 				System.out.println(updatedReimbursement);
 				String updatedReimbursementJSON = mapper.writeValueAsString(updatedReimbursement);
 				respWriter.write(updatedReimbursementJSON);
 				resp.setStatus(200); // 200 = SUCCESS
+			}
+			else if (Role.getByName(principal.getRole()) == Role.EMPLOYEE) {
+				resp.setStatus(401); // 401 Unauthorized
+				err = new ErrorResponse(401, "Unauthorized: User does not have permission to edit this reimbursement.");
+				respWriter.write(mapper.writeValueAsString(err));
 			}
 		} catch (MismatchedInputException me) {
 			me.printStackTrace();

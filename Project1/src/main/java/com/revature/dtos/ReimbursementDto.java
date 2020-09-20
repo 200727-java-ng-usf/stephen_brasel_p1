@@ -1,5 +1,6 @@
 package com.revature.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.revature.models.AppUser;
 import com.revature.models.ReimbursementStatus;
 import com.revature.models.ReimbursementType;
@@ -10,7 +11,9 @@ import java.util.Objects;
 public class ReimbursementDto {
 	private int id;
 	private double amount;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.sss")
 	private Timestamp submitted;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.sss")
 	private Timestamp resolved;
 	private String description;
 	private String receiptURI;

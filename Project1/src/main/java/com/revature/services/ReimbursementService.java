@@ -13,7 +13,16 @@ import java.util.List;
 import java.util.Optional;
 
 public class ReimbursementService {
-	final ReimbursementDao reimbursementDao = new ReimbursementDao();
+	private ReimbursementDao reimbursementDao = new ReimbursementDao();
+
+	public ReimbursementDao getReimbursementDao() {
+		return reimbursementDao;
+	}
+
+	public void setReimbursementDao(ReimbursementDao reimbursementDao) {
+		this.reimbursementDao = reimbursementDao;
+	}
+
 	/**
 	 * Returns all users registered with the bank database.
 	 * @return a Set of <code>{@link Reimbursement}</code>s that have been registered and saved to the bank database
@@ -42,9 +51,9 @@ public class ReimbursementService {
 	}
 
 	/**
-	 * Returns the first <code>{@link Reimbursement}</code> found with the given id.
+	 * Returns all <code>{@link Reimbursement}</code>s found with the given author's id.
 	 * @param id the int id to search by
-	 * @return the first <code>{@link Reimbursement}</code> found with the given id.
+	 * @return all <code>{@link Reimbursement}</code>s found with the given author's id.
 	 */
 	public List<Reimbursement> getReimbursementByAuthor(int id) throws ResourceNotFoundException {
 		if(id <= 0){
@@ -52,6 +61,23 @@ public class ReimbursementService {
 		}
 
 		List<Reimbursement> reimbursements = reimbursementDao.findByAuthor(id);
+		if(reimbursements.isEmpty()){
+			throw new ResourceNotFoundException();
+		}
+		return reimbursements;
+	}
+
+	/**
+	 * Returns the first <code>{@link Reimbursement}</code> found with the given id.
+	 * @param id the int id to search by
+	 * @return the first <code>{@link Reimbursement}</code> found with the given id.
+	 */
+	public List<Reimbursement> getPendingReimbursementByAuthor(int id) throws ResourceNotFoundException {
+		if(id <= 0){
+			throw new InvalidRequestException("The provided id cannot be less than or equal to zero.");
+		}
+
+		List<Reimbursement> reimbursements = reimbursementDao.findPendingReimbursementsByAuthor(id);
 		if(reimbursements.isEmpty()){
 			throw new ResourceNotFoundException();
 		}

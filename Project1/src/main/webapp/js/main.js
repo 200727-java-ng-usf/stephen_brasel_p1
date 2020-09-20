@@ -13,11 +13,11 @@ window.addEventListener('beforeunload', unload);
 window.addEventListener('load', init);
 
 function unload(e) {
-  // window.localStorage.setItem('unloadTime') = JSON.stringify(new Date());
+	// window.localStorage.setItem('unloadTime') = JSON.stringify(new Date());
 
 };
 
-function init() { 
+function init() {
 	// if(window.localStorage.getItem('unloadTime')){
 	// 	let loadTime = new Date();
 	// 	let unloadTime = new Date(JSON.parse(window.localStorage.getItem('unloadTime')));
@@ -57,95 +57,95 @@ async function loadView(pageToLoad) {
 	xhr.open("GET", pageToLoad, true); // third parameter of this method is optional (defaults to true)
 	xhr.send();
 	xhr.onreadystatechange = async function () {
-	if (xhr.readyState == 4 && xhr.status == 200) {
-		APP_VIEW.innerHTML = xhr.responseText;
-		switch (pageToLoad) {
-		default:
-			loadView('login.view');
-			return;
-		case 'login.view':
-			configureLoginView();
-			break;
-		case 'home.view':
-			configureHomeView();
-			break;
-		case 'profile.view':
-			configureProfileView();
-			break;
-		case 'user_register.view':
-			if (!isAuthorized(['admin'])) return;
-			configureRegisterView();
-			break;
-		case 'user_update.view':
-			if (!isAuthorized(['admin'])) return;
-			configureUserUpdateView();
-			break;
-		case 'user_view.view':
-		case 'user_delete.view':
-			if (!isAuthorized(['admin'])) return;
-			configureUsersView();
-			break;
-		case 'reimbursement_create.view':
-			configureReimbursementCreateView();
-			break;
-		case 'reimbursement_update.view':
-			configureReimbursementUpdateView();
-			break;
-		case 'reimbursement_view.view':
-			configureReimbursementsView();
-			break;
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			APP_VIEW.innerHTML = xhr.responseText;
+			switch (pageToLoad) {
+				default:
+					loadView('login.view');
+					return;
+				case 'login.view':
+					configureLoginView();
+					break;
+				case 'home.view':
+					configureHomeView();
+					break;
+				case 'profile.view':
+					configureProfileView();
+					break;
+				case 'user_register.view':
+					if (!isAuthorized(['admin'])) return;
+					configureRegisterView();
+					break;
+				case 'user_update.view':
+					if (!isAuthorized(['admin'])) return;
+					configureUserUpdateView();
+					break;
+				case 'user_view.view':
+				case 'user_delete.view':
+					if (!isAuthorized(['admin'])) return;
+					configureUsersView();
+					break;
+				case 'reimbursement_create.view':
+					configureReimbursementCreateView();
+					break;
+				case 'reimbursement_update.view':
+					configureReimbursementUpdateView();
+					break;
+				case 'reimbursement_view.view':
+					configureReimbursementsView();
+					break;
+			}
+			loadNavBar();
 		}
-		loadNavBar();
-	}
 	}
 }
 
 function eventLoadView(evt) {
-  loadView(evt.currentTarget.desiredView);
+	loadView(evt.currentTarget.desiredView);
 }
 
 function loadNavBar() {
-  console.log('in loadNavBar');
-  let xhr = new XMLHttpRequest;
-  let destNav = "main.nav";
-  let authUser = JSON.parse(localStorage.getItem('authUser'));
-  var authRole = "main";
-  if (authUser) {
-	console.log(authUser);
-	authRole = authUser.role.toLowerCase();
-	destNav = authRole + ".nav";
-  }
-  console.log(destNav);
-  xhr.open("GET", destNav, true);
-  xhr.send();
-  xhr.onreadystatechange = async function () {
-	if (xhr.readyState == 4 && xhr.status == 200) {
-	  NAV_BAR.innerHTML = xhr.responseText;
-	  switch (authRole) {
-		default:
-		case 'main':
-		  // configureNavbarUserDropdown();
-		  document.getElementById('toLogin').addEventListener('click', login);
-		  break;
-		case 'admin':
-		  configureNavbarUserDropdown();
-		  configureNavbarReimbursementDropdown();
-		  configureDefaultViewButtons();
-		  document.getElementById('toLogout').addEventListener('click', logout);
-		  break;
-		case 'employee':
-		  configureNavbarReimbursementDropdown();
-		  configureDefaultViewButtons();
-		  document.getElementById('toLogout').addEventListener('click', logout);
-		  break;
-		case 'manager':
-		  configureNavbarReimbursementDropdown();
-		  configureDefaultViewButtons();
-		  document.getElementById('toLogout').addEventListener('click', logout);
-		  break;
-	  }
+	console.log('in loadNavBar');
+	let xhr = new XMLHttpRequest;
+	let destNav = "main.nav";
+	let authUser = JSON.parse(localStorage.getItem('authUser'));
+	var authRole = "main";
+	if (authUser) {
+		console.log(authUser);
+		authRole = authUser.role.toLowerCase();
+		destNav = authRole + ".nav";
 	}
-  }
+	console.log(destNav);
+	xhr.open("GET", destNav, true);
+	xhr.send();
+	xhr.onreadystatechange = async function () {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			NAV_BAR.innerHTML = xhr.responseText;
+			switch (authRole) {
+				default:
+				case 'main':
+					// configureNavbarUserDropdown();
+					document.getElementById('toLogin').addEventListener('click', login);
+					break;
+				case 'admin':
+					configureNavbarUserDropdown();
+					configureNavbarReimbursementDropdown();
+					configureDefaultViewButtons();
+					document.getElementById('toLogout').addEventListener('click', logout);
+					break;
+				case 'employee':
+					configureNavbarReimbursementDropdown();
+					configureDefaultViewButtons();
+					document.getElementById('toLogout').addEventListener('click', logout);
+					break;
+				case 'manager':
+					configureNavbarReimbursementDropdown();
+					configureDefaultViewButtons();
+					document.getElementById('toLogout').addEventListener('click', logout);
+					break;
+			}
+		}
+	}
 }
 
 //#endregion
@@ -159,34 +159,34 @@ function loadNavBar() {
 //#region configurations
 
 function configureLoginView() {
-  console.log('in configureLoginView');
+	console.log('in configureLoginView');
 
-  document.getElementById('login-message').setAttribute('hidden', true);
-  document.getElementById('login-button-container').addEventListener('mouseover', validateLoginForm);
-  document.getElementById('login').addEventListener('click', login);
+	document.getElementById('login-message').setAttribute('hidden', true);
+	document.getElementById('login-button-container').addEventListener('mouseover', validateLoginForm);
+	document.getElementById('login').addEventListener('click', login);
 }
 
 function configureRegisterView() {
-  console.log('in configureRegisterView()');
+	console.log('in configureRegisterView()');
 
-  document.getElementById('reg-message').setAttribute('hidden', true);
-
-  document.getElementById('reg-username').addEventListener('blur', isUsernameAvailable);
-  document.getElementById('email').addEventListener('blur', isEmailAvailable);
-
-  document.getElementById('register').setAttribute('disabled', true);
-  document.getElementById('reg-button-container').addEventListener('mouseover', validateRegisterForm);
-  document.getElementById('register').addEventListener('click', registerUserRequest);
-}
-
-function configureUserUpdateView(){
-	console.log('in configureUserUpdateView()');
-  
 	document.getElementById('reg-message').setAttribute('hidden', true);
-  
+
 	document.getElementById('reg-username').addEventListener('blur', isUsernameAvailable);
 	document.getElementById('email').addEventListener('blur', isEmailAvailable);
-  
+
+	document.getElementById('register').setAttribute('disabled', true);
+	document.getElementById('reg-button-container').addEventListener('mouseover', validateRegisterForm);
+	document.getElementById('register').addEventListener('click', registerUserRequest);
+}
+
+function configureUserUpdateView() {
+	console.log('in configureUserUpdateView()');
+
+	document.getElementById('reg-message').setAttribute('hidden', true);
+
+	document.getElementById('reg-username').addEventListener('blur', isUsernameAvailable);
+	document.getElementById('email').addEventListener('blur', isEmailAvailable);
+
 	document.getElementById('register').setAttribute('disabled', true);
 	document.getElementById('reg-button-container').addEventListener('mouseover', validateUpdateForm);
 	document.getElementById('register').addEventListener('click', updateUserRequest);
@@ -194,29 +194,29 @@ function configureUserUpdateView(){
 }
 
 function configureHomeView() {
-  console.log('in configureHomeView');
+	console.log('in configureHomeView');
 
-  let authUser = JSON.parse(localStorage.getItem('authUser'));
-  document.getElementById('loggedInUsername').innerText = authUser.username;
+	let authUser = JSON.parse(localStorage.getItem('authUser'));
+	document.getElementById('loggedInUsername').innerText = authUser.username;
 }
 
 function configureUsersView() {
-  console.log('in configureUsersView()');
-  populateUserView();
+	console.log('in configureUsersView()');
+	populateUserView();
 }
 
-function configureReimbursementUpdateView(){
+function configureReimbursementUpdateView() {
 	console.log('in configureReimbursementUpdateView();');
 
 	document.getElementById('reg-message').setAttribute('hidden', true);
 
 	document.getElementById('update-reimbursement').setAttribute('disabled', true);
-	document.getElementById('sub-button-container').addEventListener('mouseover', validateReimbursementUpdateForm); 
-	document.getElementById('update-reimbursement').addEventListener('click', updateReimbursementRequest); 
+	document.getElementById('sub-button-container').addEventListener('mouseover', validateReimbursementUpdateForm);
+	document.getElementById('update-reimbursement').addEventListener('click', updateReimbursementRequest);
 	// $('.file-upload').file_upload();
 	populateReimbursementsUpdateView();
 }
-function configureReimbursementCreateView(){
+function configureReimbursementCreateView() {
 	console.log('in configureReimbursementCreateView();');
 
 	document.getElementById('reg-message').setAttribute('hidden', true);
@@ -228,67 +228,67 @@ function configureReimbursementCreateView(){
 
 }
 
-function configureReimbursementsView(){
+function configureReimbursementsView() {
 	console.log('in configureReimbursementsView()');
 	populateReimbursementsView();
 
 }
 
 function configureDefaultViewButtons() {
-  console.log('in configureDefaultViewButtons');
-  const HomeButton = document.getElementById('toHome')
-  HomeButton.addEventListener('click', eventLoadView);
-  HomeButton.desiredView = 'home.view';
+	console.log('in configureDefaultViewButtons');
+	const HomeButton = document.getElementById('toHome')
+	HomeButton.addEventListener('click', eventLoadView);
+	HomeButton.desiredView = 'home.view';
 
-  const ProfileButton = document.getElementById('toProfile')
-  ProfileButton.addEventListener('click', eventLoadView);
-  ProfileButton.desiredView = 'profile.view';
+	const ProfileButton = document.getElementById('toProfile')
+	ProfileButton.addEventListener('click', eventLoadView);
+	ProfileButton.desiredView = 'profile.view';
 }
 
 function configureNavbarUserDropdown() {
-  // const UserDropdown = document.getElementById('dropdownMenuButtonUser');
-  // UserDropdown.addEventListener('click', function(){
-  // 	$('.dropdown-toggle').dropdown('toggle');
-  // });
+	// const UserDropdown = document.getElementById('dropdownMenuButtonUser');
+	// UserDropdown.addEventListener('click', function(){
+	// 	$('.dropdown-toggle').dropdown('toggle');
+	// });
 
-  const UpdateUserButton = document.getElementById('toUpdateUser');
-  UpdateUserButton.addEventListener('click', eventLoadView);
-  UpdateUserButton.desiredView = 'user_update.view';
+	//   const UpdateUserButton = document.getElementById('toUpdateUser');
+	//   UpdateUserButton.addEventListener('click', eventLoadView);
+	//   UpdateUserButton.desiredView = 'user_update.view';
 
-  const RegisterUserButton = document.getElementById('toRegisterUser');
-  RegisterUserButton.addEventListener('click', eventLoadView);
-  RegisterUserButton.desiredView = 'user_register.view';
+	const RegisterUserButton = document.getElementById('toRegisterUser');
+	RegisterUserButton.addEventListener('click', eventLoadView);
+	RegisterUserButton.desiredView = 'user_register.view';
 
-  const ViewUserButton = document.getElementById('toViewUsers');
-  ViewUserButton.addEventListener('click', eventLoadView);
-  ViewUserButton.desiredView = 'user_view.view';
+	const ViewUserButton = document.getElementById('toViewUsers');
+	ViewUserButton.addEventListener('click', eventLoadView);
+	ViewUserButton.desiredView = 'user_view.view';
 
-  const DeleteUserButton = document.getElementById('toDeleteUser');
-  DeleteUserButton.addEventListener('click', eventLoadView);
-  DeleteUserButton.desiredView = 'user_delete.view';
+	//   const DeleteUserButton = document.getElementById('toDeleteUser');
+	//   DeleteUserButton.addEventListener('click', eventLoadView);
+	//   DeleteUserButton.desiredView = 'user_delete.view';
 }
 
 function configureNavbarReimbursementDropdown() {
-  // const ReimbursementDropdown = document.getElementById('dropdownMenuButtonReimbursement');
-  // ReimbursementDropdown.addEventListener('click', function(){
-  // 	$('.dropdown-toggle').dropdown('toggle');
-  // });
+	// const ReimbursementDropdown = document.getElementById('dropdownMenuButtonReimbursement');
+	// ReimbursementDropdown.addEventListener('click', function(){
+	// 	$('.dropdown-toggle').dropdown('toggle');
+	// });
 
-  const CreateReimbursementButton = document.getElementById('toCreateReimbursement');
-  CreateReimbursementButton.addEventListener('click', eventLoadView);
-  CreateReimbursementButton.desiredView = 'reimbursement_create.view';
+	const CreateReimbursementButton = document.getElementById('toCreateReimbursement');
+	CreateReimbursementButton.addEventListener('click', eventLoadView);
+	CreateReimbursementButton.desiredView = 'reimbursement_create.view';
 
-  const UpdateReimbursementButton = document.getElementById('toUpdateReimbursement');
-  UpdateReimbursementButton.addEventListener('click', eventLoadView);
-  UpdateReimbursementButton.desiredView = 'reimbursement_update.view';
+	//   const UpdateReimbursementButton = document.getElementById('toUpdateReimbursement');
+	//   UpdateReimbursementButton.addEventListener('click', eventLoadView);
+	//   UpdateReimbursementButton.desiredView = 'reimbursement_update.view';
 
-  const ViewReimbursementButton = document.getElementById('toViewReimbursement');
-  ViewReimbursementButton.addEventListener('click', eventLoadView);
-  ViewReimbursementButton.desiredView = 'reimbursement_view.view';
+	const ViewReimbursementButton = document.getElementById('toViewReimbursement');
+	ViewReimbursementButton.addEventListener('click', eventLoadView);
+	ViewReimbursementButton.desiredView = 'reimbursement_view.view';
 
-  const DeleteReimbursementButton = document.getElementById('toDeleteReimbursement');
-  DeleteReimbursementButton.addEventListener('click', eventLoadView);
-  DeleteReimbursementButton.desiredView = 'reimbursement_view.view';
+	//   const DeleteReimbursementButton = document.getElementById('toDeleteReimbursement');
+	//   DeleteReimbursementButton.addEventListener('click', eventLoadView);
+	//   DeleteReimbursementButton.desiredView = 'reimbursement_view.view';
 }
 
 //#endregion
@@ -302,39 +302,39 @@ function configureNavbarReimbursementDropdown() {
 //#region operations
 
 function login() {
-  console.log('in login()');
+	console.log('in login()');
 
-  let un = document.getElementById('login-username').value;
-  let pw = document.getElementById('login-password').value;
+	let un = document.getElementById('login-username').value;
+	let pw = document.getElementById('login-password').value;
 
-  let credentials = {
-	username: un,
-	password: pw
-  }
-
-  let credentialsJSON = JSON.stringify(credentials);
-
-  let xhr = new XMLHttpRequest;
-  xhr.open('POST', 'auth');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(credentialsJSON);
-
-  xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 200) {
-
-	  console.log('login successful!');
-	  document.getElementById('login-message').setAttribute('hidden', true);
-	  localStorage.setItem('authUser', xhr.responseText);
-	  loadView('home.view');
-
-	} else if (xhr.readyState == 4 && xhr.status == 401) {
-
-	  document.getElementById('login-message').removeAttribute('hidden');
-	  let err = JSON.parse(xhr.responseText);
-	  document.getElementById('login-message').innerText = err.message;
-
+	let credentials = {
+		username: un,
+		password: pw
 	}
-  }
+
+	let credentialsJSON = JSON.stringify(credentials);
+
+	let xhr = new XMLHttpRequest;
+	xhr.open('POST', 'auth');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(credentialsJSON);
+
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+
+			console.log('login successful!');
+			document.getElementById('login-message').setAttribute('hidden', true);
+			localStorage.setItem('authUser', xhr.responseText);
+			loadView('home.view');
+
+		} else if (xhr.readyState == 4 && xhr.status == 401) {
+
+			document.getElementById('login-message').removeAttribute('hidden');
+			let err = JSON.parse(xhr.responseText);
+			document.getElementById('login-message').innerText = err.message;
+
+		}
+	}
 }
 
 function logout() {
@@ -397,24 +397,24 @@ function registerUserRequest() {
 	}
 }
 
-function submitReimbursementRequest(){
+function submitReimbursementRequest() {
 	console.log('in submitReimbursementRequest()');
 
 	let amt = document.getElementById('amount').value;
 	let desc = document.getElementById('description').value;
-	let rcpt =  ''; //document.getElementById('').value; //TODO coming soon
+	let rcpt = ''; //document.getElementById('').value; //TODO coming soon
 	let author = JSON.parse(localStorage.getItem('authUser')).username;
 	let reimb_type = document.getElementById('reimbursementType').value;
-	
+
 	let reimbDto = {
-		amount:amt,
-		description:desc,
-		receiptURI:rcpt,
-		author:author,
-		type:reimb_type
+		amount: amt,
+		description: desc,
+		receiptURI: rcpt,
+		author: author,
+		type: reimb_type
 	}
 	console.log(reimbDto);
-	
+
 	let reimbDtoJSON = JSON.stringify(reimbDto);
 
 	let xhr = new XMLHttpRequest;
@@ -475,29 +475,39 @@ function updateUserRequest() {
 	xhr.onreadystatechange = function () {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 
-		let msg = JSON.parse(xhr.responseText);
-		console.log(msg);
-		// document.getElementById('reg-message').innerText = msg;
-		document.getElementById('reg-message').setAttribute('hidden', true);
-		loadView("user_view.view");
+			let msg = JSON.parse(xhr.responseText);
+			console.log(msg);
+			// document.getElementById('reg-message').innerText = msg;
+			document.getElementById('reg-message').setAttribute('hidden', true);
+			loadView("user_view.view");
 
 		} else if (xhr.readyState == 4 && xhr.status == 400) {
 
-		document.getElementById('reg-message').removeAttribute('hidden');
-		let err = JSON.parse(xhr.responseText);
-		document.getElementById('reg-message').innerText = err.message;
+			document.getElementById('reg-message').removeAttribute('hidden');
+			let err = JSON.parse(xhr.responseText);
+			document.getElementById('reg-message').innerText = err.message;
 
 		}
 	}
 }
 
-function updateReimbursementRequest(){
+function updateReimbursementRequest() {
 	console.log('in updateReimbursementRequest()');
 
 	let rid = document.getElementById('id').value;
 	let amt = document.getElementById('amount').value;
-	let sub = document.getElementById('submitted').value;
-	let res = document.getElementById('resolved').value;
+	let sub = new Date(document.getElementById('submitted').value);
+	console.log(sub);
+	sub = formatTime(sub);
+	console.log(sub);
+	let res = new Date(document.getElementById('resolved').value);
+	console.log(res);
+	if (isNaN(res.getTime())) {
+		res = null;
+	} else {
+		res = formatTime(res);
+	}
+	console.log(res);
 	let des = document.getElementById('description').value;
 	let rec = document.getElementById('receipts').value;
 	let aut = document.getElementById('author').value;
@@ -506,16 +516,16 @@ function updateReimbursementRequest(){
 	let typ = document.getElementById('reimbursementType').value;
 
 	let reimbursementDTO = {
-		id:rid,
-		amount:amt,
-		submitted:sub,
-		resolved:res,
-		description:des,
-		receiptURI:rec,
-		author:aut,
-		resolver:olv,
-		reimb_status_id:sta,
-		reimb_type_id:typ
+		id: rid,
+		amount: amt,
+		submitted: sub,
+		resolved: res,
+		description: des,
+		receiptURI: rec,
+		author: aut,
+		resolver: olv,
+		reimb_status_id: sta,
+		reimb_type_id: typ
 	}
 	console.log(reimbursementDTO);
 
@@ -529,17 +539,17 @@ function updateReimbursementRequest(){
 	xhr.onreadystatechange = function () {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 
-		let msg = JSON.parse(xhr.responseText);
-		console.log(msg);
-		// document.getElementById('reg-message').innerText = msg;
-		document.getElementById('reg-message').setAttribute('hidden', true);
-		loadView("reimbursement_view.view");
+			let msg = JSON.parse(xhr.responseText);
+			console.log(msg);
+			// document.getElementById('reg-message').innerText = msg;
+			document.getElementById('reg-message').setAttribute('hidden', true);
+			loadView("reimbursement_view.view");
 
 		} else if (xhr.readyState == 4 && xhr.status == 400) {
 
-		document.getElementById('reg-message').removeAttribute('hidden');
-		let err = JSON.parse(xhr.responseText);
-		document.getElementById('reg-message').innerText = err.message;
+			document.getElementById('reg-message').removeAttribute('hidden');
+			let err = JSON.parse(xhr.responseText);
+			document.getElementById('reg-message').innerText = err.message;
 
 		}
 	}
@@ -547,121 +557,137 @@ function updateReimbursementRequest(){
 }
 
 function populateUserView() {
-  console.log('in populateUserView');
+	console.log('in populateUserView');
 
-  let tableBody = document.getElementById('userTableBody');
+	let tableBody = document.getElementById('userTableBody');
 
-  let xhr = new XMLHttpRequest();
+	let xhr = new XMLHttpRequest();
 
-  xhr.open('GET', 'users');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send();
+	xhr.open('GET', 'users');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send();
 
-  xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 200) {
-		for(let child of tableBody.childNodes){
-			child.remove();
-		}
-		let users = JSON.parse(xhr.responseText);
-		for (var i = 0; i < users.length; i++) {
-			let row = document.createElement("tr");
-			row.classList.add("userEntry");
-			let active = users[i].active;
-			if (!active) {
-				row.classList.add('disabled');
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			for (let child of tableBody.childNodes) {
+				child.remove();
 			}
-			let id = document.createElement("td");
-			id.innerText = users[i].id;
-			row.id = users[i].id;
-			let firstName = document.createElement("td");
-			firstName.innerText = users[i].firstName;
-			let lastName = document.createElement("td");
-			lastName.innerText = users[i].lastName;
-			let username = document.createElement("td");
-			username.innerText = users[i].username;
-			let email = document.createElement("td");
-			email.innerText = users[i].email;
-			let role = document.createElement("td");
-			role.innerText = titleCase(users[i].role);
-			let modify = document.createElement('td');
-			modify.id = `modify:${users[i].id}`;
+			let users = JSON.parse(xhr.responseText);
+			for (var i = 0; i < users.length; i++) {
+				let row = document.createElement("tr");
+				row.classList.add("userEntry");
+				let active = users[i].active;
+				if (!active) {
+					row.classList.add('deactivated');
+				}
+				let id = document.createElement("td");
+				id.innerText = users[i].id;
+				row.id = users[i].id;
+				let firstName = document.createElement("td");
+				firstName.innerText = users[i].firstName;
+				let lastName = document.createElement("td");
+				lastName.innerText = users[i].lastName;
+				let username = document.createElement("td");
+				username.innerText = users[i].username;
+				let email = document.createElement("td");
+				email.innerText = users[i].email;
+				let role = document.createElement("td");
+				role.innerText = titleCase(users[i].role);
+				let modify = document.createElement('td');
+				modify.id = `modify:${users[i].id}`;
 
-			let pid = users[i].id;
-			let ac = users[i].active;
-			let em = users[i].email;
-			let un = users[i].username;
-			let rl = titleCase(users[i].role);
+				let pid = users[i].id;
+				let ac = users[i].active;
+				let em = users[i].email;
+				let un = users[i].username;
+				let rl = titleCase(users[i].role);
 
-			let principal = {
-				"id": pid,
-				"username": un,
-				"role": rl
-			}
+				let principal = {
+					"id": pid,
+					"username": un,
+					"role": rl
+				}
 
-			let user = {
-				id: pid,
-				active: ac,
-				username: un,
-				email: em,
-				role: rl
-			}
+				let user = {
+					id: pid,
+					active: ac,
+					username: un,
+					email: em,
+					role: rl
+				}
 
-			let editInteract = document.createElement('a');
-			editInteract.href = "#";
-			editInteract.className += 'edit';
-			editInteract.innerText = "Edit";
-			editInteract.addEventListener('click', eventUpdateUser);
-			editInteract.user = user;
-			modify.appendChild(editInteract);
-			let slash = document.createTextNode(' / ');
-			modify.appendChild(slash);
-			if (active) {
-				let deactivateInteract = document.createElement('a');
-				deactivateInteract.id = `deactivate:${users[i].id}`;
-				deactivateInteract.href = "#";
-				deactivateInteract.className += 'remove';
-				deactivateInteract.innerText = "Deactivate";
-				deactivateInteract.addEventListener('click', eventDeactivateUser);
-				deactivateInteract.principal = principal;
-				modify.appendChild(deactivateInteract);
-			} else {
-				let reactivateInteract = document.createElement('a');
-				reactivateInteract.id = `reactivate:${users[i].id}`;
-				reactivateInteract.href = "#";
-				reactivateInteract.className += 'remove';
-				reactivateInteract.innerText = "Activate";
-				reactivateInteract.addEventListener('click', eventActivateUser);
-				reactivateInteract.principal = principal;
-				modify.appendChild(reactivateInteract);
-			}
+				let editInteract = document.createElement('a');
+				editInteract.href = "#";
+				editInteract.className += 'edit';
+				let editIcon = document.createElement('span');
+				editIcon.classList += "glyphicon glyphicon-wrench";
+				editInteract.appendChild(editIcon);
+				editInteract.innerText = "Edit";
+				// editInteract.setAttribute("data-toggle", ["tooltip"]);
+				editInteract.title = "Update User";
+				editInteract.addEventListener('click', eventUpdateUser);
+				editInteract.user = user;
+				modify.appendChild(editInteract);
+				let slash = document.createTextNode(' / ');
+				modify.appendChild(slash);
+				if (active) {
+					let deactivateInteract = document.createElement('a');
+					deactivateInteract.id = `deactivate:${users[i].id}`;
+					deactivateInteract.href = "#";
+					deactivateInteract.className += 'remove';
+					let deactivateIcon = document.createElement('span');
+					deactivateIcon.classList += "glyphicon glyphicon-remove-circle";
+					deactivateInteract.appendChild(deactivateIcon);
+					deactivateInteract.innerText = "Deactivate";
+					// deactivateInteract.setAttribute("data-toggle", ["tooltip"]);
+					deactivateInteract.title = "Deactivate User";
+					deactivateInteract.addEventListener('click', eventDeactivateUser);
+					deactivateInteract.principal = principal;
+					modify.appendChild(deactivateInteract);
+				} else {
+					let reactivateInteract = document.createElement('a');
+					reactivateInteract.id = `reactivate:${users[i].id}`;
+					reactivateInteract.href = "#";
+					reactivateInteract.className += 'ok';
+					let reactivateIcon = document.createElement('span');
+					reactivateIcon.classList += "glyphicon glyphicon-ok-circle";
+					reactivateInteract.appendChild(reactivateIcon);
+					reactivateInteract.innerText = "Activate";
+					// reactivateInteract.setAttribute("data-toggle", ["tooltip"]);
+					reactivateInteract.title = "Reactivate User";
+					reactivateInteract.addEventListener('click', eventActivateUser);
+					reactivateInteract.principal = principal;
+					modify.appendChild(reactivateInteract);
+				}
 
-			row.appendChild(id);
-			row.appendChild(firstName);
-			row.appendChild(lastName);
-			row.appendChild(username);
-			row.appendChild(email);
-			row.appendChild(role);
-			row.appendChild(modify);
+				row.appendChild(id);
+				row.appendChild(firstName);
+				row.appendChild(lastName);
+				row.appendChild(username);
+				row.appendChild(email);
+				row.appendChild(role);
+				row.appendChild(modify);
 
-			tableBody.appendChild(row);
+				tableBody.appendChild(row);
 			}
 			$('#userTable').DataTable();
 			$('.dataTables_length').addClass('bs-select');
+			$('[data-toggle="tooltip"]').tooltip()
 			console.log(users);
 			// tableBody.innerText = JSON.stringify(users);
 		}
 	}
 }
 
-function populateReimbursementsView(){
-	
+function populateReimbursementsView() {
+
 	console.log('in populateReimbursementsView');
 
 	let tableBody = document.getElementById('reimbursementTableBody');
 
 	let xhr = new XMLHttpRequest();
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
-	if(isAuthorized(['admin','manager'])){
+	if (isAuthorized(['admin', 'manager'])) {
 		xhr.open('GET', 'reimbursements');
 	} else {
 		xhr.open('GET', `reimbursements?author=${authUser.id}`);
@@ -670,125 +696,144 @@ function populateReimbursementsView(){
 	xhr.send();
 
 	xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 200) {
-		//remove previous table states, if any.
-		for(let child of tableBody.childNodes){
-			child.remove();
-		}
-		let reimbursements = JSON.parse(xhr.responseText);
-		for (var i = 0; i < reimbursements.length; i++) {
-			let row = document.createElement("tr");
-			row.classList.add("reimbursementEntry");
-
-			let rid = reimbursements[i].id;
-			let amt = reimbursements[i].amount;
-			let submitd = reimbursements[i].submitted;
-			let submtd = reimbursements[i].submitted;
-			if(submtd) submtd = (new Date(submtd)).toString();
-			let reslvd = reimbursements[i].resolved;
-			let rslvd = reimbursements[i].resolved;
-			if(rslvd) rslvd = (new Date(rslvd)).toString();
-			let desc = reimbursements[i].description;
-			let rcptURI = reimbursements[i].receiptURI;
-			let authr = reimbursements[i].author;
-			if(authr) authr = authr.username;
-			let rslvr = reimbursements[i].resolver;
-			if(rslvr) rslvr = rslvr.username;
-			let reimb_status = reimbursements[i].reimb_status_id;
-			if(reimb_status) reimb_status = titleCase(reimb_status);
-			let reimb_type= reimbursements[i].reimb_type_id;
-			if(reimb_type) reimb_type = titleCase(reimb_type);
-
-			let idElem = document.createElement("td");
-			idElem.innerText = rid;
-			row.id = rid;
-			let amountElem = document.createElement("td");
-			amountElem.innerText = amt;
-			let submittedElem = document.createElement("td");
-			submittedElem.innerText = submtd;
-			let resolvedElem = document.createElement("td");
-			resolvedElem.innerText = rslvd;
-			let descriptionElem = document.createElement("td");
-			descriptionElem.innerText = desc;
-			let receiptURIElem = document.createElement("td");
-			receiptURIElem.innerText = rcptURI;
-			let authorElem = document.createElement("td");
-			authorElem.innerText = authr;
-			let resolverElem = document.createElement("td");
-			resolverElem.innerText = rslvr;
-			let reimbursementStatusElem = document.createElement("td");
-			reimbursementStatusElem.innerText = reimb_status;
-			let reimbursementTypeElem = document.createElement("td");
-			reimbursementTypeElem.innerText = reimb_type;
-			let modifyElem = document.createElement('td');
-			modifyElem.id = `modify:${rid}`;
-
-			let reimbursement = {
-				id:rid,
-				amount:amt,
-				submitted:submitd,
-				resolved:reslvd,
-				description:desc,
-				receiptURI:rcptURI,
-				author:authr,
-				resolver:rslvr,
-				reimbursementStatus:reimb_status,
-				reimbursementType:reimb_type
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			//remove previous table states, if any.
+			for (let child of tableBody.childNodes) {
+				child.remove();
 			}
+			let reimbursements = JSON.parse(xhr.responseText);
+			for (var i = 0; i < reimbursements.length; i++) {
+				let row = document.createElement("tr");
+				row.classList.add("reimbursementEntry");
 
-			let deleteId = {
-				id:rid
+				let rid = reimbursements[i].id;
+				let amt = reimbursements[i].amount;
+				let submitd = reimbursements[i].submitted;
+				let submtd = reimbursements[i].submitted;
+				if (submtd) submtd = (new Date(submtd)).toString();
+				let reslvd = reimbursements[i].resolved;
+				let rslvd = reimbursements[i].resolved;
+				if (rslvd) rslvd = (new Date(rslvd)).toString();
+				let desc = reimbursements[i].description;
+				let rcptURI = reimbursements[i].receiptURI;
+				let authr = reimbursements[i].author;
+				if (authr) authr = authr.username;
+				let rslvr = reimbursements[i].resolver;
+				if (rslvr) rslvr = rslvr.username;
+				let reimb_status = reimbursements[i].reimb_status_id;
+				if (reimb_status) reimb_status = titleCase(reimb_status);
+				let reimb_type = reimbursements[i].reimb_type_id;
+				if (reimb_type) reimb_type = titleCase(reimb_type);
+
+				let idElem = document.createElement("td");
+				idElem.innerText = rid;
+				row.id = rid;
+				let amountElem = document.createElement("td");
+				amountElem.innerText = amt;
+				let submittedElem = document.createElement("td");
+				submittedElem.innerText = submtd;
+				let resolvedElem = document.createElement("td");
+				resolvedElem.innerText = rslvd;
+				let descriptionElem = document.createElement("td");
+				descriptionElem.innerText = desc;
+				let receiptURIElem = document.createElement("td");
+				receiptURIElem.innerText = rcptURI;
+				let authorElem = document.createElement("td");
+				authorElem.innerText = authr;
+				let resolverElem = document.createElement("td");
+				resolverElem.innerText = rslvr;
+				let reimbursementStatusElem = document.createElement("td");
+				reimbursementStatusElem.innerText = reimb_status;
+				let reimbursementTypeElem = document.createElement("td");
+				reimbursementTypeElem.innerText = reimb_type;
+				let modifyElem = document.createElement('td');
+				modifyElem.id = `modify:${rid}`;
+
+				let reimbursement = {
+					id: rid,
+					amount: amt,
+					submitted: submitd,
+					resolved: reslvd,
+					description: desc,
+					receiptURI: rcptURI,
+					author: authr,
+					resolver: rslvr,
+					reimbursementStatus: reimb_status,
+					reimbursementType: reimb_type
+				}
+
+				let deleteId = {
+					id: rid
+				}
+
+				if (authUser.role != "employee" || reimb_status.toLowerCase() == "pending") {
+
+					let editInteract = document.createElement('a');
+					editInteract.href = "#";
+					editInteract.className += 'edit';
+					let editIcon = document.createElement('span');
+					editIcon.classList += "glyphicon glyphicon-wrench";
+					editInteract.appendChild(editIcon);
+					editInteract.innerText = "Edit";
+					// editInteract.innerHTML = '<span class="glyphicon glyphicon-wrench"></span>';
+					// editInteract.setAttribute("data-toggle", ["tooltip"]);
+					editInteract.title = "Update Reimbursement";
+					editInteract.addEventListener('click', eventUpdateReimbursement);
+					editInteract.reimbursement = reimbursement;
+					modifyElem.appendChild(editInteract);
+
+				}
+				if (authUser.role != "employee") {
+					let slash = document.createTextNode(' / ');
+					modifyElem.appendChild(slash);
+
+					let deleteInteract = document.createElement('a');
+					deleteInteract.id = `deactivate:${reimbursements[i].id}`;
+					deleteInteract.href = "#";
+					deleteInteract.className += 'remove';
+					let deleteIcon = document.createElement('span');
+					deleteIcon.classList += "glyphicon glyphicon-remove-circle";
+					deleteInteract.appendChild(deleteIcon);
+					deleteInteract.innerText = "Delete";
+					// deleteInteract.innerHTML = '<span class="glyphicon glyphicon-remove-circle"></span>';
+					// deleteInteract.setAttribute("data-toggle", ["tooltip"]);
+					deleteInteract.title = "Delete Reimbursement";
+					deleteInteract.addEventListener('click', eventDeleteReimbursement);
+					deleteInteract.id = deleteId;
+					modifyElem.appendChild(deleteInteract);
+				}
+
+				row.classList.add(reimb_status.toLowerCase());
+
+				row.appendChild(idElem);
+				row.appendChild(amountElem);
+				row.appendChild(submittedElem);
+				row.appendChild(resolvedElem);
+				row.appendChild(descriptionElem);
+				row.appendChild(receiptURIElem);
+				row.appendChild(authorElem);
+				row.appendChild(resolverElem);
+				row.appendChild(reimbursementStatusElem);
+				row.appendChild(reimbursementTypeElem);
+				row.appendChild(modifyElem);
+
+				tableBody.appendChild(row);
 			}
-
-			let editInteract = document.createElement('a');
-			editInteract.href = "#";
-			editInteract.className += 'edit';
-			editInteract.innerText = "Edit";
-			editInteract.addEventListener('click', eventUpdateReimbursement);
-			editInteract.reimbursement = reimbursement;
-			modifyElem.appendChild(editInteract);
-
-			let slash = document.createTextNode(' / ');
-			modifyElem.appendChild(slash);
-
-			let deactivateInteract = document.createElement('a');
-			deactivateInteract.id = `deactivate:${reimbursements[i].id}`;
-			deactivateInteract.href = "#";
-			deactivateInteract.className += 'remove';
-			deactivateInteract.innerText = "Delete";
-			deactivateInteract.addEventListener('click', eventDeleteReimbursement);
-			deactivateInteract.id = deleteId;
-			modifyElem.appendChild(deactivateInteract);
-			
-
-			row.appendChild(idElem);
-			row.appendChild(amountElem);
-			row.appendChild(submittedElem);
-			row.appendChild(resolvedElem);
-			row.appendChild(descriptionElem);
-			row.appendChild(receiptURIElem);
-			row.appendChild(authorElem);
-			row.appendChild(resolverElem);
-			row.appendChild(reimbursementStatusElem);
-			row.appendChild(reimbursementTypeElem);
-			row.appendChild(modifyElem);
-
-			tableBody.appendChild(row);
-			}
-		$('#reimbursementTable').DataTable();
-		$('.dataTables_length').addClass('bs-select');
-		console.log(reimbursements);
-		// tableBody.innerText = JSON.stringify(reimbursements);
+			$('#reimbursementTable').DataTable();
+			$('.dataTables_length').addClass('bs-select');
+			$('[data-toggle="tooltip"]').tooltip()
+			console.log(reimbursements);
+			// tableBody.innerText = JSON.stringify(reimbursements);
 		}
 	}
 }
 
-function populateUserUpdateInputFields(){
+function populateUserUpdateInputFields() {
 	console.log('in populateUserUpdateInputFields()');
-	
+
 	let user = JSON.parse(localStorage.getItem('updateUser'));
 	console.log(user);
-	
+
 	let updateViewHeader = document.getElementById('updateViewHeader');
 	updateViewHeader.innerText = 'Revabursement Update: Updating ' + user.username;
 	let idBox = document.getElementById('id');
@@ -800,7 +845,7 @@ function populateUserUpdateInputFields(){
 	for (let i = 0; i < roleSelect.options.length; i++) {
 		const opt = roleSelect.options[i];
 		console.log(user);
-		if(opt.value == user.role.toLowerCase()){
+		if (opt.value == user.role.toLowerCase()) {
 			opt.selected = true;
 			break;
 		}
@@ -808,26 +853,28 @@ function populateUserUpdateInputFields(){
 	localStorage.removeItem('updateUser');
 }
 
-function populateReimbursementsUpdateView(){
+function populateReimbursementsUpdateView() {
+	let numSlice = 23;
 	console.log('in populateReimbursementsUpdateView()');
 	//if user is Employee AND reimbursementStatus is NOT pending
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
-	if(authUser){
-		if(authUser.role.toLowerCase() == "employee" 
-		&& reimbursement.reimbursementStatus.toLowerCase() != "pending"){
-			document.getElementById('sub-button-container').removeEventListener('mouseover', validateReimbursementUpdateForm); 
+	let reimbursement = JSON.parse(localStorage.getItem('updateReimbursement'));
+	console.log(authUser);
+	console.log(reimbursement);
+	if (authUser) {
+		if (authUser.role.toLowerCase() == "employee"
+			&& reimbursement.reimbursementStatus.toLowerCase() != "pending") {
+			document.getElementById('sub-button-container').removeEventListener('mouseover', validateReimbursementUpdateForm);
 			document.getElementById('update-reimbursement').removeEventListener('click', updateReimbursementRequest);
 		}
 	}
-	
-	let reimbursement = JSON.parse(localStorage.getItem('updateReimbursement'));
-	console.log(reimbursement);
-	
+
+
 	let updateViewHeader = document.getElementById('updateViewHeader');
 	updateViewHeader.innerText = 'Revabursement Update: Updating Reimbursement for ' + reimbursement.author;
 
 	editDisabledValue('id', reimbursement.id);
-	editDisabledValue('submitted', new Date(reimbursement.submitted).toISOString().slice(0, 16));
+	editDisabledValue('submitted', formatTime(new Date(reimbursement.submitted)).slice(0, numSlice).replace(' ', 'T'));
 	editDisabledValue('author', reimbursement.author);
 	editDisabledValue('resolver', reimbursement.resolver);
 	selectChosenOption('reimbursementStatus', reimbursement.reimbursementStatus);
@@ -835,44 +882,47 @@ function populateReimbursementsUpdateView(){
 
 	let amount = document.getElementById('amount');
 	amount.value = reimbursement.amount;
-	if(reimbursement.resolved){ 
-		let resolved = document.getElementById('resolved');
-		resolved.value = new Date(reimbursement.resolved).toISOString().slice(0, 16);
+	if (reimbursement.resolved) {
+		editDisabledValue('resolved', formatTime(new Date(reimbursement.resolved)).slice(0, numSlice).replace(' ', 'T'));
 	}
 	let description = document.getElementById('description');
 	description.value = reimbursement.description;
 	let receiptURI = document.getElementById('receiptURI');
 	receiptURI.value = reimbursement.receiptURI;
-	
+
 	localStorage.removeItem('updateReimbursement');
 	//if user is Employee AND reimbursementStatus is NOT pending
 	authUser = JSON.parse(localStorage.getItem('authUser'));
-	if(authUser){
-		if(authUser.role.toLowerCase() == "employee" 
-		&& reimbursement.reimbursementStatus.toLowerCase() != "pending"){
-			//disable all controls. 
-			
-			document.getElementById('id').disabled = true;
-			document.getElementById('amount').disabled = true;
-			document.getElementById('submitted').disabled = true;
-			document.getElementById('resolved').disabled = true;
-			document.getElementById('description').disabled = true;
-			document.getElementById('receipts').disabled = true;
-			document.getElementById('author').disabled = true;
-			document.getElementById('resolver').disabled = true;
+	if (authUser) {
+		if (authUser.role.toLowerCase() == "employee") {
+			if (reimbursement.reimbursementStatus.toLowerCase() != "pending") {
+				//disable all controls. 
+
+				document.getElementById('id').disabled = true;
+				document.getElementById('amount').disabled = true;
+				document.getElementById('submitted').disabled = true;
+				document.getElementById('resolved').disabled = true;
+				document.getElementById('description').disabled = true;
+				document.getElementById('receipts').disabled = true;
+				document.getElementById('receiptURI').disabled = true;
+				document.getElementById('author').disabled = true;
+				document.getElementById('resolver').disabled = true;
+				document.getElementById('reimbursementType').disabled = true;
+				document.getElementById('sub-button-container').removeEventListener('mouseover', validateReimbursementUpdateForm);
+				// document.getElementById('sub-button-container').hidden = true; 
+				document.getElementById('update-reimbursement').removeEventListener('click', updateReimbursementRequest);
+				// document.getElementById('update-reimbursement').hidden = true;
+			}
 			document.getElementById('reimbursementStatus').disabled = true;
-			document.getElementById('reimbursementType').disabled = true;
-			document.getElementById('sub-button-container').removeEventListener('mouseover', validateReimbursementUpdateForm); 
-			document.getElementById('update-reimbursement').removeEventListener('click', updateReimbursementRequest);
 		}
 	}
 }
 
-function selectChosenOption(id, option){
+function selectChosenOption(id, option) {
 	let selection = document.getElementById(id);
 	for (let i = 0; i < selection.options.length; i++) {
 		const opt = selection.options[i];
-		if(opt.value == option.toLowerCase()){
+		if (opt.value == option.toLowerCase()) {
 			opt.selected = true;
 			break;
 		}
@@ -887,121 +937,131 @@ function UpdateUser(user) {
 }
 
 function eventUpdateUser(evt) {
-  UpdateUser(evt.currentTarget.user);
+	UpdateUser(evt.currentTarget.user);
 }
 // Delete a record
 function deleteUser(principal) {
-  console.log(principal);
-  if (!principal) return;
-  let xhr = new XMLHttpRequest();
-  xhr.open('DELETE', 'users');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(JSON.stringify(principal));
+	console.log(principal);
+	if (!principal) return;
+	let xhr = new XMLHttpRequest();
+	xhr.open('DELETE', 'users');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(principal));
 
-  xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 204) {
-	  console.log('User removed successfully!');
-	  let deleteMe = document.getElementById(principal.id);
-	  deleteMe.remove();
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('User removed successfully!');
+			let deleteMe = document.getElementById(principal.id);
+			deleteMe.remove();
+		}
 	}
-  }
 }
 function eventDeleteUser(evt) {
-  deleteUser(evt.currentTarget.principal);
+	deleteUser(evt.currentTarget.principal);
 }
 /**
  * 
  * @param {Principal} principal 
  */
 function deactivateUser(principal) {
-  console.log(principal);
-  if (!principal) return;
-  if(isSelf(principal)){
-	  console.log(`You cannot deactivate yourself.`);
-	  return;
-  }
-  let xhr = new XMLHttpRequest();
-  xhr.open('DELETE', 'users');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(JSON.stringify(principal));
-
-  xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 204) {
-	  console.log('User removed successfully!');
-	  let disabledRow = document.getElementById(principal.id);
-	  disabledRow.classList.add('disabled');
-	  let deactivateInteract = document.getElementById(`deactivate:${principal.id}`);
-	  deactivateInteract.remove();
-	  
-	  let reactivateInteract = document.createElement('a');
-	  reactivateInteract.id = `reactivate:${principal.id}`;
-	  reactivateInteract.href = "#";
-	  reactivateInteract.className += 'remove';
-	  reactivateInteract.innerText = "Activate";
-	  reactivateInteract.addEventListener('click', eventActivateUser);
-	  reactivateInteract.principal = principal;
-
-	  let modify = document.getElementById(`modify:${principal.id}`);
-	  modify.appendChild(reactivateInteract);
-
+	console.log(principal);
+	if (!principal) return;
+	if (isSelf(principal)) {
+		console.log(`You cannot deactivate yourself.`);
+		return;
 	}
-  }
+	let xhr = new XMLHttpRequest();
+	xhr.open('DELETE', 'users');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(principal));
+
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('User removed successfully!');
+			let disabledRow = document.getElementById(principal.id);
+			disabledRow.classList.add('deactivated');
+			let deactivateInteract = document.getElementById(`deactivate:${principal.id}`);
+			deactivateInteract.remove();
+
+			let reactivateInteract = document.createElement('a');
+			reactivateInteract.id = `reactivate:${principal.id}`;
+			reactivateInteract.href = "#";
+			reactivateInteract.className += 'ok';
+			let reactivateIcon = document.createElement('span');
+			reactivateIcon.classList += "glyphicon glyphicon-ok-circle";
+			reactivateInteract.appendChild(reactivateIcon);
+			reactivateInteract.innerText = "Activate";
+			//   reactivateInteract.setAttribute("data-toggle", ["tooltip"]);
+			reactivateInteract.title = "Reactivate User";
+			reactivateInteract.addEventListener('click', eventActivateUser);
+			reactivateInteract.principal = principal;
+
+			let modify = document.getElementById(`modify:${principal.id}`);
+			modify.appendChild(reactivateInteract);
+
+		}
+	}
 }
 function eventDeactivateUser(evt) {
-  deactivateUser(evt.currentTarget.principal);
+	deactivateUser(evt.currentTarget.principal);
 }
 /**
  * 
  * @param {Principal} principal 
  */
 function activateUser(principal) {
-  console.log(principal);
-  if (!principal) return;
-  let xhr = new XMLHttpRequest();
-  xhr.open('PUT', 'users');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.setRequestHeader('activate', true);
-  xhr.send(JSON.stringify(principal));
+	console.log(principal);
+	if (!principal) return;
+	let xhr = new XMLHttpRequest();
+	xhr.open('PUT', 'users');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.setRequestHeader('activate', true);
+	xhr.send(JSON.stringify(principal));
 
-  xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 204) {
-	  console.log('User reactivated successfully!');
-	  let deleteMe = document.getElementById(principal.id);
-	  deleteMe.classList.remove('disabled');
-	  let reactivateInteract = document.getElementById(`reactivate:${principal.id}`);
-	  reactivateInteract.remove();
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('User reactivated successfully!');
+			let deleteMe = document.getElementById(principal.id);
+			deleteMe.classList.remove('deactivated');
+			let reactivateInteract = document.getElementById(`reactivate:${principal.id}`);
+			reactivateInteract.remove();
 
-	  let deactivateInteract = document.createElement('a');
-	  deactivateInteract.id = `deactivate:${principal.id}`;
-	  deactivateInteract.href = "#";
-	  deactivateInteract.className += 'remove';
-	  deactivateInteract.innerText = "Deactivate";
-	  deactivateInteract.addEventListener('click', eventDeactivateUser);
-	  deactivateInteract.principal = principal;
+			let deactivateInteract = document.createElement('a');
+			deactivateInteract.id = `deactivate:${principal.id}`;
+			deactivateInteract.href = "#";
+			deactivateInteract.className += 'remove';
+			let deactivateIcon = document.createElement('span');
+			deactivateIcon.classList += "glyphicon glyphicon-remove-circle";
+			deactivateInteract.appendChild(deactivateIcon);
+			deactivateInteract.innerText = "Deactivate";
+			//   deactivateInteract.setAttribute("data-toggle", ["tooltip"]);
+			deactivateInteract.title = "Deactivate User";
+			deactivateInteract.addEventListener('click', eventDeactivateUser);
+			deactivateInteract.principal = principal;
 
-	  let modify = document.getElementById(`modify:${principal.id}`);
-	  modify.appendChild(deactivateInteract);
+			let modify = document.getElementById(`modify:${principal.id}`);
+			modify.appendChild(deactivateInteract);
+
+		}
 
 	}
-	
-  }
 }
 function eventActivateUser(evt) {
-  activateUser(evt.currentTarget.principal);
+	activateUser(evt.currentTarget.principal);
 }
 
-function updateReimbursement(reimbursement){
+function updateReimbursement(reimbursement) {
 	localStorage.setItem('updateReimbursement', JSON.stringify(reimbursement));
 	loadView('reimbursement_update.view');
 }
 
-function eventUpdateReimbursement(evt){
+function eventUpdateReimbursement(evt) {
 	console.log('in eventUpdateReimbursement()');
 	updateReimbursement(evt.currentTarget.reimbursement);
-	
+
 }
 
-function deleteReimbursement(id){
+function deleteReimbursement(id) {
 	id = JSON.stringify(id);
 	console.log(id);
 	if (!id) return;
@@ -1009,17 +1069,17 @@ function deleteReimbursement(id){
 	xhr.open('DELETE', 'reimbursements');
 	xhr.setRequestHeader('Content-type', 'application/json');
 	xhr.send(id);
-  
+
 	xhr.onreadystatechange = function () {
-	  if (xhr.readyState == 4 && xhr.status == 204) {
-		console.log('User removed successfully!');
-		let deleteMe = document.getElementById(id.id);
-		deleteMe.remove();
-	  }
+		if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('User removed successfully!');
+			let deleteMe = document.getElementById(id.id);
+			deleteMe.remove();
+		}
 	}
 }
 
-function eventDeleteReimbursement(evt){
+function eventDeleteReimbursement(evt) {
 	console.log('in eventDeleteReimbursement()');
 	deleteReimbursement(evt.currentTarget.id);
 }
@@ -1034,32 +1094,52 @@ function eventDeleteReimbursement(evt){
 // 	  \/       \/     |__|        \/             \/             \/     \/                    \/     \/ 
 //#region helper functions
 function titleCase(string) {
-  var sentence = string.toLowerCase().split(" ");
-  for (var i = 0; i < sentence.length; i++) {
-	sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
-  }
-  return (sentence.join(" "));
+	var sentence = string.toLowerCase().split(" ");
+	for (var i = 0; i < sentence.length; i++) {
+		sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+	}
+	return (sentence.join(" "));
 }
 
-function isAuthorized(listOfRoles){
+function isAuthorized(listOfRoles) {
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
 	if (!authUser) {
 		return false;
 	}
 	let authorized = false;
 	for (var i = 0; i < listOfRoles.length; i++) {
-		if (authUser.role.toLowerCase() == listOfRoles[i].toLowerCase()){
+		if (authUser.role.toLowerCase() == listOfRoles[i].toLowerCase()) {
 			authorized = true;
 		}
 	}
 	return authorized;
-} 
+}
 
-function editDisabledValue(id, newVal){
+function editDisabledValue(id, newVal) {
 	let element = document.getElementById(id);
 	element.removeAttribute('disabled');
 	element.value = newVal;
 	element.disabled = true;
+}
+
+function formatUTCTime(timeF) {
+	return timeF.getUTCFullYear() + '-' +
+		('00' + (timeF.getUTCMonth() + 1)).slice(-2) + '-' +
+		('00' + timeF.getUTCDate()).slice(-2) + ' ' +
+		('00' + timeF.getUTCHours()).slice(-2) + ':' +
+		('00' + timeF.getUTCMinutes()).slice(-2) + ':' +
+		('00' + timeF.getUTCSeconds()).slice(-2) + '.' +
+		('00' + timeF.getUTCMilliseconds()).slice(-4);
+}
+
+function formatTime(timeF) {
+	return timeF.getFullYear() + '-' +
+		('00' + (timeF.getMonth() + 1)).slice(-2) + '-' +
+		('00' + timeF.getDate()).slice(-2) + ' ' +
+		('00' + timeF.getHours()).slice(-2) + ':' +
+		('00' + timeF.getMinutes()).slice(-2) + ':' +
+		('00' + timeF.getSeconds()).slice(-2) + '.' +
+		('00' + timeF.getMilliseconds()).slice(-4);
 }
 //#endregion
 
@@ -1084,14 +1164,14 @@ function isUsernameAvailable() {
 	xhr.send(JSON.stringify(username));
 
 	xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 204) {
-		console.log('Provided username is available!');
-		document.getElementById('reg-message').setAttribute('hidden', true);
-	} else if (xhr.readyState == 4 && xhr.status == 409) {
-		document.getElementById('reg-message').removeAttribute('hidden')
-		document.getElementById('reg-message').innerText = 'The provided username is already taken!';
-		document.getElementById('register').setAttribute('disabled', true);
-	}
+		if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('Provided username is available!');
+			document.getElementById('reg-message').setAttribute('hidden', true);
+		} else if (xhr.readyState == 4 && xhr.status == 409) {
+			document.getElementById('reg-message').removeAttribute('hidden')
+			document.getElementById('reg-message').innerText = 'The provided username is already taken!';
+			document.getElementById('register').setAttribute('disabled', true);
+		}
 	}
 }
 
@@ -1108,14 +1188,14 @@ function isEmailAvailable() {
 	xhr.send(JSON.stringify(email));
 
 	xhr.onreadystatechange = function () {
-	if (xhr.readyState == 4 && xhr.status == 204) {
-		console.log('Provided email is available!');
-		document.getElementById('reg-message').setAttribute('hidden', true);
-	} else if (xhr.readyState == 4 && xhr.status == 409) {
-		document.getElementById('reg-message').removeAttribute('hidden');
-		document.getElementById('reg-message').innerText = 'The provided email address is already taken!';
-		document.getElementById('register').setAttribute('disabled', true);
-	}
+		if (xhr.readyState == 4 && xhr.status == 204) {
+			console.log('Provided email is available!');
+			document.getElementById('reg-message').setAttribute('hidden', true);
+		} else if (xhr.readyState == 4 && xhr.status == 409) {
+			document.getElementById('reg-message').removeAttribute('hidden');
+			document.getElementById('reg-message').innerText = 'The provided email address is already taken!';
+			document.getElementById('register').setAttribute('disabled', true);
+		}
 	}
 }
 
@@ -1185,13 +1265,13 @@ function validateUpdateForm() {
 	}
 }
 
-function validateReimbursementCreateForm(){
+function validateReimbursementCreateForm() {
 	console.log('in validateReimbursementForm()');
-	
+
 	let amnt = document.getElementById('amount').value;
 	let desc = document.getElementById('description').value;
 	let recpt = document.getElementById('receipts').value;
-	
+
 	if (amnt && desc) {
 		document.getElementById('submit-reimbursement').removeAttribute('disabled');
 		document.getElementById('reg-message').setAttribute('hidden', true);
@@ -1202,13 +1282,13 @@ function validateReimbursementCreateForm(){
 	}
 }
 
-function validateReimbursementUpdateForm(){
+function validateReimbursementUpdateForm() {
 	console.log('in validateReimbursementUpdateForm()');
-	
+
 	let amnt = document.getElementById('amount').value;
 	let desc = document.getElementById('description').value;
 	let recpt = document.getElementById('receipts').value;
-	
+
 	if (amnt && desc) {
 		document.getElementById('update-reimbursement').removeAttribute('disabled');
 		document.getElementById('reg-message').setAttribute('hidden', true);
@@ -1219,7 +1299,7 @@ function validateReimbursementUpdateForm(){
 	}
 }
 
-function isSelf(principal){
+function isSelf(principal) {
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
 	return principal.id == authUser.id;
 }

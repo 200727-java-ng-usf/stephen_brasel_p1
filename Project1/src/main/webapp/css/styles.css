@@ -1,3 +1,9 @@
+@font-face {
+	font-family: 'Glyphicons Halflings';
+	src: url('https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.eot');
+	src: url('https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.woff') format('woff'), url('https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+}
+
 html, body{
     height: 100%;
 }
@@ -55,6 +61,9 @@ table.dataTable thead .sorting_desc_disabled:before {
 	bottom: .5em;
 }
 
-.disabled {
-	text-decoration: line-through;
+.denied, .deactivated{
+	background-color: #ffb9b9 !important;
+}
+.approved {
+	background-color: #c5fdc9 !important;
 }
