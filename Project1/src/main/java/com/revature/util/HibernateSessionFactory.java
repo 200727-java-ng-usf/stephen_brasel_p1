@@ -21,9 +21,15 @@ public class HibernateSessionFactory {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			InputStream propsInput = loader.getResourceAsStream("application.properties");
 			if (propsInput == null) {
-				props.setProperty("url", System.getProperty("url"));
-				props.setProperty("username", System.getProperty("username"));
-				props.setProperty("password", System.getProperty("password"));
+				if(System.getProperty("url") == null){
+					props.setProperty("url", System.getenv("url"));
+					props.setProperty("username", System.getenv("username"));
+					props.setProperty("password", System.getenv("password"));
+				}else {
+					props.setProperty("url", System.getProperty("url"));
+					props.setProperty("username", System.getProperty("username"));
+					props.setProperty("password", System.getProperty("password"));
+				}
 			} else {
 				props.load(propsInput);
 			}
