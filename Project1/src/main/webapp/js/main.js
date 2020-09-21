@@ -166,7 +166,9 @@ function loadNavBar() {
 				default:
 				case 'main':
 					// configureNavbarUserDropdown();
-					document.getElementById('toLogin').addEventListener('click', login);
+					LoginButton = document.getElementById('toLogin');
+					LoginButton.addEventListener('click', eventLoadView);
+					LoginButton.desiredView = 'login.view';
 					break;
 				case 'admin':
 					configureNavbarUserDropdown();
