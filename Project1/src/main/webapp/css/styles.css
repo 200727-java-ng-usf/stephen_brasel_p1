@@ -1,3 +1,4 @@
+/* Used for Glyph Icons: Wrench Symbol (Edit) Circle with Check Mark (Activate) Circle with an X mark (Deactivate) */
 @font-face {
 	font-family: 'Glyphicons Halflings';
 	src: url('https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.eot');
@@ -23,6 +24,7 @@ html, body{
 	color: white;
 }
 
+/* The base Header information, for old-school headers like <h1>, <h2>, etc. */
 .h1{
     font-size: 2em;
     font-weight: bolder;
@@ -48,6 +50,7 @@ html, body{
     font-weight: bolder;
 }
 
+/* DataTables. */
 table.dataTable thead .sorting:after,
 table.dataTable thead .sorting:before,
 table.dataTable thead .sorting_asc:after,
@@ -61,6 +64,8 @@ table.dataTable thead .sorting_desc_disabled:before {
 	bottom: .5em;
 }
 
+/* Make a Bigger Distinction between Pending, Approved, Denied, Active, and Deactivated 
+	Important because Bootstrap was overriding it in DataTables */
 .denied, .deactivated{
 	background-color: #ffb9b9 !important;
 }

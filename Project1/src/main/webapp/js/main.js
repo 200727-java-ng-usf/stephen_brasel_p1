@@ -1,4 +1,8 @@
-
+/**
+ * @author Stephen J. Brasel
+ * <code>{@link activateUser}</code>
+ * @since 1.0
+ */
 // .___       .__  __  .__       .__  .__               
 // |   | ____ |__|/  |_|__|____  |  | |__|_______ ____  
 // |   |/    \|  \   __\  \__  \ |  | |  \___   // __ \ 
@@ -6,24 +10,48 @@
 // |___|___|  /__||__| |__(____  /____/__/_____ \\___  >
 //          \/                 \/              \/    \/ 
 //#region Initialize
+
+/**
+ * Sets variable document.getElementById('app-view') for convenience.
+ */
 const APP_VIEW = document.getElementById('app-view');
+/**
+ * Sets variable document.getElementById('navbar') for convenience.
+ */
 const NAV_BAR = document.getElementById('navbar');
 
-window.addEventListener('beforeunload', unload);
+// window.addEventListener('beforeunload', unload);
+window.addEventListener('unload', unload);
 window.addEventListener('load', init);
 
-function unload(e) {
-	// window.localStorage.setItem('unloadTime') = JSON.stringify(new Date());
+/**
+ * Called before the page is unloaded. 
+ * Used to set a timestamp so that a logout can be called if 
+ */
+function unload() {
+	// let currentDate = JSON.stringify(new Date());
+	// console.log(currentDate);
+	// window.localStorage.setItem('unloadTime') = currentDate;
 
 };
 
+/**
+ * Called when page is initialized. 
+ * Loads the view and enables dropdown boxes.
+ */
 function init() {
 	// if(window.localStorage.getItem('unloadTime')){
 	// 	let loadTime = new Date();
-	// 	let unloadTime = new Date(JSON.parse(window.localStorage.getItem('unloadTime')));
+	// 	console.log(loadTime);
+	// 	let unldTime = window.localStorage.getItem('unloadTime');
+	// 	console.log(unldTime);
+	// 	console.log(JSON.parse(unldTime));
+	// 	let unloadTime = new Date(JSON.parse(unldTime));
+	// 	console.log(unloadTime);
 	// 	let refreshTime = loadTime.getTime() - unloadTime.getTime();
+	// 	console.log(refreshTime);
 
-	// 	if(refreshTime>3000)//3000 milliseconds
+	// 	if(refreshTime > 3)//3000 milliseconds
 	// 	{
 	// 		window.localStorage.removeItem("authUser");
 	// 		logout();
@@ -43,6 +71,11 @@ function init() {
 //         \/         \/      \/    \/           \/ 
 //#region loaders
 
+/**
+ * Generic function for loading html sections and inserting them into the single-page website. 
+ * Takes in a string, '<location>.view', that will load location into the page.
+ * @param {string} pageToLoad 
+ */
 async function loadView(pageToLoad) {
 	console.log('in ' + pageToLoad);
 	if (pageToLoad == 'home.view') {
@@ -100,10 +133,18 @@ async function loadView(pageToLoad) {
 	}
 }
 
+/**
+ * An event for loading a view. 
+ * Directly calls loadView(desiredView).  
+ * @param {Event} evt 
+ */
 function eventLoadView(evt) {
 	loadView(evt.currentTarget.desiredView);
 }
 
+/**
+ * Generic function for loading the navbar of different roles of user. 
+ */
 function loadNavBar() {
 	console.log('in loadNavBar');
 	let xhr = new XMLHttpRequest;
@@ -158,6 +199,10 @@ function loadNavBar() {
 //         \/            \/        /_____/                   \/                    \/     \/ 
 //#region configurations
 
+/**
+ * Configures the Login html such that it behaves the way it's supposed to. 
+ * Adds events for validation and login.
+ */
 function configureLoginView() {
 	console.log('in configureLoginView');
 
@@ -166,6 +211,10 @@ function configureLoginView() {
 	document.getElementById('login').addEventListener('click', login);
 }
 
+/**
+ * Configures the Register html such that it behaves the way it's supposed to. 
+ * Adds events for validation, registration, and availability.
+ */
 function configureRegisterView() {
 	console.log('in configureRegisterView()');
 
@@ -179,6 +228,10 @@ function configureRegisterView() {
 	document.getElementById('register').addEventListener('click', registerUserRequest);
 }
 
+/** 
+ * Configures the User Update html such that it behaves the way it's supposed to. 
+ * Adds events for validation, registration, and availability.
+ */
 function configureUserUpdateView() {
 	console.log('in configureUserUpdateView()');
 
@@ -193,6 +246,10 @@ function configureUserUpdateView() {
 	populateUserUpdateInputFields();
 }
 
+/**
+ * Configures the Home html such that it behaves the way it's supposed to. 
+ * Sets the user name to appear on the screen.
+ */
 function configureHomeView() {
 	console.log('in configureHomeView');
 
@@ -200,11 +257,20 @@ function configureHomeView() {
 	document.getElementById('loggedInUsername').innerText = authUser.username;
 }
 
+/**
+ * Configures the Users html such that it behaves the way it's supposed to. 
+ * populates the user view with all users.
+ */
 function configureUsersView() {
 	console.log('in configureUsersView()');
 	populateUserView();
 }
 
+/**
+ * Configures the Reimbursement Update html such that it behaves the way it's supposed to. 
+ * adds listeners for validation and updating, 
+ * populates the update view with the desired reimbursement information.
+ */
 function configureReimbursementUpdateView() {
 	console.log('in configureReimbursementUpdateView();');
 
@@ -216,6 +282,11 @@ function configureReimbursementUpdateView() {
 	// $('.file-upload').file_upload();
 	populateReimbursementsUpdateView();
 }
+
+/**
+ * Configures the Reimbursement Create html such that it behaves the way it's supposed to. 
+ * Adds listeners for validation and submission. 
+ */
 function configureReimbursementCreateView() {
 	console.log('in configureReimbursementCreateView();');
 
@@ -228,12 +299,20 @@ function configureReimbursementCreateView() {
 
 }
 
+/**
+ * Configures the Reimbursements html such that it behaves the way it's supposed to. 
+ * populates the DataTable of reimbursements. 
+ */
 function configureReimbursementsView() {
 	console.log('in configureReimbursementsView()');
 	populateReimbursementsView();
 
 }
 
+/**
+ * Configures the Default Navbar buttons, Home and Profile, such that they behaves the way they're supposed to. 
+ * adds listeners for clicking on the buttons.
+ */
 function configureDefaultViewButtons() {
 	console.log('in configureDefaultViewButtons');
 	const HomeButton = document.getElementById('toHome')
@@ -245,6 +324,10 @@ function configureDefaultViewButtons() {
 	ProfileButton.desiredView = 'profile.view';
 }
 
+/**
+ * Configures the Navbar user dropdown html such that it behaves the way it's supposed to. 
+ * add listeners for click events.
+ */
 function configureNavbarUserDropdown() {
 	// const UserDropdown = document.getElementById('dropdownMenuButtonUser');
 	// UserDropdown.addEventListener('click', function(){
@@ -268,6 +351,10 @@ function configureNavbarUserDropdown() {
 	//   DeleteUserButton.desiredView = 'user_delete.view';
 }
 
+/**
+ * Configures the Navbar Reimbursement html such that it behaves the way it's supposed to. 
+ * adds listeners for click events.
+ */
 function configureNavbarReimbursementDropdown() {
 	// const ReimbursementDropdown = document.getElementById('dropdownMenuButtonReimbursement');
 	// ReimbursementDropdown.addEventListener('click', function(){
@@ -301,6 +388,12 @@ function configureNavbarReimbursementDropdown() {
 //         \/|__|        \/           \/                    \/     \/ 
 //#region operations
 
+/**
+ * bundles the username and password into a credentials object, 
+ * sends it to the server.
+ * If successful, loads the home view.
+ * If unsuccessful, shows error message to the user. 
+ */
 function login() {
 	console.log('in login()');
 
@@ -337,6 +430,10 @@ function login() {
 	}
 }
 
+/**
+ * loads the login view, 
+ * sends message to server to terminate session. 
+ */
 function logout() {
 	console.log('in logout()');
 	localStorage.removeItem('authUser');
@@ -351,6 +448,12 @@ function logout() {
 	}
 }
 
+/**
+ * bundles the user information into a JSON object, 
+ * sends it to the server.
+ * If successful, reloads page to register additional users. 
+ * If unsuccessful, displays error message to the user.
+ */
 function registerUserRequest() {
 	console.log('in register()');
 
@@ -397,6 +500,12 @@ function registerUserRequest() {
 	}
 }
 
+/**
+ * Bundles reimbursement info into a Data Transfer Object, 
+ * sends that to the server.
+ * If successful, reloads reimbursement creation page for additional reimbursements. 
+ * If unsuccessful, displays error message to the user. 
+ */
 function submitReimbursementRequest() {
 	console.log('in submitReimbursementRequest()');
 
@@ -441,6 +550,11 @@ function submitReimbursementRequest() {
 	}
 }
 
+/**
+ * Bundles updated user information together and sends it to the server.
+ * If successful, loads the users DataTable view. 
+ * If unsuccessful, displays error message to the user.
+ */
 function updateUserRequest() {
 	console.log('in update()');
 
@@ -491,6 +605,11 @@ function updateUserRequest() {
 	}
 }
 
+/**
+ * Bundles updated reimbursement information together and sends it to the server.
+ * If successful, loads reimbursement DataTable view. 
+ * If unsuccessful, displays error message to the user. 
+ */
 function updateReimbursementRequest() {
 	console.log('in updateReimbursementRequest()');
 
@@ -556,6 +675,10 @@ function updateReimbursementRequest() {
 
 }
 
+/**
+ * Requests Users from the server.
+ * Upon Success, parses the information into the Users DataTable. 
+ */
 function populateUserView() {
 	console.log('in populateUserView');
 
@@ -679,6 +802,10 @@ function populateUserView() {
 	}
 }
 
+/**
+ * Requests Reimbursements from the server, if Employee only requests personal reimbursements. 
+ * Upon success, parses the information into the Reimbursement DataTable.  
+ */
 function populateReimbursementsView() {
 
 	console.log('in populateReimbursementsView');
@@ -828,6 +955,10 @@ function populateReimbursementsView() {
 	}
 }
 
+/**
+ * Grabs locally stored user information,
+ * and populates the html elements with the parsed data. 
+ */
 function populateUserUpdateInputFields() {
 	console.log('in populateUserUpdateInputFields()');
 
@@ -853,6 +984,11 @@ function populateUserUpdateInputFields() {
 	localStorage.removeItem('updateUser');
 }
 
+/**
+ * Grabs locally stored reimbursement and populates the html elements with the parsed data. 
+ * If user role is Employee, they will be unable to change the reimbursement if it is no longer pending. 
+ * 
+ */
 function populateReimbursementsUpdateView() {
 	let numSlice = 23;
 	console.log('in populateReimbursementsUpdateView()');
@@ -918,6 +1054,11 @@ function populateReimbursementsUpdateView() {
 	}
 }
 
+/**
+ * A helper function for adding the selected class to the appropriately selected element. 
+ * @param {integer} id 
+ * @param {string} option 
+ */
 function selectChosenOption(id, option) {
 	let selection = document.getElementById(id);
 	for (let i = 0; i < selection.options.length; i++) {
@@ -929,17 +1070,29 @@ function selectChosenOption(id, option) {
 	}
 
 }
-
-// Edit record
+/**
+ * Edit a record and update the information by loading the update view. 
+ * @param {User} user 
+ */
 function UpdateUser(user) {
 	localStorage.setItem('updateUser', JSON.stringify(user));
 	loadView('user_update.view');
 }
 
+/**
+ * An event to load the user update view, 
+ * called for UpdateUser(user). 
+ * @param {Event} evt 
+ */
 function eventUpdateUser(evt) {
 	UpdateUser(evt.currentTarget.user);
 }
-// Delete a record
+
+/**
+ * Requests to delete a user from the database. 
+ * If successful, DataTable information is omitted. 
+ * @param {Principal} principal 
+ */
 function deleteUser(principal) {
 	console.log(principal);
 	if (!principal) return;
@@ -956,11 +1109,18 @@ function deleteUser(principal) {
 		}
 	}
 }
+
+/**
+ * An event to call deleteUser(principal). 
+ * @param {Event} evt 
+ */
 function eventDeleteUser(evt) {
 	deleteUser(evt.currentTarget.principal);
 }
+
 /**
- * 
+ * Sends a request to the server to deactivate a certain user with information 'principal'. 
+ * If successful, modifies DataTable to appropriately reflect deactivated status.
  * @param {Principal} principal 
  */
 function deactivateUser(principal) {
@@ -1002,11 +1162,17 @@ function deactivateUser(principal) {
 		}
 	}
 }
+
+/**
+ * An event to call deactivateUser(principal)
+ * @param {Event} evt 
+ */
 function eventDeactivateUser(evt) {
 	deactivateUser(evt.currentTarget.principal);
 }
 /**
- * 
+ * Sends a request to the server to re-activate a deactivated User (all users start activated)
+ * Uses the information in principal to activate the correct user. 
  * @param {Principal} principal 
  */
 function activateUser(principal) {
@@ -1046,21 +1212,39 @@ function activateUser(principal) {
 
 	}
 }
+
+/**
+ * An event to activateUser(principal). 
+ * @param {Event} evt 
+ */
 function eventActivateUser(evt) {
 	activateUser(evt.currentTarget.principal);
 }
 
+/**
+ * Stores the reimbursement to update in local storage, then loads the reimbursement update html.  
+ * @param {Reimbursement} reimbursement 
+ */
 function updateReimbursement(reimbursement) {
 	localStorage.setItem('updateReimbursement', JSON.stringify(reimbursement));
 	loadView('reimbursement_update.view');
 }
 
+/**
+ * An event ot updateReimbursement(reimbursement).
+ * @param {Event} evt 
+ */
 function eventUpdateReimbursement(evt) {
 	console.log('in eventUpdateReimbursement()');
 	updateReimbursement(evt.currentTarget.reimbursement);
 
 }
 
+/**
+ * Sends a request to the server to delete a reimbursement with the given id. 
+ * If successful, corrects the DataTable to reflect that the reimbursement no longer exists. 	
+ * @param {integer} id 
+ */
 function deleteReimbursement(id) {
 	id = JSON.stringify(id);
 	console.log(id);
@@ -1079,6 +1263,10 @@ function deleteReimbursement(id) {
 	}
 }
 
+/**
+ * An event to call deleteReimbursement(id). 
+ * @param {Event} evt 
+ */
 function eventDeleteReimbursement(evt) {
 	console.log('in eventDeleteReimbursement()');
 	deleteReimbursement(evt.currentTarget.id);
@@ -1093,6 +1281,12 @@ function eventDeleteReimbursement(evt) {
 // \___|_  /  \___  >____/   __/ \___  >__|     \___  / |____/|___|  /\___  >__| |__|\____/|___|  /____  >
 // 	  \/       \/     |__|        \/             \/             \/     \/                    \/     \/ 
 //#region helper functions
+
+/**
+ * transforms the given string into a 'Title Case String.'
+ * Every Word Is Capitalized.  
+ * @param {String} string 
+ */
 function titleCase(string) {
 	var sentence = string.toLowerCase().split(" ");
 	for (var i = 0; i < sentence.length; i++) {
@@ -1101,6 +1295,12 @@ function titleCase(string) {
 	return (sentence.join(" "));
 }
 
+/**
+ * Checks the current user role against every role in listOfRoles, 
+ * if the user is in the list, they are authorized and this function returns true. 
+ * If there is no user, returns false. 
+ * @param {string[]} listOfRoles 
+ */
 function isAuthorized(listOfRoles) {
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
 	if (!authUser) {
@@ -1115,6 +1315,13 @@ function isAuthorized(listOfRoles) {
 	return authorized;
 }
 
+/**
+ * enables an element with the provided id,
+ * sets the elements value with the newVal, 
+ * re-disables the given element.
+ * @param {int} id 
+ * @param {any} newVal 
+ */
 function editDisabledValue(id, newVal) {
 	let element = document.getElementById(id);
 	element.removeAttribute('disabled');
@@ -1122,6 +1329,10 @@ function editDisabledValue(id, newVal) {
 	element.disabled = true;
 }
 
+/**
+ * returns a Universal Time Code Date in format yyyy-MM-dd HH:mm:ss.sss
+ * @param {Date} timeF 
+ */
 function formatUTCTime(timeF) {
 	return timeF.getUTCFullYear() + '-' +
 		('00' + (timeF.getUTCMonth() + 1)).slice(-2) + '-' +
@@ -1132,6 +1343,10 @@ function formatUTCTime(timeF) {
 		('00' + timeF.getUTCMilliseconds()).slice(-4);
 }
 
+/**
+ * returns a Date in format yyyy-MM-dd HH:mm:ss.sss
+ * @param {Date} timeF 
+ */
 function formatTime(timeF) {
 	return timeF.getFullYear() + '-' +
 		('00' + (timeF.getMonth() + 1)).slice(-2) + '-' +
@@ -1151,12 +1366,13 @@ function formatTime(timeF) {
 //      \/                    \/                 \/             \/     \/                    \/ 
 //#region formValidation
 
+/**
+ * sends a request to the server to determine if a given username is in the database. 
+ * returns true if there is no matching username in the database. 
+ */
 function isUsernameAvailable() {
-
 	console.log('in isUsernameAvailable()');
-
 	let username = document.getElementById('reg-username').value;
-
 	let xhr = new XMLHttpRequest();
 
 	xhr.open('POST', 'username.validate');
@@ -1175,6 +1391,10 @@ function isUsernameAvailable() {
 	}
 }
 
+/**
+ * sends a request to the server to determine if a given email is in the database. 
+ * returns true if there is no matching email in the database. 
+ */
 function isEmailAvailable() {
 
 	console.log('in isEmailAvailable()');
@@ -1199,6 +1419,12 @@ function isEmailAvailable() {
 	}
 }
 
+/**
+ * Checks the Login Form for
+ * a username
+ * a password
+ * returns true if both exist with more than 0 characters. 
+ */
 function validateLoginForm() {
 
 	console.log('in validateLoginForm()');
@@ -1223,6 +1449,16 @@ function validateLoginForm() {
 
 }
 
+/**
+ * Checks the registration form for 
+ * firstname
+ * lastname
+ * username
+ * email
+ * password
+ * role
+ * returns true if all exist with a minimum of 1 character for the string values. 
+ */
 function validateRegisterForm() {
 
 	console.log('in validateRegisterForm()');
@@ -1244,6 +1480,16 @@ function validateRegisterForm() {
 	}
 }
 
+/**
+ * Checks the user update form for 
+ * firstname
+ * lastname
+ * username
+ * email
+ * password
+ * role
+ * returns true if all exist with a minimum of 1 character for the string values. 
+ */
 function validateUpdateForm() {
 
 	console.log('in validateRegisterForm()');
@@ -1265,6 +1511,12 @@ function validateUpdateForm() {
 	}
 }
 
+/**
+ * Checks the reimbursement form for 
+ * amount
+ * description
+ * returns true if amount is a positive number and description has at least one character. 
+ */
 function validateReimbursementCreateForm() {
 	console.log('in validateReimbursementForm()');
 
@@ -1272,7 +1524,7 @@ function validateReimbursementCreateForm() {
 	let desc = document.getElementById('description').value;
 	let recpt = document.getElementById('receipts').value;
 
-	if (amnt && desc) {
+	if (amnt > 0 && desc) {
 		document.getElementById('submit-reimbursement').removeAttribute('disabled');
 		document.getElementById('reg-message').setAttribute('hidden', true);
 	} else {
@@ -1282,6 +1534,12 @@ function validateReimbursementCreateForm() {
 	}
 }
 
+/**
+ * Checks the reimbursement update form for 
+ * amount
+ * description
+ * returns true if amount is a positive number and description has at least one character. 
+ */
 function validateReimbursementUpdateForm() {
 	console.log('in validateReimbursementUpdateForm()');
 
@@ -1299,6 +1557,10 @@ function validateReimbursementUpdateForm() {
 	}
 }
 
+/**
+ * returns true if the current user id is equal to the principal user's id
+ * @param {Principal} principal 
+ */
 function isSelf(principal) {
 	let authUser = JSON.parse(localStorage.getItem('authUser'));
 	return principal.id == authUser.id;
