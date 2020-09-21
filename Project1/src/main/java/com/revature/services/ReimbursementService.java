@@ -12,7 +12,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Models all services and operations that might apply to <code>{@link Reimbursement}</code>s.
+ */
 public class ReimbursementService {
+	/**
+	 * A <code>{@link Reimbursement}</code> Data Access Object Instance.
+	 */
 	private ReimbursementDao reimbursementDao = new ReimbursementDao();
 
 	public ReimbursementDao getReimbursementDao() {

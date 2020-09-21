@@ -24,10 +24,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Serves all reimbursement-related RESTful states.
+ */
 @WebServlet("/reimbursements/*")
 public class ReimbursementServlet extends HttpServlet {
 
+	/**
+	 * An instance of the <code>{@link Reimbursement}</code> class
+	 * This handles all services related to <code>{@link Reimbursement}</code>s.
+	 */
 	private final ReimbursementService reimbursementService = new ReimbursementService();
+	/**
+	 * An instance of the <code>{@link UserService}</code> class
+	 * This handles all services related to <code>{@link AppUser}</code>s.
+	 */
 	private final UserService userService = new UserService();
 
 	@Override

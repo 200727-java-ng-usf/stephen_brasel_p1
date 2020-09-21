@@ -1,7 +1,17 @@
 package com.revature.dtos;
 
+import com.revature.models.Reimbursement;
+
 import java.util.Objects;
 
+/**
+ * The Partial Data Transfer Object for <code>{@link Reimbursement}</code>s, including:
+ * amount
+ * description
+ * receipt URI
+ * author
+ * reimbursement type
+ */
 public class ReimbDto {
 	private double amount;
 	private String description;

@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * A singleton of the <code>{@link SessionFactory}</code> class that handles sessions for hibernate.
+ */
 public class HibernateSessionFactory {
 	private static SessionFactory sessionFactory;
 	private static Properties props = new Properties();
@@ -47,6 +50,11 @@ public class HibernateSessionFactory {
 	private HibernateSessionFactory(){
 	}
 
+	/**
+	 * Returns an instance of the <code>{@link SessionFactory}</code> class configured as necessary to talk to
+	 * the Revabursement repository.
+	 * @return an instance of the <code>{@link SessionFactory}</code> class.
+	 */
 	public static SessionFactory getInstance(){
 		if(sessionFactory != null){
 			return sessionFactory;

@@ -2,6 +2,10 @@ package com.revature.dtos;
 
 import java.util.Objects;
 
+/**
+ * The Data Transfer Object for Integers.
+ * Includes an Integer.
+ */
 public class IntegerDto {
 	int id;
 

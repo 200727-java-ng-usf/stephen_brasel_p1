@@ -19,8 +19,15 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * Serves all authentication-related RESTful states.
+ */
 @WebServlet("/auth")
 public class AuthServlet extends HttpServlet {
+	/**
+	 * An instance of the <code>{@link UserService}</code> class
+	 * This handles all services related to <code>{@link AppUser}</code>s.
+	 */
 	private final UserService userService = new UserService();
 
 	@Override

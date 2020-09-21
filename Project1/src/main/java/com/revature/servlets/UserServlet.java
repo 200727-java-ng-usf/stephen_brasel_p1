@@ -25,9 +25,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Serves all <code>{@link AppUser}</code>-related RESTful states.
+ */
 @WebServlet("/users/*")
 public class UserServlet extends HttpServlet {
 
+	/**
+	 * An instance of the <code>{@link UserService}</code> class
+	 * This handles all services related to <code>{@link AppUser}</code>.
+	 */
 	private final UserService userService = new UserService();
 
 	@Override

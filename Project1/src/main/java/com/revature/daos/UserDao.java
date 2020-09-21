@@ -1,7 +1,7 @@
 package com.revature.daos;
 
-import com.revature.dtos.Credentials;
 import com.revature.models.AppUser;
+import com.revature.models.Reimbursement;
 import com.revature.models.Role;
 import com.revature.util.HibernateSessionFactory;
 import org.hibernate.Session;
@@ -15,9 +15,21 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.*;
 
+/**
+ * The <code>{@link AppUser}</code> Data Access Object
+ * Implements <code>{@link CrudDao}</code><<code>{@link AppUser}</code>>
+ */
 public class UserDao implements CrudDao<AppUser> {
+
+	/**
+	 * The <code>{@link HibernateSessionFactory}</code> sessionFactory instance.
+	 */
 	private final SessionFactory sessionFactory = HibernateSessionFactory.getInstance();
 
+	/**
+	 * Saves the given <code>{@link AppUser}</code> to the repository.
+	 * @param appUser the <code>{@link AppUser}</code> to save to the repository
+	 */
 	@Override
 	public void save(AppUser appUser) {
 		Transaction tx = null;
@@ -31,6 +43,10 @@ public class UserDao implements CrudDao<AppUser> {
 		}
 	}
 
+	/**
+	 * Returns all <code>{@link AppUser}</code>s in the repository in an <code>{@link ArrayList}</code><<code>{@link AppUser}</code>>
+	 * @return an <code>{@link ArrayList}</code><<code>{@link AppUser}</code>> of all <code>{@link AppUser}</code>s in the repository.
+	 */
 	@Override
 	public List<AppUser> findAll() {
 		List<AppUser> _users = new ArrayList<>();
@@ -52,11 +68,22 @@ public class UserDao implements CrudDao<AppUser> {
 		return _users;
 	}
 
+	/**
+	 * Returns an <code>{@link AppUser}</code>s with the given id.
+	 * @param id the id associated with the <code>{@link AppUser}</code>.
+	 * @return an <code>{@link AppUser}</code>s with the given id.
+	 * 			If no <code>{@link AppUser}</code> is found, returns null.
+	 */
 	@Override
 	public Optional<AppUser> findById(int id) {
 		return findUserById(id);
 	}
 
+	/**
+	 * Returns true if a successful update occurs.
+	 * @param appUser the <code>{@link AppUser}</code> to update.
+	 * @return true if update was successful.
+	 */
 	@Override
 	public boolean update(AppUser appUser) {
 		Transaction tx = null;
@@ -137,6 +164,11 @@ public class UserDao implements CrudDao<AppUser> {
 		return true;
 	}
 
+	/**
+	 * Deletes an <code>{@link AppUser}</code> by the <code>{@link AppUser}</code>s id.
+	 * @param id the id of the <code>{@link AppUser}</code> to delete.
+	 * @return true if the deletion was successful.
+	 */
 	@Override
 	public boolean deleteById(int id) {
 		Transaction tx = null;
@@ -156,6 +188,12 @@ public class UserDao implements CrudDao<AppUser> {
 	}
 
 
+
+	/**
+	 * Deletes an <code>{@link AppUser}</code> by the <code>{@link AppUser}</code>s username.
+	 * @param username the username of the <code>{@link AppUser}</code> to delete.
+	 * @return true if the deletion was successful.
+	 */
 	public boolean deleteByUsername(String username) {
 		Transaction tx = null;
 		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
@@ -173,6 +211,11 @@ public class UserDao implements CrudDao<AppUser> {
 		return true;
 	}
 
+	/**
+	 * Deactivates an <code>{@link AppUser}</code> by the <code>{@link AppUser}</code>s id.
+	 * @param id the id of the <code>{@link AppUser}</code> to deactivate.
+	 * @return true if the deactivation was successful.
+	 */
 	public boolean deactivateById(int id) {
 		Transaction tx = null;
 		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
@@ -193,6 +236,11 @@ public class UserDao implements CrudDao<AppUser> {
 		return true;
 	}
 
+	/**
+	 * Deactivates an <code>{@link AppUser}</code> by the <code>{@link AppUser}</code>s username.
+	 * @param username the username of the <code>{@link AppUser}</code> to deactivate.
+	 * @return true if the deactivation was successful.
+	 */
 	public boolean deactivateByUsername(String username) {
 		Transaction tx = null;
 		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
@@ -213,6 +261,12 @@ public class UserDao implements CrudDao<AppUser> {
 		return true;
 	}
 
+	/**
+	 * Returns an <code>{@link Optional}</code><<code>{@link AppUser}</code>> with the given username.
+	 * @param userName the username associated with the desired <code>{@link AppUser}</code>
+	 * @return an <code>{@link Optional}</code><<code>{@link AppUser}</code>> with the given username.
+	 * 			If none match the username, an <code>{@link Optional}</code>.empty() is returned.
+	 */
 	public Optional<AppUser> findUserByUsername(String userName) {
 		Optional<AppUser> _user = Optional.empty();
 
@@ -233,28 +287,13 @@ public class UserDao implements CrudDao<AppUser> {
 		}
 		return _user;
 	}
-//
-//	public Optional<AppUser> findUserByCredentials(Credentials creds) {
-//		Optional<AppUser> _user = Optional.empty();
-//
-//		Transaction tx = null;
-//		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {
-//			tx = session.beginTransaction();
-//			AppUser retrievedUser = session.createQuery(
-//					"from AppUser au where au.username = :un"
-//					, AppUser.class)
-//					.setParameter("un", creds.getUsername())
-//					.getSingleResult();
-//			_user = Optional.of(retrievedUser);
-////			}
-//			tx.commit();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			if (tx != null) tx.rollback();
-//		}
-//		return  _user;
-//	}
 
+	/**
+	 * Returns an <code>{@link Optional}</code><<code>{@link AppUser}</code>> with the given email.
+	 * @param email the email associated with the desired <code>{@link AppUser}</code>
+	 * @return an <code>{@link Optional}</code><<code>{@link AppUser}</code>> with the given email.
+	 * 			If none match the email, an <code>{@link Optional}</code>.empty() is returned.
+	 */
 	public Optional<AppUser> findUserByEmail(String email) {
 		Optional<AppUser> _user = Optional.empty();
 
@@ -276,6 +315,12 @@ public class UserDao implements CrudDao<AppUser> {
 		return  _user;
 	}
 
+	/**
+	 * Returns an <code>{@link Optional}</code><<code>{@link AppUser}</code>> with the given id.
+	 * @param id the id associated with the desired <code>{@link AppUser}</code>
+	 * @return an <code>{@link Optional}</code><<code>{@link AppUser}</code>> with the given id.
+	 * 			If none match the id, an <code>{@link Optional}</code>.empty() is returned.
+	 */
 	public Optional<AppUser> findUserById(int id) {
 		Optional<AppUser> _user = Optional.empty();
 
@@ -297,7 +342,12 @@ public class UserDao implements CrudDao<AppUser> {
 		return  _user;
 	}
 
-	// TODO Test Me
+	/**
+	 * Returns an <code>{@link ArrayList}</code><<code>{@link AppUser}</code>> with the given <code>{@link Role}</code>.
+	 * @param role the <code>{@link Role}</code> associated with the desired <code>{@link AppUser}</code>
+	 * @return an <code>{@link Optional}</code><<code>{@link AppUser}</code>> with the given <code>{@link Role}</code>.
+	 * 			If none match the <code>{@link Role}</code>, an <code>{@link Optional}</code>.empty() is returned.
+	 */
 	public List<AppUser> findUserbyRole(Role role) {
 		List<AppUser> _users = new ArrayList<>();
 
@@ -317,6 +367,11 @@ public class UserDao implements CrudDao<AppUser> {
 		return _users;
 	}
 
+	/**
+	 * Reactivates the <code>{@link AppUser}</code> with the given id.
+	 * @param id the id of the reactivated <code>{@link AppUser}</code>
+	 * @return true if the reactivation was successful.
+	 */
 	public boolean reactivateById(int id) {
 		Transaction tx = null;
 		try (Session session = Objects.requireNonNull(sessionFactory).openSession()) {

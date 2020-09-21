@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Serves all validation-related RESTful states.
+ */
 @WebServlet("*.validate")
 public class ValidationServlet extends HttpServlet {
 

@@ -1,5 +1,6 @@
 package com.revature.daos;
 
+import com.revature.models.AppUser;
 import com.revature.models.Reimbursement;
 import com.revature.models.ReimbursementStatus;
 import com.revature.util.HibernateSessionFactory;
@@ -15,10 +16,21 @@ import javax.persistence.criteria.Root;
 import java.sql.Timestamp;
 import java.util.*;
 
+/**
+ * The <code>{@link Reimbursement}</code> Data Access Object
+ * Implements <code>{@link CrudDao}</code><<code>{@link Reimbursement}</code>>
+ */
 public class ReimbursementDao implements CrudDao<Reimbursement> {
 
+	/**
+	 * The <code>{@link HibernateSessionFactory}</code> sessionFactory instance.
+	 */
 	private final SessionFactory sessionFactory = HibernateSessionFactory.getInstance();
 
+	/**
+	 * Saves a <code>{@link Reimbursement}</code> to the repository.
+	 * @param reimbursement the <code>{@link Reimbursement}</code> to save
+	 */
 	@Override
 	public void save(Reimbursement reimbursement) {
 		Transaction tx = null;
@@ -33,6 +45,10 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 
 	}
 
+	/**
+	 * Returns all reimbursements in the repository in an <code>{@link ArrayList}</code><<code>{@link Reimbursement}</code>>
+	 * @return an <code>{@link ArrayList}</code><<code>{@link Reimbursement}</code>> of all <code>{@link Reimbursement}</code>s in the repository.
+	 */
 	@Override
 	public List<Reimbursement> findAll() {
 		List<Reimbursement> _reimbursements = new ArrayList<>();
@@ -57,6 +73,12 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 		}
 		return _reimbursements;
 	}
+
+	/**
+	 * Returns all <code>{@link Reimbursement}</code>s by the same <code>{@link AppUser}</code> Author.
+	 * @param id the id associated with the <code>{@link AppUser}</code> Author.
+	 * @return an <code>{@link ArrayList}</code><<code>{@link Reimbursement}</code>> of all <code>{@link Reimbursement}</code>s by the <code>{@link AppUser}</code> Author.
+	 */
 	public List<Reimbursement> findByAuthor(int id) {
 		List<Reimbursement> _reimbursements = new ArrayList<>();
 
@@ -81,6 +103,12 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 		}
 		return _reimbursements;
 	}
+
+	/**
+	 * Returns all <code>{@link ReimbursementStatus#PENDING}</code> <code>{@link Reimbursement}</code>s by the same <code>{@link AppUser}</code> Author.
+	 * @param id the id associated with the <code>{@link AppUser}</code> Author.
+	 * @return an <code>{@link ArrayList}</code><<code>{@link Reimbursement}</code>> of all <code>{@link ReimbursementStatus#PENDING}</code> <code>{@link Reimbursement}</code>s by the <code>{@link AppUser}</code> Author.
+	 */
 	public List<Reimbursement> findPendingReimbursementsByAuthor(int id) {
 		List<Reimbursement> _reimbursements = new ArrayList<>();
 
@@ -107,6 +135,12 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 		return _reimbursements;
 	}
 
+	/**
+	 * Returns a <code>{@link Reimbursement}</code>s with the given id.
+	 * @param id the id associated with the <code>{@link Reimbursement}</code>.
+	 * @return a <code>{@link Reimbursement}</code>s with the given id.
+	 * 			If no <code>{@link Reimbursement}</code> is found, returns null.
+	 */
 	@Override
 	public Optional<Reimbursement> findById(int id) {
 		Optional<Reimbursement> _reimbursement = Optional.empty();
@@ -133,6 +167,11 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 		return  _reimbursement;
 	}
 
+	/**
+	 * Returns true if a successful update occurs.
+	 * @param reimbursement the <code>{@link Reimbursement}</code> to update.
+	 * @return true if update was successful.
+	 */
 	@Override
 	public boolean update(Reimbursement reimbursement) {
 
@@ -216,6 +255,11 @@ public class ReimbursementDao implements CrudDao<Reimbursement> {
 		return true;
 	}
 
+	/**
+	 * Deletes a <code>{@link Reimbursement}</code> by the <code>{@link Reimbursement}</code>s id.
+	 * @param id the id of the <code>{@link Reimbursement}</code> to delete.
+	 * @return true if the deletion was successful.
+	 */
 	@Override
 	public boolean deleteById(int id) {
 		Transaction tx = null;

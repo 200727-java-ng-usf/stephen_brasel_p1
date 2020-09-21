@@ -10,8 +10,13 @@ import com.revature.models.*;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Models all services and operations that might apply to <code>{@link AppUser}</code>s.
+ */
 public class UserService {
+	/**
+	 * An <code>{@link AppUser}</code> Data Access Object Instance.
+	 */
 	private UserDao userDao = new UserDao();
 
 	public UserDao getUserDao() {
@@ -179,11 +184,21 @@ public class UserService {
 		return userDao.deactivateByUsername(username);
 	}
 
+	/**
+	 * Returns true if no <code>{@link AppUser}</code> in the database has the given username.
+	 * @param username the username to find the availability of
+	 * @return true if no <code>{@link AppUser}</code> in the database has the given username.
+	 */
 	public boolean isUsernameAvailable(String username) {
 		AppUser user = userDao.findUserByUsername(username).orElse(null);
 		return user == null;
 	}
 
+	/**
+	 * Returns true if no <code>{@link AppUser}</code> in the database has the given email.
+	 * @param email the email to find the availability of
+	 * @return true if no <code>{@link AppUser}</code> in the database has the given email.
+	 */
 	public boolean isEmailAvailable(String email) {
 		AppUser user = userDao.findUserByEmail(email).orElse(null);
 		return user == null;
@@ -208,6 +223,11 @@ public class UserService {
 		return true;
 	}
 
+	/**
+	 * Sets the <code>{@link AppUser#isActive()}</code> to true for a user with the given id.
+	 * @param id the id of the <code>{@link AppUser}</code> to activate.
+	 * @return true if the activation was successful.
+	 */
 	public boolean activateUserById(int id) { return userDao.reactivateById(id);
 	}
 	//endregion

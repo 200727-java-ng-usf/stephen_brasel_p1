@@ -3,7 +3,10 @@ package com.revature.dtos;
 import java.util.Objects;
 
 /**
- * DTO -> Data Transfer Object
+ * The Data Transfer Object for Credentials, including
+ * Username
+ * Password
+ * Email
  */
 public class Credentials {
 

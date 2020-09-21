@@ -12,6 +12,19 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.*;
 
+
+/**
+ * Defines the basic Application user, with facets such as:
+ * an id
+ * whether or not they are active
+ * first name
+ * last name
+ * username
+ * the hash of their password
+ * the salt of their password
+ * email
+ * the <code>{@link Role}</code>
+ */
 @Entity
 @Table(name = "revabursement.ers_users")
 public class AppUser {
@@ -175,6 +188,12 @@ public class AppUser {
 	//endregion
 
 	//region Methods
+
+	/**
+	 * Processes a given <code>{@link String}</code> into a password salt and hash.
+	 * @param password the <code>{@link String}</code> to salt and hash
+	 * @return true if the process was successful
+	 */
 	public boolean saltAndHashPassword(String password){
 		if(password == null || password.trim().equals("")){
 			passwordHash = new byte[0];
@@ -198,6 +217,13 @@ public class AppUser {
 		return false;
 	}
 
+	/**
+	 * Validates a given password against the given hash and salt. If true, the password matches this users' account.
+	 * @param password the <code>{@link String}</code> to check
+	 * @param hash the <code>byte[]</code> of the password hash
+	 * @param salt the <code>byte[]</code> of the password salt
+	 * @return true if the password matches the salt and hash.
+	 */
 	public boolean validatePassword(String password, byte[] hash, byte[] salt){
 		try{
 			int iterationCount = 65536;

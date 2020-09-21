@@ -6,6 +6,12 @@ import com.revature.models.AppUser;
 
 import java.util.Objects;
 
+/**
+ * The Data Transfer Object for Principal information, including:
+ * User id
+ * Username
+ * Role
+ */
 public class Principal {
 
 	private int id;

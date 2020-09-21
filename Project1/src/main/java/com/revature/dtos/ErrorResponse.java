@@ -3,6 +3,12 @@ package com.revature.dtos;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * The Data Transfer Object for Errors, including:
+ * HttpStatusCode
+ * message
+ * timestamp
+ */
 public class ErrorResponse {
 
 	private int status;

@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Serves all view/page-related RESTful states.
+ */
 @WebServlet("*.view")
 public class ViewServlet extends HttpServlet {
 

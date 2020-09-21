@@ -2,12 +2,26 @@ package com.revature.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.revature.models.AppUser;
+import com.revature.models.Reimbursement;
 import com.revature.models.ReimbursementStatus;
 import com.revature.models.ReimbursementType;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
+/**
+ * The Data Transfer Object for <code>{@link Reimbursement}</code>s, including:
+ * reimbursement id
+ * amount
+ * timestamp submitted
+ * timestamp resolved
+ * description
+ * receipt URI
+ * author
+ * resolver
+ * reimbursement status
+ * reimbursement type
+ */
 public class ReimbursementDto {
 	private int id;
 	private double amount;

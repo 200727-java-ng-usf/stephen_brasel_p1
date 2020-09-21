@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Serves all navigation-bar-related RESTful states.
+ */
 @WebServlet("*.nav")
 public class NavServlet extends HttpServlet {
 

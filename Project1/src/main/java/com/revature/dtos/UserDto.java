@@ -1,9 +1,20 @@
 package com.revature.dtos;
 
-import com.revature.models.Role;
+import com.revature.models.AppUser;
 
 import java.util.Objects;
 
+/**
+ * The Data Transfer Object for <code>{@link AppUser}</code>s, including:
+ * <code>{@link AppUser}</code> id
+ * whether or not the <code>{@link AppUser}</code> is active
+ * first name
+ * last name
+ * user name
+ * password
+ * email
+ * role
+ */
 public class UserDto {
 	//region Fields
 	private int id;

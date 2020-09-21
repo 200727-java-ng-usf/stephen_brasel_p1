@@ -4,6 +4,19 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+/**
+ * Defines a model for a Reimbursements, with properties such as:
+ * an id
+ * the amount to reimburse
+ * the time submitted
+ * the time resolved
+ * a description
+ * the URI of a receipt, if any
+ * an <code>{@link AppUser}</code> author
+ * an <code>{@link AppUser}</code> resolver
+ * A <code>{@link ReimbursementStatus}</code>
+ * A <code>{@link ReimbursementType}</code>
+ */
 @Entity
 @Table(name="revabursement.ers_reimbursements")
 public class Reimbursement {

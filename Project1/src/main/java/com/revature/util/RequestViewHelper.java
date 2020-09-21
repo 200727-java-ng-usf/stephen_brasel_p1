@@ -1,12 +1,20 @@
 package com.revature.util;
 
 import com.revature.controllers.*;
-import org.hibernate.sql.Update;
+import com.revature.servlets.ViewServlet;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Assists the <code>{@link ViewServlet}</code> in directing users to the appropriate page.
+ */
 public class RequestViewHelper {
 
+	/**
+	 * Processes a view-related request.
+	 * @param req the <code>{@link HttpServletRequest}</code> to process
+	 * @return the appropriate web page html
+	 */
 	public static String process(HttpServletRequest req){
 		System.out.println("Processing:" + req.getRequestURI());
 		switch (req.getRequestURI()){

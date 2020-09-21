@@ -4,6 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * The base Interface for the Database operations
+ * Create
+ * Replace
+ * Update
+ * Delete
+ * @param <T> The Type of Repository to operate upon.
+ */
 public interface CrudDao<T> {
 	public abstract void save(T t);
 	public abstract List<T> findAll();
